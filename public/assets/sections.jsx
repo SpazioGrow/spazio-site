@@ -181,9 +181,9 @@ function Hero() {
                 scale, and modern digital performance.
               </p>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
-                <button className="btn btn--primary" onClick={() => go("start")} style={{ padding: "15px 26px" }}>
+                <a href="/lead" className="btn btn--primary" style={{ padding: "15px 26px" }}>
                   Start a project <Arrow />
-                </button>
+                </a>
                 <button className="btn btn--ghost" onClick={() => go("work")} style={{ padding: "15px 26px" }}>
                   See our work
                 </button>
