@@ -127,5 +127,10 @@ export async function POST(request: Request) {
     );
   }
 
-  return Response.json({ ok: true }, { status: 201 });
+  const data = (await airtableResponse.json()) as {
+    records: Array<{ id: string }>;
+  };
+  const id = data.records?.[0]?.id ?? null;
+
+  return Response.json({ ok: true, id }, { status: 201 });
 }

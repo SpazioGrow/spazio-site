@@ -8,7 +8,7 @@ const { useState, useEffect, useRef, useContext, createContext, useCallback } = 
 const RouterCtx = createContext({ route: "home", navigate: () => {} });
 const useRouter = () => useContext(RouterCtx);
 
-const ROUTES = ["home", "services", "process", "work", "start", "subscribe"];
+const ROUTES = ["home", "services", "process", "work", "start", "foundation", "subscribe"];
 
 /* ---------- Scroll reveal ---------- */
 function useReveal() {

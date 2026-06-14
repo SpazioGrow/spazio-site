@@ -308,6 +308,8 @@ function BriefStudio() {
   const [f, setF] = useState(BRIEF_BLANK);
   const [errors, setErrors] = useState({});
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const topRef = useRef(null);
 
   const set = (k, v) => { setF((s) => ({ ...s, [k]: v })); setErrors((e) => ({ ...e, [k]: null })); };
@@ -345,11 +347,38 @@ function BriefStudio() {
   const back = () => { if (step > 0) { setStep(step - 1); goToTop(); } };
   const jump = (i) => { if (i <= maxReached) { setStep(i); goToTop(); } };
 
-  const submit = () => {
+  const submit = async () => {
+    setSubmitting(true);
+    setSubmitError(null);
     const payload = buildPayload(f);
-    // In production this POSTs to /api/brief → Make.com → Perplexity / OpenAI / DALL·E / Airtable.
-    try { console.info("[Spazio] creative brief payload →", payload); } catch (_) {}
-    setDone(true); goToTop();
+    const leadId = (typeof sessionStorage !== "undefined" && sessionStorage.getItem("spazio_lead_id")) || null;
+
+    const answers = {
+      shaping:       { project_type: payload.project_type, industry: payload.industry, goal: payload.goal },
+      direction:     { target_perception: payload.target_perception, emotional_outcome: payload.emotional_outcome, metaphor: payload.metaphor },
+      visualLanguage:{ visual_references: payload.visual_references, materials: payload.materials, lighting: payload.lighting, avoid_list: payload.avoid_list },
+      output:        { direction_count: payload.direction_count, boldness_level: payload.boldness_level },
+      context:       { competitors: payload.competitors, cultural_inspiration: payload.cultural_inspiration },
+    };
+
+    try {
+      const res = await fetch("/api/foundation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadId, answers }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not save your brief.");
+      if (leadId) sessionStorage.removeItem("spazio_lead_id");
+    } catch (err) {
+      setSubmitError(err.message || "Something went wrong. Please try again.");
+      setSubmitting(false);
+      return;
+    }
+
+    setSubmitting(false);
+    setDone(true);
+    goToTop();
   };
 
   const reset = () => { setF(BRIEF_BLANK); setErrors({}); setStep(0); setMaxReached(0); setDone(false); goToTop(); };
@@ -381,22 +410,31 @@ function BriefStudio() {
           </div>
 
           {/* nav */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap",
-            marginTop: "clamp(34px,4vw,52px)", paddingTop: 24, borderTop: "1px solid var(--line)" }}>
-            <button type="button" className="btn btn--ghost" onClick={back}
-              style={{ padding: "13px 22px", visibility: step === 0 ? "hidden" : "visible" }}>
-              <svg className="arr" width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ transform: "scaleX(-1)" }}><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              Back
-            </button>
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              {step === 4 && (
-                <button type="button" className="txtlink" onClick={next} style={{ border: 0, background: "none" }}>
-                  Skip — queue brief
-                </button>
-              )}
-              <button type="button" className="btn btn--primary" onClick={next} style={{ padding: "14px 28px" }}>
-                {isLast ? "Queue my brief" : "Continue"} <Arrow />
+          <div style={{ marginTop: "clamp(34px,4vw,52px)", paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+            {submitError && (
+              <div style={{ marginBottom: 16, padding: "11px 14px", background: "#FFF0EE", border: "1px solid #C0492E", borderRadius: 4,
+                fontFamily: "var(--mono)", fontSize: 12, color: "#B0432B", letterSpacing: "0.03em" }}>
+                {submitError}
+              </div>
+            )}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+              <button type="button" className="btn btn--ghost" onClick={back}
+                style={{ padding: "13px 22px", visibility: step === 0 ? "hidden" : "visible" }}>
+                <svg className="arr" width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ transform: "scaleX(-1)" }}><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                Back
               </button>
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                {step === 4 && (
+                  <button type="button" className="txtlink" onClick={next} disabled={submitting}
+                    style={{ border: 0, background: "none", opacity: submitting ? 0.5 : 1 }}>
+                    Skip — queue brief
+                  </button>
+                )}
+                <button type="button" className="btn btn--primary" onClick={next} disabled={submitting}
+                  style={{ padding: "14px 28px", opacity: submitting ? 0.7 : 1 }}>
+                  {isLast && submitting ? "Saving…" : isLast ? "Queue my brief" : "Continue"} {!submitting && <Arrow />}
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -79,7 +79,8 @@ function App() {
     case "services": Page = <ServicesPage />; break;
     case "process":  Page = <ProcessPage />; break;
     case "work":     Page = <WorkPage />; break;
-    case "start":    Page = <StartPage />; break;
+    case "start":
+    case "foundation": Page = <StartPage />; break;
     case "subscribe":Page = <SubscribePage />; break;
     default:         Page = <HomePage />;
   }

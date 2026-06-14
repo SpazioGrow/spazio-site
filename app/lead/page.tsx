@@ -35,6 +35,9 @@ export default function LeadPage() {
         throw new Error(data.error ?? "Something went wrong.");
       }
       setState("success");
+      if (data.id) {
+        sessionStorage.setItem("spazio_lead_id", data.id);
+      }
       setTimeout(() => {
         window.location.replace(window.location.origin + "/#foundation");
       }, 1400);
