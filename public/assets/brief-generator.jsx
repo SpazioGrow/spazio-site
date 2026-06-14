@@ -310,6 +310,7 @@ function BriefStudio() {
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [reportId, setReportId] = useState(null);
   const topRef = useRef(null);
 
   const set = (k, v) => { setF((s) => ({ ...s, [k]: v })); setErrors((e) => ({ ...e, [k]: null })); };
@@ -370,6 +371,7 @@ function BriefStudio() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not save your brief.");
       if (leadId) sessionStorage.removeItem("spazio_lead_id");
+      if (data.id) setReportId(data.id);
     } catch (err) {
       setSubmitError(err.message || "Something went wrong. Please try again.");
       setSubmitting(false);
@@ -383,7 +385,7 @@ function BriefStudio() {
 
   const reset = () => { setF(BRIEF_BLANK); setErrors({}); setStep(0); setMaxReached(0); setDone(false); goToTop(); };
 
-  if (done) return <span ref={topRef}><BriefQueued f={f} onReset={reset} onHome={() => navigate("home")} /></span>;
+  if (done) return <span ref={topRef}><BriefQueued f={f} reportId={reportId} onReset={reset} onHome={() => navigate("home")} /></span>;
 
   const isLast = step === BRIEF_STEPS.length - 1;
 
@@ -472,7 +474,31 @@ const Val = ({ children, muted }) => (
   <span style={{ fontSize: 16.5, lineHeight: 1.5, color: muted ? "var(--ink-4)" : "var(--ink)" }}>{children || (muted ? "—" : "")}</span>
 );
 
-function BriefQueued({ f, onReset, onHome }) {
+function BriefQueued({ f, reportId, onReset, onHome }) {
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState(null);
+
+  const generateBrief = async () => {
+    if (!reportId) { setGenError("No report ID — please re-submit the form."); return; }
+    setGenerating(true);
+    setGenError(null);
+    try {
+      const res = await fetch("/api/brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reportId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Brief generation failed.");
+      // Open the HTML brief in a new tab via a blob URL
+      const blob = new Blob([data.html], { type: "text/html" });
+      const url  = URL.createObjectURL(blob);
+      window.open(url, "_blank", "noopener");
+    } catch (err) {
+      setGenError(err.message || "Something went wrong. Please try again.");
+    }
+    setGenerating(false);
+  };
   const ref = ((f.industry || f.project_type || "SPZ").replace(/[^A-Za-z]/g, "").slice(0, 3).toUpperCase() || "SPZ") + "\u201326";
   const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
@@ -546,10 +572,23 @@ function BriefQueued({ f, onReset, onHome }) {
       </div>
 
       {/* actions */}
-      <div style={{ marginTop: "clamp(24px,3vw,34px)", paddingTop: "clamp(22px,3vw,30px)", borderTop: "1px solid var(--line)",
-        display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-        <button className="btn btn--primary" style={{ padding: "14px 26px" }} onClick={onReset}>Start another brief <Arrow /></button>
-        <button className="btn btn--ghost" style={{ padding: "14px 22px" }} onClick={onHome}>Back to home</button>
+      <div style={{ marginTop: "clamp(24px,3vw,34px)", paddingTop: "clamp(22px,3vw,30px)", borderTop: "1px solid var(--line)" }}>
+        {genError && (
+          <div style={{ marginBottom: 16, padding: "11px 14px", background: "#FFF0EE", border: "1px solid #C0492E", borderRadius: 4,
+            fontFamily: "var(--mono)", fontSize: 12, color: "#B0432B", letterSpacing: "0.03em" }}>
+            {genError}
+          </div>
+        )}
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
+          <button className="btn btn--accent" style={{ padding: "14px 26px", opacity: generating ? 0.7 : 1 }}
+            onClick={generateBrief} disabled={generating}>
+            {generating
+              ? <><span className="brief-dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor", display: "inline-block" }} /> Generating…</>
+              : <>Generate brief <Arrow /></>}
+          </button>
+          <button className="btn btn--ghost" style={{ padding: "14px 22px" }} onClick={onReset}>New brief</button>
+          <button className="txtlink" style={{ border: 0, background: "none" }} onClick={onHome}>Back to home</button>
+        </div>
       </div>
     </div>
   );
