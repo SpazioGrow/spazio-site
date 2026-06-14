@@ -36,7 +36,7 @@ export default function LeadPage() {
       }
       setState("success");
       setTimeout(() => {
-        window.location.href = "/#foundation";
+        window.location.replace(window.location.origin + "/#foundation");
       }, 1400);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
