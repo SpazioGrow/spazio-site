@@ -154,6 +154,7 @@ function SectionHead({ label, title, lede, linkTo, linkLabel }) {
 /* ---------------- HERO ---------------- */
 function Hero() {
   const { navigate } = useRouter();
+  const { openLead } = useLeadModal();
   const go = (id) => navigate(id);
   return (
     <section style={{ paddingTop: "clamp(48px,7vw,96px)", paddingBottom: "clamp(48px,6vw,84px)" }}>
@@ -181,7 +182,7 @@ function Hero() {
                 scale, and modern digital performance.
               </p>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
-                <button className="btn btn--primary" onClick={() => go("start")} style={{ padding: "15px 26px" }}>
+                <button className="btn btn--primary" onClick={() => openLead()} style={{ padding: "15px 26px" }}>
                   Start a project <Arrow />
                 </button>
                 <button className="btn btn--ghost" onClick={() => go("work")} style={{ padding: "15px 26px" }}>

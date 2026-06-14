@@ -57,6 +57,9 @@ function App() {
 
   const getHash = () => {
     const h = (window.location.hash || "#home").replace("#", "");
+    // #foundation is the first step of the brief questionnaire, which lives
+    // on the Start page — resolve it there rather than falling back to home.
+    if (h === "foundation") return "start";
     return ROUTES.includes(h) ? h : "home";
   };
   const [route, setRoute] = useState(getHash());
@@ -74,6 +77,19 @@ function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  // When sent to #foundation (e.g. after the lead modal), scroll the brief
+  // questionnaire into view once the Start page has rendered.
+  useEffect(() => {
+    if (route !== "start" || window.location.hash !== "#foundation") return;
+    const raf = requestAnimationFrame(() => {
+      setTimeout(() => {
+        const el = document.getElementById("foundation");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 80);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [route]);
+
   let Page;
   switch (route) {
     case "services": Page = <ServicesPage />; break;
@@ -86,6 +102,7 @@ function App() {
 
   return (
     <RouterCtx.Provider value={{ route, navigate }}>
+      <LeadModalProvider>
       <Nav />
       <div key={route} className="page-fade">{Page}</div>
       <Footer />
@@ -106,6 +123,7 @@ function App() {
         <TweakToggle label="Entrance motion" value={t.motion}
           onChange={(v) => setTweak("motion", v)} />
       </TweaksPanel>
+      </LeadModalProvider>
     </RouterCtx.Provider>
   );
 }

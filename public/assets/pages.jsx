@@ -98,6 +98,7 @@ function SubscribeSection() {
 /* ---------- CTA band ---------- */
 function CtaBand() {
   const { navigate } = useRouter();
+  const { openLead } = useLeadModal();
   return (
     <section className="section" style={{ background: "var(--ink)", color: "var(--bg)" }}>
       <div className="wrap" style={{ textAlign: "center" }}>
@@ -106,7 +107,7 @@ function CtaBand() {
             Let's design the space your brand <em className="grace" style={{ color: "var(--accent)" }}>grows into</em>.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 36 }}>
-            <button className="btn btn--accent" style={{ padding: "15px 28px" }} onClick={() => navigate("start")}>
+            <button className="btn btn--accent" style={{ padding: "15px 28px" }} onClick={() => openLead()}>
               Start a project <Arrow />
             </button>
             <button className="btn btn--ghost" style={{ padding: "15px 28px", color: "var(--bg)", borderColor: "color-mix(in oklab, var(--bg) 30%, transparent)" }}
@@ -435,7 +436,7 @@ function WorkPage() {
 function StartPage() {
   return (
     <main>
-      <section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}>
+      <section id="foundation" style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)", scrollMarginTop: 80 }}>
         <div className="wrap">
           <BriefStudio />
         </div>

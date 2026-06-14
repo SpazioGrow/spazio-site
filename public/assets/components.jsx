@@ -138,6 +138,7 @@ const NAV_LINKS = [
 
 function Nav() {
   const { route, navigate } = useRouter();
+  const { openLead } = useLeadModal();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -189,7 +190,7 @@ function Nav() {
              style={{ fontSize: 15, fontWeight: 500, padding: "8px 14px", borderRadius: 100,
                color: route === "subscribe" ? "var(--ink)" : "var(--ink-2)" }}
           >Subscribe</a>
-          <a href="#start" onClick={(e) => go(e, "start")} className="btn btn--primary"
+          <a href="#start" onClick={(e) => { e.preventDefault(); openLead(); }} className="btn btn--primary"
              style={{ marginLeft: 10, padding: "11px 20px" }}>
             Start a project <Arrow />
           </a>
@@ -229,7 +230,7 @@ function Nav() {
               {l.label} <Arrow size={16} />
             </a>
           ))}
-          <a href="#start" onClick={(e) => go(e, "start")} className="btn btn--primary"
+          <a href="#start" onClick={(e) => { e.preventDefault(); openLead(); }} className="btn btn--primary"
              style={{ width: "100%", justifyContent: "center", marginTop: 18, padding: "15px" }}>
             Start a project <Arrow />
           </a>
@@ -300,6 +301,7 @@ function FooterSubscribe() {
 /* ---------- Footer ---------- */
 function Footer() {
   const { navigate } = useRouter();
+  const { openLead } = useLeadModal();
   const go = (e, id) => { e.preventDefault(); navigate(id); };
   const year = 2026;
   return (
@@ -321,7 +323,8 @@ function Footer() {
             <p className="label" style={{ color: "color-mix(in oklab, var(--bg) 50%, transparent)", marginBottom: 18 }}>Explore</p>
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 12 }}>
               {[["work","Work"],["services","Services"],["process","Process"],["start","Start a project"]].map(([id,l]) => (
-                <li key={id}><a href={`#${id}`} onClick={(e)=>go(e,id)}
+                <li key={id}><a href={`#${id}`}
+                  onClick={(e)=>{ if (id === "start") { e.preventDefault(); openLead(); } else { go(e,id); } }}
                   style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>{l}</a></li>
               ))}
             </ul>
