@@ -106,7 +106,7 @@ function CtaBand() {
             Let's design the space your brand <em className="grace" style={{ color: "var(--accent)" }}>grows into</em>.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 36 }}>
-            <button className="btn btn--accent" style={{ padding: "15px 28px" }} onClick={() => navigate("start")}>
+            <button className="btn btn--accent" style={{ padding: "15px 28px" }} onClick={() => navigate("foundation")}>
               Start a project <Arrow />
             </button>
             <button className="btn btn--ghost" style={{ padding: "15px 28px", color: "var(--bg)", borderColor: "color-mix(in oklab, var(--bg) 30%, transparent)" }}

@@ -8,7 +8,7 @@ const { useState, useEffect, useRef, useContext, createContext, useCallback } = 
 const RouterCtx = createContext({ route: "home", navigate: () => {} });
 const useRouter = () => useContext(RouterCtx);
 
-const ROUTES = ["home", "services", "process", "work", "start", "subscribe"];
+const ROUTES = ["home", "services", "process", "work", "start", "subscribe", "foundation", "brief-ready"];
 
 /* ---------- Scroll reveal ---------- */
 function useReveal() {
@@ -189,7 +189,7 @@ function Nav() {
              style={{ fontSize: 15, fontWeight: 500, padding: "8px 14px", borderRadius: 100,
                color: route === "subscribe" ? "var(--ink)" : "var(--ink-2)" }}
           >Subscribe</a>
-          <a href="#start" onClick={(e) => go(e, "start")} className="btn btn--primary"
+          <a href="#foundation" onClick={(e) => go(e, "foundation")} className="btn btn--primary"
              style={{ marginLeft: 10, padding: "11px 20px" }}>
             Start a project <Arrow />
           </a>
@@ -229,7 +229,7 @@ function Nav() {
               {l.label} <Arrow size={16} />
             </a>
           ))}
-          <a href="#start" onClick={(e) => go(e, "start")} className="btn btn--primary"
+          <a href="#foundation" onClick={(e) => go(e, "foundation")} className="btn btn--primary"
              style={{ width: "100%", justifyContent: "center", marginTop: 18, padding: "15px" }}>
             Start a project <Arrow />
           </a>
@@ -320,7 +320,7 @@ function Footer() {
           <div className="col-span-3" style={{ gridColumn: "span 3" }}>
             <p className="label" style={{ color: "color-mix(in oklab, var(--bg) 50%, transparent)", marginBottom: 18 }}>Explore</p>
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 12 }}>
-              {[["work","Work"],["services","Services"],["process","Process"],["start","Start a project"]].map(([id,l]) => (
+              {[["work","Work"],["services","Services"],["process","Process"],["foundation","Start a project"]].map(([id,l]) => (
                 <li key={id}><a href={`#${id}`} onClick={(e)=>go(e,id)}
                   style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>{l}</a></li>
               ))}

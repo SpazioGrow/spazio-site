@@ -81,6 +81,8 @@ function App() {
     case "work":     Page = <WorkPage />; break;
     case "start":    Page = <StartPage />; break;
     case "subscribe":Page = <SubscribePage />; break;
+    case "foundation": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><FoundationForm onSuccess={() => { window.location.hash = "brief-ready"; }} /></div></section></main>; break;
+    case "brief-ready": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><BriefReadyPage /></div></section></main>; break;
     default:         Page = <HomePage />;
   }
 

@@ -181,7 +181,7 @@ function Hero() {
                 scale, and modern digital performance.
               </p>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
-                <button className="btn btn--primary" onClick={() => go("start")} style={{ padding: "15px 26px" }}>
+                <button className="btn btn--primary" onClick={() => go("foundation")} style={{ padding: "15px 26px" }}>
                   Start a project <Arrow />
                 </button>
                 <button className="btn btn--ghost" onClick={() => go("work")} style={{ padding: "15px 26px" }}>
@@ -470,7 +470,7 @@ function WorkRow({ w, index }) {
             </div>
           )}
 
-          <a href="#start" onClick={(e)=>{e.preventDefault();navigate("start");}} className="txtlink" style={{ marginTop: 26 }}>
+          <a href="#foundation" onClick={(e)=>{e.preventDefault();navigate("foundation");}} className="txtlink" style={{ marginTop: 26 }}>
             Start one like this <Arrow />
           </a>
         </div>
