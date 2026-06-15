@@ -13,6 +13,13 @@ const LEAD_FIELDS = {
   source: "fldD97lODtKXRBp57",
 } as const;
 
+const REPORT_FIELDS = {
+  reportId: "fldDIew0Hh6uWyy7Z",
+  lead: "flduD1QjX8XxucINU",
+  answers: "fldgTPk5L6fnvZzZo",
+  status: "fldLUKmsHhqidDFWb",
+} as const;
+
 function str(v: unknown): string {
   return typeof v === "string" ? v.trim() : "";
 }
@@ -76,16 +83,16 @@ export async function POST(request: Request) {
     return Response.json({ error: "Could not reach database." }, { status: 502 });
   }
 
-  // 2. Create Brand Intelligence Report record (uses field names + typecast)
+  // 2. Create Brand Intelligence Report using correct field IDs
   const questionnaire = body.questionnaire ?? {};
+  const allAnswers = { company, service, email, ...questionnaire };
+  const ref = (company || name).replace(/[^A-Za-z]/g, "").slice(0, 4).toUpperCase() + "-" + Date.now().toString(36).slice(-4).toUpperCase();
+
   const reportFields: Record<string, unknown> = {
-    "Lead Name": name,
-    "Lead Email": email,
-    "Company": company,
-    "Service Interest": service,
-    "Questionnaire JSON": JSON.stringify(questionnaire),
-    "Status": "New",
-    "Lead Record ID": leadId,
+    [REPORT_FIELDS.reportId]: ref,
+    [REPORT_FIELDS.lead]: [leadId],
+    [REPORT_FIELDS.answers]: JSON.stringify(allAnswers),
+    [REPORT_FIELDS.status]: "New",
   };
 
   let reportId: string;
@@ -101,7 +108,7 @@ export async function POST(request: Request) {
     if (!res.ok) {
       const detail = await res.text();
       console.error(`Airtable Reports ${res.status}: ${detail}`);
-      return Response.json({ ok: true, leadId, reportId: null, warning: "Lead saved but report creation failed." }, { status: 201 });
+      return Response.json({ ok: true, leadId, reportId: null, warning: "Lead saved but report creation failed: " + detail }, { status: 201 });
     }
     const data = await res.json();
     reportId = data.records[0].id;
