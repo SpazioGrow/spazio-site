@@ -1,11 +1,5 @@
-// Generate Deck — the full creative pipeline.
-// Called fire-and-forget after foundation form submit.
-// 1. Perplexity: market/competitor/brand research
-// 2. OpenAI: 3 creative directions from research
-// 3. DALL·E: concept visual per direction
-// 4. Build 4-page deck HTML
-// 5. Store in Airtable
-// 6. Create Asana review task
+// Generate Deck — full creative pipeline with rich visual output.
+// Perplexity research → OpenAI directions (colors, fonts, mood) → DALL·E visuals → rich deck
 
 const BASE_ID = "appv2sIRwDvNPjV7j";
 const LEADS_TABLE = "tbl5qLZO9mAN9LQ0P";
@@ -15,138 +9,162 @@ const ASANA_PROJECT = "1215677774689770";
 const REPORT_FIELDS = {
   status: "fldLUKmsHhqidDFWb",
   briefHTML: "fld3ZgwxOlFRK27Qx",
-  answers: "fldgTPk5L6fnvZzZo",
-  lead: "flduD1QjX8XxucINU",
 } as const;
 
-const LEAD_FIELDS = {
-  name: "fldcNCcvpv3UYK7sR",
-  company: "fldK7UmiFjbqxuibh",
-  email: "fld8bcTQhFU2ZBxKS",
-  service: "fld15eMrZbh2n8Kev",
-} as const;
-
-// === PERPLEXITY: RESEARCH LAYER ===
+// === PERPLEXITY: RESEARCH ===
 async function runResearch(company: string, service: string, answers: string, key: string): Promise<string> {
-  const prompt = `You are a senior brand researcher at a high-end design agency. Conduct a thorough brand intelligence analysis for a potential client.
-
-Company: ${company}
-Service interest: ${service}
-Client intake data: ${answers}
-
-Deliver a structured research report covering:
-1. MARKET LANDSCAPE — Industry size, growth trajectory, key trends shaping the space right now
-2. COMPETITIVE ANALYSIS — 4-5 direct and aspirational competitors, what they do well, where they fall short visually and strategically
-3. AUDIENCE PROFILE — Who the ideal customer is, what they value, how they discover and evaluate brands in this space
-4. BRAND OPPORTUNITY — The specific gap this brand can own, the positioning white space, the strategic angle competitors are missing
-5. VISUAL LANDSCAPE — The dominant visual language in this space, what's overused, what would feel fresh
-
-Write in clear, opinionated, professional prose. Be specific with competitor names and market data. No filler. 800-1000 words.`;
-
   const res = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "sonar", messages: [{ role: "user", content: prompt }], max_tokens: 2000 }),
+    body: JSON.stringify({ model: "sonar", messages: [{ role: "user", content: `You are a senior brand researcher. Conduct a thorough brand intelligence analysis.
+
+Company: ${company}
+Service: ${service}
+Intake data: ${answers}
+
+Cover:
+1. MARKET LANDSCAPE — Industry size, growth, key trends
+2. COMPETITIVE ANALYSIS — 4-5 competitors, strengths, visual weaknesses
+3. AUDIENCE PROFILE — Ideal customer, values, discovery channels
+4. BRAND OPPORTUNITY — Positioning white space, strategic angle
+5. VISUAL LANDSCAPE — Dominant visual language, what's overused, what's fresh
+
+Be specific with names and data. 800-1000 words. Professional prose, no filler.` }], max_tokens: 2000 }),
   });
   if (!res.ok) throw new Error(`Perplexity ${res.status}`);
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content ?? "";
+  const d = await res.json();
+  return d.choices?.[0]?.message?.content ?? "";
 }
 
-// === OPENAI: CREATIVE DIRECTOR LAYER ===
-async function generateDirections(company: string, research: string, key: string): Promise<Array<{name: string; concept: string; visualPrompt: string}>> {
-  const prompt = `You are a senior creative director at a high-end design agency. Based on this brand research, create exactly 3 distinct creative directions for the brand "${company}".
+// === OPENAI: CREATIVE DIRECTOR (rich output) ===
+async function generateDirections(company: string, research: string, key: string) {
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: `You are a world-class creative director at a premium design agency. Based on this research, create 3 distinct creative directions for "${company}".
 
 RESEARCH:
 ${research}
 
-For each direction, provide:
-- name: A 2-4 word evocative direction name (e.g. "Quiet Authority", "Raw Momentum", "Soft Industrial")
-- concept: 2-3 sentences describing the strategic angle, visual mood, and emotional territory
-- visualPrompt: A detailed DALL-E image prompt for a brand mood board. Describe specific colors, textures, composition, lighting, and aesthetic. No text or logos. Abstract/atmospheric. 100 words max.
+For each direction provide ALL of these:
+- name: 2-4 word evocative name (e.g. "Quiet Authority", "Raw Momentum")
+- concept: 3 sentences — strategic angle, emotional territory, what makes it different
+- colorPalette: array of 5 objects with "hex" and "name" (e.g. {"hex":"#2C3E50","name":"Midnight Navy"})
+- fonts: object with "display" (headline font), "body" (paragraph font), "accent" (detail font) — use real font names from Google Fonts or premium type foundries
+- mood: array of 4-5 adjective keywords
+- inspiration: array of 3-4 real brand/publication names this direction channels
+- visualPrompt: 80-word DALL-E prompt for an abstract mood board. Describe specific colors, textures, materials, lighting, composition. No text, no logos, no people. Atmospheric and editorial.
 
-Respond ONLY with a JSON array of 3 objects. No markdown, no explanation, no backticks. Just the raw JSON array.`;
-
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: prompt }], max_tokens: 1200, temperature: 0.9 }),
+Respond ONLY with a JSON array of 3 objects. No markdown, no backticks, no explanation.` }], max_tokens: 2500, temperature: 0.9 }),
   });
   if (!res.ok) throw new Error(`OpenAI ${res.status}`);
-  const data = await res.json();
-  const raw = data.choices?.[0]?.message?.content ?? "[]";
+  const d = await res.json();
+  const raw = d.choices?.[0]?.message?.content ?? "[]";
   try { return JSON.parse(raw.replace(/```json|```/g, "").trim()); }
   catch { return []; }
 }
 
-// === DALL·E: VISUAL LAYER ===
+// === DALL·E ===
 async function generateVisual(prompt: string, key: string): Promise<string> {
   const res = await fetch("https://api.openai.com/v1/images/generations", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "dall-e-3", prompt: `Brand mood board concept: ${prompt}. Abstract, atmospheric, no text, no logos, no people. Editorial photography aesthetic, cinematic lighting.`, n: 1, size: "1792x1024", quality: "standard" }),
+    body: JSON.stringify({ model: "dall-e-3", prompt: `Brand mood board: ${prompt}. Abstract, atmospheric, no text, no logos, no people. Cinematic editorial photography.`, n: 1, size: "1792x1024", quality: "standard" }),
   });
   if (!res.ok) throw new Error(`DALL-E ${res.status}`);
-  const data = await res.json();
-  return data.data?.[0]?.url ?? "";
+  const d = await res.json();
+  return d.data?.[0]?.url ?? "";
 }
 
-// === BUILD 4-PAGE DECK HTML ===
-function buildDeckHTML(company: string, service: string, research: string, directions: Array<{name: string; concept: string; imageUrl: string}>): string {
+// === BUILD RICH DECK HTML ===
+function buildDeckHTML(company: string, service: string, research: string, directions: any[]): string {
   const date = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   const researchHTML = research.split(/\n\n+/).filter(p => p.trim()).map(p => {
-    if (/^\d+\.\s|^[A-Z]{2,}/.test(p.trim())) {
-      const lines = p.split("\n");
-      const heading = lines[0].replace(/^\d+\.\s*/, "").replace(/[*_]/g, "");
-      const body = lines.slice(1).join(" ").trim();
-      return `<p style="margin: 24px 0 6px; font-weight: 700; font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; color: #3E7D5A;">${heading}</p><p style="margin: 0 0 14px; font-size: 15.5px; line-height: 1.65;">${body}</p>`;
+    const lines = p.split("\n");
+    const first = lines[0].replace(/^\d+\.\s*/, "").replace(/[*_#]/g, "").trim();
+    if (/^[A-Z]{2,}/.test(first) || /^\d+\./.test(p.trim())) {
+      return `<p style="margin: 28px 0 6px; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #3E7D5A;">${first}</p><p style="margin: 0 0 14px; font-size: 15.5px; line-height: 1.7; color: #17160F;">${lines.slice(1).join(" ").trim()}</p>`;
     }
-    return `<p style="margin: 0 0 14px; font-size: 15.5px; line-height: 1.65;">${p.replace(/\n/g, " ").trim()}</p>`;
+    return `<p style="margin: 0 0 14px; font-size: 15.5px; line-height: 1.7; color: #17160F;">${p.replace(/\n/g, " ").trim()}</p>`;
   }).join("\n");
 
-  const directionsHTML = directions.map((d, i) => `
-    <div style="margin-bottom: 48px; ${i < directions.length - 1 ? "padding-bottom: 40px; border-bottom: 1px solid #DFD9C9;" : ""}">
-      <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px;">
-        <span style="font-family: monospace; font-size: 11px; letter-spacing: 0.1em; color: #3E7D5A;">0${i + 1}</span>
-        <h3 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.02em;">${d.name}</h3>
+  const directionsHTML = directions.map((d, i) => {
+    const colors = (d.colorPalette || []).map((c: any) =>
+      `<div style="display:inline-flex;align-items:center;gap:8px;margin:0 14px 8px 0;">
+        <div style="width:32px;height:32px;border-radius:4px;background:${c.hex};border:1px solid #DFD9C9;"></div>
+        <div><span style="font-size:12px;font-weight:600;color:#17160F;">${c.name}</span><br/><span style="font-size:11px;color:#847F71;font-family:monospace;">${c.hex}</span></div>
+      </div>`).join("");
+
+    const fonts = d.fonts || {};
+    const fontsHTML = `<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:4px;">
+      ${fonts.display ? `<div><span style="font-size:11px;color:#847F71;text-transform:uppercase;letter-spacing:0.06em;">Display</span><br/><span style="font-size:16px;font-weight:600;">${fonts.display}</span></div>` : ""}
+      ${fonts.body ? `<div><span style="font-size:11px;color:#847F71;text-transform:uppercase;letter-spacing:0.06em;">Body</span><br/><span style="font-size:16px;font-weight:600;">${fonts.body}</span></div>` : ""}
+      ${fonts.accent ? `<div><span style="font-size:11px;color:#847F71;text-transform:uppercase;letter-spacing:0.06em;">Accent</span><br/><span style="font-size:16px;font-weight:600;">${fonts.accent}</span></div>` : ""}
+    </div>`;
+
+    const mood = (d.mood || []).map((m: string) => `<span style="display:inline-block;padding:4px 12px;background:#F5F3ED;border:1px solid #DFD9C9;border-radius:100px;font-size:12px;color:#514E44;margin:0 6px 6px 0;">${m}</span>`).join("");
+    const inspo = (d.inspiration || []).map((b: string) => `<span style="display:inline-block;padding:4px 12px;background:#EBF5EF;border:1px solid #C8DFD0;border-radius:100px;font-size:12px;color:#3E7D5A;margin:0 6px 6px 0;">${b}</span>`).join("");
+
+    return `
+    <div style="margin-bottom: 56px; padding-bottom: 48px; ${i < directions.length - 1 ? "border-bottom: 1px solid #DFD9C9;" : ""}">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;">
+        <span style="font-family:monospace;font-size:11px;color:#3E7D5A;">0${i+1}</span>
+        <h3 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-0.025em;color:#17160F;">${d.name || `Direction ${i+1}`}</h3>
       </div>
-      <p style="font-size: 16px; line-height: 1.6; color: #514E44; margin: 0 0 20px; max-width: 600px;">${d.concept}</p>
-      ${d.imageUrl ? `<img src="${d.imageUrl}" alt="Concept visual for ${d.name}" style="width: 100%; max-width: 800px; border-radius: 6px; border: 1px solid #DFD9C9;" />` : `<div style="width: 100%; max-width: 800px; height: 300px; background: #F0EDE4; border-radius: 6px; display: grid; place-items: center; color: #ADA897; font-size: 14px;">Visual generating...</div>`}
-      <p style="margin: 10px 0 0; font-size: 12px; color: #ADA897; font-style: italic;">Concept placeholder — licensed imagery for finals</p>
-    </div>`).join("\n");
+      <p style="font-size:16.5px;line-height:1.6;color:#514E44;margin:0 0 24px;max-width:640px;">${d.concept || ""}</p>
+
+      ${d.imageUrl ? `<img src="${d.imageUrl}" alt="Mood board for ${d.name}" style="width:100%;max-width:860px;border-radius:8px;border:1px solid #DFD9C9;margin-bottom:24px;" />` : ""}
+      <p style="margin:0 0 24px;font-size:11px;color:#ADA897;font-style:italic;">AI concept placeholder — licensed imagery for finals</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div>
+          <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#3E7D5A;font-weight:600;">Color palette</p>
+          <div style="display:flex;flex-wrap:wrap;">${colors}</div>
+        </div>
+        <div>
+          <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#3E7D5A;font-weight:600;">Typography</p>
+          ${fontsHTML}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:20px;">
+        <div>
+          <p style="margin:0 0 8px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#3E7D5A;font-weight:600;">Mood</p>
+          <div>${mood}</div>
+        </div>
+        <div>
+          <p style="margin:0 0 8px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#3E7D5A;font-weight:600;">Inspiration</p>
+          <div>${inspo}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join("\n");
 
   return `
-<div style="font-family: system-ui, -apple-system, sans-serif; color: #17160F; max-width: 860px; margin: 0 auto;">
-  <!-- PAGE 1: COVER -->
-  <div style="padding: 80px 40px; text-align: center; border-bottom: 2px solid #DFD9C9; margin-bottom: 48px;">
-    <p style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #847F71; margin: 0 0 28px;">Spazio — Brand Intelligence Report</p>
-    <h1 style="font-size: 48px; font-weight: 600; line-height: 1.02; letter-spacing: -0.03em; margin: 0 0 16px;">${company || "Your Brand"}</h1>
-    <p style="font-size: 20px; color: #514E44; margin: 0 0 8px;">${service || "Strategic Brief"}</p>
-    <p style="font-size: 13px; color: #ADA897; margin: 28px 0 0;">${date}</p>
+<div style="font-family:system-ui,-apple-system,sans-serif;color:#17160F;max-width:900px;margin:0 auto;">
+  <div style="padding:80px 40px;text-align:center;border-bottom:2px solid #DFD9C9;margin-bottom:48px;">
+    <p style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#847F71;margin:0 0 28px;">Spazio — Brand Intelligence Report</p>
+    <h1 style="font-size:52px;font-weight:600;line-height:1;letter-spacing:-0.035em;margin:0 0 16px;">${company || "Your Brand"}</h1>
+    <p style="font-size:20px;color:#514E44;margin:0 0 8px;">${service || "Strategic Brief"}</p>
+    <p style="font-size:13px;color:#ADA897;margin:28px 0 0;">${date}</p>
   </div>
-
-  <!-- PAGE 2: RESEARCH -->
-  <div style="padding: 0 40px 48px; border-bottom: 2px solid #DFD9C9; margin-bottom: 48px;">
-    <p style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #3E7D5A; margin: 0 0 28px;">Market & Brand Intelligence</p>
-    <div style="color: #17160F;">${researchHTML}</div>
+  <div style="padding:0 40px 48px;border-bottom:2px solid #DFD9C9;margin-bottom:48px;">
+    <p style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3E7D5A;margin:0 0 28px;">Market & Brand Intelligence</p>
+    ${researchHTML}
   </div>
-
-  <!-- PAGE 3: CREATIVE DIRECTIONS -->
-  <div style="padding: 0 40px 48px; border-bottom: 2px solid #DFD9C9; margin-bottom: 48px;">
-    <p style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #3E7D5A; margin: 0 0 12px;">Creative Directions</p>
-    <p style="font-size: 15px; color: #847F71; margin: 0 0 36px;">Three strategic territories for your brand. Each takes the research in a distinct visual and emotional direction.</p>
+  <div style="padding:0 40px 48px;border-bottom:2px solid #DFD9C9;margin-bottom:48px;">
+    <p style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3E7D5A;margin:0 0 8px;">Creative Directions</p>
+    <p style="font-size:15px;color:#847F71;margin:0 0 40px;">Three strategic territories. Each includes a color palette, typography, mood board, and brand inspiration.</p>
     ${directionsHTML}
   </div>
-
-  <!-- PAGE 4: NEXT STEPS -->
-  <div style="padding: 0 40px 48px;">
-    <p style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #3E7D5A; margin: 0 0 24px;">Next Steps</p>
-    <div style="font-size: 16px; line-height: 1.6; color: #514E44; padding: 24px; background: #FBF9F3; border: 1px solid #DFD9C9; border-radius: 6px;">
-      <p style="margin: 0 0 14px;"><strong>1. Review & select</strong> — Choose the direction that resonates, or tell us what to adjust.</p>
-      <p style="margin: 0 0 14px;"><strong>2. Design development</strong> — Your Spazio designer builds out the selected direction into a full brand system.</p>
-      <p style="margin: 0 0 14px;"><strong>3. Refinement</strong> — Two rounds of refinement to dial in every detail.</p>
-      <p style="margin: 0;"><strong>Human-led, AI-accelerated.</strong> The intelligence above was researched and structured by our system — every creative decision is made by a real designer.</p>
+  <div style="padding:0 40px 48px;">
+    <p style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3E7D5A;margin:0 0 24px;">Next Steps</p>
+    <div style="font-size:16px;line-height:1.6;color:#514E44;padding:28px;background:#FBF9F3;border:1px solid #DFD9C9;border-radius:8px;">
+      <p style="margin:0 0 14px;"><strong>1. Review & select</strong> — Choose the direction that resonates, or tell us what to adjust.</p>
+      <p style="margin:0 0 14px;"><strong>2. Design development</strong> — Full brand system built from your selected direction.</p>
+      <p style="margin:0 0 14px;"><strong>3. Refinement</strong> — Two rounds to dial in every detail.</p>
+      <p style="margin:0;"><strong>Human-led, AI-accelerated.</strong> Every creative decision is made by a real designer.</p>
     </div>
   </div>
 </div>`.trim();
@@ -157,15 +175,13 @@ export async function POST(request: Request) {
   const pplxKey = process.env.PERPLEXITY_API_KEY;
   const oaiKey = process.env.OPENAI_API_KEY;
   const asanaToken = process.env.ASANA_TOKEN;
-
-  if (!atToken) return Response.json({ error: "Server not configured." }, { status: 500 });
+  if (!atToken) return Response.json({ error: "Not configured." }, { status: 500 });
 
   let body: Record<string, unknown>;
   try { body = (await request.json()) as Record<string, unknown>; }
   catch { return Response.json({ error: "Invalid JSON." }, { status: 400 }); }
 
   const reportId = typeof body.reportId === "string" ? body.reportId : "";
-  const leadId = typeof body.leadId === "string" ? body.leadId : "";
   if (!reportId) return Response.json({ error: "Missing reportId." }, { status: 400 });
 
   const atHeaders = { Authorization: `Bearer ${atToken}`, "Content-Type": "application/json" };
@@ -173,16 +189,16 @@ export async function POST(request: Request) {
   // Fetch lead + report data
   let company = "", service = "", email = "", name = "", answers = "{}";
   try {
-    const reportRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}/${reportId}`, { headers: { Authorization: `Bearer ${atToken}` } });
-    if (reportRes.ok) {
-      const rd = await reportRes.json();
+    const rr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}/${reportId}`, { headers: { Authorization: `Bearer ${atToken}` } });
+    if (rr.ok) {
+      const rd = await rr.json();
       answers = rd.fields?.["Answers"] || "{}";
       const lLinks = rd.fields?.["Lead"];
-      const lid = Array.isArray(lLinks) && lLinks.length ? lLinks[0] : leadId;
+      const lid = Array.isArray(lLinks) && lLinks.length ? lLinks[0] : "";
       if (lid) {
-        const leadRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${LEADS_TABLE}/${lid}`, { headers: { Authorization: `Bearer ${atToken}` } });
-        if (leadRes.ok) {
-          const ld = await leadRes.json();
+        const lr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${LEADS_TABLE}/${lid}`, { headers: { Authorization: `Bearer ${atToken}` } });
+        if (lr.ok) {
+          const ld = await lr.json();
           name = ld.fields?.["Name"] || "";
           company = ld.fields?.["Company "] || ld.fields?.["Company"] || "";
           email = ld.fields?.["Email "] || ld.fields?.["Email"] || "";
@@ -193,59 +209,39 @@ export async function POST(request: Request) {
     }
   } catch (err) { console.error("Data fetch failed", err); }
 
-  // Parse answers for extra context
-  let parsedAnswers: Record<string, string> = {};
-  try { parsedAnswers = JSON.parse(answers); } catch {}
-
   // === 1. PERPLEXITY RESEARCH ===
-  let research = "Research generation pending.";
-  if (pplxKey) {
-    try {
-      research = await runResearch(company, service, answers, pplxKey);
-    } catch (err) { console.error("Research failed", err); }
-  }
+  let research = "Research pending.";
+  if (pplxKey) { try { research = await runResearch(company, service, answers, pplxKey); } catch (e) { console.error("Research failed", e); } }
 
   // === 2. OPENAI CREATIVE DIRECTIONS ===
-  let directions: Array<{name: string; concept: string; visualPrompt: string}> = [];
-  if (oaiKey) {
-    try {
-      directions = await generateDirections(company, research, oaiKey);
-    } catch (err) { console.error("Directions failed", err); }
-  }
-  // Fallback
+  let directions: any[] = [];
+  if (oaiKey) { try { directions = await generateDirections(company, research, oaiKey); } catch (e) { console.error("Directions failed", e); } }
   if (!directions.length) {
     directions = [
-      { name: "Direction A", concept: "A bold, confident approach emphasizing authority and trust.", visualPrompt: "" },
-      { name: "Direction B", concept: "A warm, approachable direction focused on human connection.", visualPrompt: "" },
-      { name: "Direction C", concept: "A minimal, modern aesthetic that lets the work speak.", visualPrompt: "" },
+      { name: "Direction A", concept: "Pending generation.", colorPalette: [], fonts: {}, mood: [], inspiration: [], visualPrompt: "" },
+      { name: "Direction B", concept: "Pending generation.", colorPalette: [], fonts: {}, mood: [], inspiration: [], visualPrompt: "" },
+      { name: "Direction C", concept: "Pending generation.", colorPalette: [], fonts: {}, mood: [], inspiration: [], visualPrompt: "" },
     ];
   }
 
   // === 3. DALL·E VISUALS (parallel) ===
-  const directionsWithImages = await Promise.all(directions.map(async (d) => {
+  const enriched = await Promise.all(directions.map(async (d: any) => {
     let imageUrl = "";
-    if (oaiKey && d.visualPrompt) {
-      try { imageUrl = await generateVisual(d.visualPrompt, oaiKey); }
-      catch (err) { console.error(`Visual failed for ${d.name}`, err); }
-    }
-    return { name: d.name, concept: d.concept, imageUrl };
+    if (oaiKey && d.visualPrompt) { try { imageUrl = await generateVisual(d.visualPrompt, oaiKey); } catch (e) { console.error(`Visual failed: ${d.name}`, e); } }
+    return { ...d, imageUrl };
   }));
 
-  // === 4. BUILD DECK ===
-  const deckHTML = buildDeckHTML(company, service, research, directionsWithImages);
-
-  // === 5. STORE IN AIRTABLE ===
+  // === 4. BUILD + STORE HTML DECK ===
+  const deckHTML = buildDeckHTML(company, service, research, enriched);
   try {
     await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
       method: "PATCH", headers: atHeaders,
-      body: JSON.stringify({ records: [{ id: reportId, fields: {
-        [REPORT_FIELDS.briefHTML]: deckHTML,
-        [REPORT_FIELDS.status]: "Review Pending",
-      }}], typecast: true }),
+      body: JSON.stringify({ records: [{ id: reportId, fields: { [REPORT_FIELDS.briefHTML]: deckHTML, [REPORT_FIELDS.status]: "Review Pending" } }], typecast: true }),
     });
-  } catch (err) { console.error("Deck save failed", err); }
+  } catch (e) { console.error("Deck save failed", e); }
 
-  // === 6. ASANA TASK ===
+  // === 5. ASANA TASK (with download link, no public access) ===
+  const dirNames = enriched.map((d: any) => d.name).join(", ");
   if (asanaToken) {
     try {
       await fetch("https://app.asana.com/api/1.0/tasks", {
@@ -253,12 +249,12 @@ export async function POST(request: Request) {
         headers: { Authorization: `Bearer ${asanaToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({ data: {
           name: `Review deck: ${company || name}`,
-          notes: `Full brand intelligence deck ready for review.\n\nClient: ${name}\nEmail: ${email}\nCompany: ${company}\nService: ${service}\nDirections: ${directionsWithImages.map(d => d.name).join(", ")}\n\nAirtable Report ID: ${reportId}\nClient review link: https://www.spaziographics.com/#review=${reportId}`,
+          html_notes: `<body><strong>Brand intelligence deck ready for review.</strong>\n\n<strong>Client:</strong> ${name}\n<strong>Email:</strong> ${email}\n<strong>Company:</strong> ${company}\n<strong>Service:</strong> ${service}\n<strong>Directions:</strong> ${dirNames}\n\n<strong>Download deck (PPTX):</strong>\n<a href="https://www.spaziographics.com/api/export-deck?id=${reportId}">Download Vision Deck</a>\n\n<strong>Internal review (web):</strong>\n<a href="https://www.spaziographics.com/#review=${reportId}">View in browser</a>\n\n<em>DALL·E images expire in ~1 hour. Download the deck promptly.</em></body>`,
           projects: [ASANA_PROJECT],
           due_on: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0],
         }}),
       });
-    } catch (err) { console.error("Asana task failed", err); }
+    } catch (e) { console.error("Asana failed", e); }
   }
 
   return Response.json({ ok: true });

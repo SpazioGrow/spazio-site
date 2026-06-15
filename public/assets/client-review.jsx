@@ -84,11 +84,6 @@ function ClientReviewPage(props) {
         <CropMarks color="var(--accent)" />
         <div style={{ marginBottom: 28, textAlign: "center" }}>
           <span className="tag tag-dot tag--accent" style={{ display: "inline-flex" }}>Your Brand Intelligence Report</span>
-          <div style={{ marginTop: 14 }}>
-            <a href={"/api/export-deck?id=" + reportId} className="btn btn--ghost" style={{ padding: "10px 20px", fontSize: 13, textDecoration: "none" }}>
-              Download as deck (.pptx)
-            </a>
-          </div>
         </div>
         <div dangerouslySetInnerHTML={{ __html: briefHTML }} />
         <div style={{ marginTop: 40, paddingTop: 28, borderTop: "1px solid var(--line)" }}>
