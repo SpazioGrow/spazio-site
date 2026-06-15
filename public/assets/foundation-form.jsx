@@ -98,6 +98,12 @@ function FoundationForm({ onSuccess }) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Submission failed");
         window.__spazioReport = { reportId: data.reportId, leadId: data.leadId };
+        // Fire deck generation in background — client doesn't wait
+        fetch("/api/generate-deck", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reportId: data.reportId, leadId: data.leadId }),
+        }).catch(function() {}); // fire and forget
         if (onSuccess) onSuccess();
       } catch (err) {
         setSubmitError(err.message || "Something went wrong. Please try again.");
