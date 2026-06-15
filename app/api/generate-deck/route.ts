@@ -231,8 +231,35 @@ export async function POST(request: Request) {
     return { ...d, imageUrl };
   }));
 
-  // === 4. BUILD + STORE HTML DECK ===
-  const deckHTML = buildDeckHTML(company, service, research, enriched);
+  // === 4. SAVE IMAGES TO AIRTABLE (permanent storage) ===
+  const imageUrls = enriched.map((d: any) => d.imageUrl).filter(Boolean);
+  const attachments = imageUrls.map((url: string) => ({ url }));
+  let permanentUrls: string[] = [];
+  if (attachments.length) {
+    try {
+      const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
+        method: "PATCH", headers: atHeaders,
+        body: JSON.stringify({ records: [{ id: reportId, fields: { "fldPVXauT9v4GqVZm": attachments } }] }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const imgs = data.records?.[0]?.fields?.["fldPVXauT9v4GqVZm"] || [];
+        permanentUrls = imgs.map((img: any) => img.url || "");
+      }
+    } catch (e) { console.error("Image upload failed", e); }
+  }
+
+  // Map permanent URLs back to directions
+  let urlIdx = 0;
+  const finalDirections = enriched.map((d: any) => {
+    if (d.imageUrl && urlIdx < permanentUrls.length) {
+      return { ...d, imageUrl: permanentUrls[urlIdx++] };
+    }
+    return d;
+  });
+
+  // === 5. BUILD + STORE HTML DECK ===
+  const deckHTML = buildDeckHTML(company, service, research, finalDirections);
   try {
     await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
       method: "PATCH", headers: atHeaders,
@@ -240,8 +267,8 @@ export async function POST(request: Request) {
     });
   } catch (e) { console.error("Deck save failed", e); }
 
-  // === 5. ASANA TASK (with download link, no public access) ===
-  const dirNames = enriched.map((d: any) => d.name).join(", ");
+  // === 6. ASANA TASK ===
+  const dirNames = finalDirections.map((d: any) => d.name).join(", ");
   if (asanaToken) {
     try {
       await fetch("https://app.asana.com/api/1.0/tasks", {
@@ -249,7 +276,7 @@ export async function POST(request: Request) {
         headers: { Authorization: `Bearer ${asanaToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({ data: {
           name: `Review deck: ${company || name}`,
-          html_notes: `<body><strong>Brand intelligence deck ready for review.</strong>\n\n<strong>Client:</strong> ${name}\n<strong>Email:</strong> ${email}\n<strong>Company:</strong> ${company}\n<strong>Service:</strong> ${service}\n<strong>Directions:</strong> ${dirNames}\n\n<strong>Download deck (PPTX):</strong>\n<a href="https://www.spaziographics.com/api/export-deck?id=${reportId}">Download Vision Deck</a>\n\n<strong>Internal review (web):</strong>\n<a href="https://www.spaziographics.com/#review=${reportId}">View in browser</a>\n\n<em>DALL·E images expire in ~1 hour. Download the deck promptly.</em></body>`,
+          html_notes: `<body><strong>Brand intelligence deck ready for review.</strong>\n\n<strong>Client:</strong> ${name}\n<strong>Email:</strong> ${email}\n<strong>Company:</strong> ${company}\n<strong>Service:</strong> ${service}\n<strong>Directions:</strong> ${dirNames}\n\n<strong>Download deck (PPTX):</strong>\n<a href="https://www.spaziographics.com/api/export-deck?id=${reportId}">Download Vision Deck</a>\n\n<em>Images are permanently stored in Airtable.</em></body>`,
           projects: [ASANA_PROJECT],
           due_on: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0],
         }}),
