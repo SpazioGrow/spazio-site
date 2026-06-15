@@ -57,7 +57,14 @@ type StrategyDoc = {
   strategicRecommendations: string[];
 };
 
-function buildPrompt(lead: Record<string, unknown>, answers: Record<string, unknown>): string {
+const SYSTEM_PROMPT = `You are a senior brand strategist and creative consultant at Spazio, a digital design agency. \
+You produce research-backed brand strategy documents for founders, startups, and growing brands. \
+Your role is that of a human expert conducting market research and strategic analysis — not an AI automation tool. \
+Write with confidence, precision, and authority. Avoid filler phrases like "it's important to note" or "leveraging synergies". \
+Back every strategic claim with observable market reality. When you have web search results available, use them. \
+Return only the structured JSON requested — no preamble, no markdown fences, no commentary outside the JSON object.`;
+
+function buildPrompt(lead: Record<string, unknown>, answers: Record<string, unknown>): { system: string; user: string } {
   const shaping       = (answers.shaping       ?? {}) as Record<string, string>;
   const direction     = (answers.direction     ?? {}) as Record<string, unknown>;
   const visualLanguage = (answers.visualLanguage ?? {}) as Record<string, unknown>;
@@ -76,38 +83,53 @@ function buildPrompt(lead: Record<string, unknown>, answers: Record<string, unkn
   const competitors   = String(context.competitors ?? "").trim();
   const cultural      = Array.isArray(context.cultural_inspiration) ? context.cultural_inspiration.join(", ") : "";
 
-  return `You are a senior brand strategist producing a research-backed strategy document.
+  const user = `CLIENT BRIEF — research and produce a brand strategy document for this client.
 
-CLIENT BRIEF:
-- Client: ${clientName}${company ? ` at ${company}` : ""}${website ? ` (${website})` : ""}
-- Service requested: ${serviceInt || shaping.project_type || "Brand Identity"}
+CLIENT:
+- Name: ${clientName}${company ? ` / ${company}` : ""}${website ? ` — ${website}` : ""}
+- Service: ${serviceInt || shaping.project_type || "Brand Identity"}
 - Project type: ${shaping.project_type || "Brand Identity"}
-- Industry/category: ${shaping.industry || "Not specified"}
+- Industry / category: ${shaping.industry || "Not specified"}
 - Goal: ${shaping.goal || "Not specified"}
-- Desired perceptions: ${perceptions || "Not specified"}
-- Emotional outcome: ${emotion || "Not specified"}
-- Brand metaphor: ${metaphor || "Not specified"}
+- Desired brand perceptions: ${perceptions || "Not specified"}
+- Emotional outcome for audience: ${emotion || "Not specified"}
+- Brand metaphor / personality: ${metaphor || "Not specified"}
 - Visual avoidances: ${avoidList || "None stated"}
-- Output: ${output.direction_count || 3} creative directions, ${output.boldness_level || "Balanced"} boldness
-${competitors ? `- Competitive benchmarks: ${competitors}` : ""}
-${cultural ? `- Cultural touchstones: ${cultural}` : ""}
+- Creative output: ${output.direction_count || 3} directions, ${output.boldness_level || "Balanced"} boldness${competitors ? `\n- Competitive benchmarks: ${competitors}` : ""}${cultural ? `\n- Cultural touchstones: ${cultural}` : ""}
 
-Using your web search capabilities, research the competitive landscape and market context for this client. Then produce a JSON object with exactly these keys:
+Use your web search to research this category, competitors, and market trends. Then return this JSON object exactly:
 
 {
-  "businessSummary": "2–3 sentence summary of the client's business, category, and context",
-  "audienceOverview": "2–3 sentences on the likely primary audience: demographics, psychographics, what they value",
-  "keyChallenge": "1–2 sentences on the central design/brand challenge or opportunity this project must address",
-  "marketObservations": ["observation 1", "observation 2", "observation 3", "observation 4"],
-  "positioningStatement": "A single crisp brand positioning statement for this client",
-  "differentiators": ["differentiator 1", "differentiator 2", "differentiator 3"],
-  "strategicRecommendations": ["recommendation 1", "recommendation 2", "recommendation 3", "recommendation 4"]
+  "businessSummary": "2–3 sentences: what this client does, their category, current market position",
+  "audienceOverview": "2–3 sentences: primary audience — who they are, what they value, what they respond to",
+  "keyChallenge": "1–2 sentences: the central brand challenge or opportunity this project must resolve",
+  "marketObservations": [
+    "specific, research-backed observation about the market or competitive landscape",
+    "a gap, shift, or tension in the category worth exploiting",
+    "an audience behaviour or expectation relevant to this project",
+    "a trend or emerging signal that affects the brand direction"
+  ],
+  "positioningStatement": "A single declarative positioning statement — specific, differentiated, ownable",
+  "differentiators": [
+    "differentiator 1 — short, concrete",
+    "differentiator 2",
+    "differentiator 3"
+  ],
+  "strategicRecommendations": [
+    "Actionable recommendation tied to research findings",
+    "Second recommendation",
+    "Third recommendation",
+    "Fourth recommendation"
+  ]
+}`;
+
+  return { system: SYSTEM_PROMPT, user };
 }
 
-Return ONLY the raw JSON object. No markdown fences, no commentary.`;
-}
-
-async function callPerplexity(prompt: string, apiKey: string): Promise<StrategyDoc> {
+async function callPerplexity(
+  { system, user }: { system: string; user: string },
+  apiKey: string,
+): Promise<StrategyDoc> {
   const res = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: {
@@ -116,7 +138,10 @@ async function callPerplexity(prompt: string, apiKey: string): Promise<StrategyD
     },
     body: JSON.stringify({
       model: "sonar-pro",
-      messages: [{ role: "user", content: prompt }],
+      messages: [
+        { role: "system", content: system },
+        { role: "user",   content: user },
+      ],
       temperature: 0.3,
     }),
   });
@@ -745,7 +770,8 @@ export async function POST(request: Request) {
   }
 
   const reportFields = report.fields;
-  const reportRef    = String(reportFields[RF.lead] || reportId).slice(0, 12).toUpperCase();
+  // RF.reportId is the "Report ID" primary field (e.g. "BIR-XXXXX"); fall back to truncated record ID
+  const reportRef    = String(reportFields["fldDIew0Hh6uWyy7Z"] || reportId).slice(0, 16).toUpperCase();
 
   // 2. Get the linked lead ID
   const linkedLeads = reportFields[RF.lead];
