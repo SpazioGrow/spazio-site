@@ -1,173 +1,181 @@
-// Generate Deck — full creative pipeline with rich visual output.
-// Perplexity research → OpenAI directions (colors, fonts, mood) → DALL·E visuals → rich deck
+// Generate Deck — 10-slide consulting-grade vision deck
+// Perplexity research → OpenAI 10-slide content → DALL·E mood boards → Airtable + Asana
 
 const BASE_ID = "appv2sIRwDvNPjV7j";
 const LEADS_TABLE = "tbl5qLZO9mAN9LQ0P";
 const REPORTS_TABLE = "tbl7hxUDQRJLjUpKQ";
 const ASANA_PROJECT = "1215677774689770";
+const IMG_FIELD = "fldPVXauT9v4GqVZm";
+const REPORT_FIELDS = { status: "fldLUKmsHhqidDFWb", briefHTML: "fld3ZgwxOlFRK27Qx" } as const;
 
-const REPORT_FIELDS = {
-  status: "fldLUKmsHhqidDFWb",
-  briefHTML: "fld3ZgwxOlFRK27Qx",
-} as const;
-
-// === PERPLEXITY: RESEARCH ===
+// === PERPLEXITY RESEARCH ===
 async function runResearch(company: string, service: string, answers: string, key: string): Promise<string> {
   const res = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "sonar", messages: [{ role: "user", content: `You are a senior brand researcher. Conduct a thorough brand intelligence analysis.
+    body: JSON.stringify({ model: "sonar", messages: [{ role: "user", content: `You are a senior strategy consultant preparing a client engagement brief. Conduct exhaustive research.
 
-Company: ${company}
-Service: ${service}
-Intake data: ${answers}
+COMPANY: ${company}
+SERVICE NEED: ${service}
+CLIENT INTAKE: ${answers}
 
-Cover:
-1. MARKET LANDSCAPE — Industry size, growth, key trends
-2. COMPETITIVE ANALYSIS — 4-5 competitors, strengths, visual weaknesses
-3. AUDIENCE PROFILE — Ideal customer, values, discovery channels
-4. BRAND OPPORTUNITY — Positioning white space, strategic angle
-5. VISUAL LANDSCAPE — Dominant visual language, what's overused, what's fresh
+Deliver a research report with these EXACT sections (use these headers):
 
-Be specific with names and data. 800-1000 words. Professional prose, no filler.` }], max_tokens: 2000 }),
+EXECUTIVE CONTEXT
+2-3 sentences summarizing the company, its challenge, and the opportunity.
+
+BUSINESS OVERVIEW
+What the company does, products/services, current positioning, brand maturity.
+If info is missing, infer from context and label as [INFERRED].
+
+TARGET AUDIENCE
+Ideal customer profile, demographics, psychographics, pain points, buying triggers, discovery channels.
+
+MARKET LANDSCAPE
+Industry size, growth rate, key trends, emerging technologies, market shifts.
+Include specific numbers and name sources.
+
+COMPETITIVE ANALYSIS
+Name 4-5 specific competitors. For each: what they do well, where they fall short visually and strategically, their positioning.
+
+STRATEGIC OPPORTUNITIES
+3-4 specific opportunities this brand can own. What positioning white space exists. What competitors are missing.
+
+VISUAL LANDSCAPE
+Dominant design language in this space. What's overused. What would feel fresh and differentiated.
+
+Be specific — use real company names, real numbers, real trends. 1200-1500 words. If information is unavailable, make informed inferences and mark them [INFERRED]. Never leave a section empty.` }], max_tokens: 3000 }),
   });
-  if (!res.ok) throw new Error(`Perplexity ${res.status}`);
-  const d = await res.json();
-  return d.choices?.[0]?.message?.content ?? "";
+  if (!res.ok) throw new Error(`Perplexity ${res.status}: ${await res.text()}`);
+  return (await res.json()).choices?.[0]?.message?.content ?? "";
 }
 
-// === OPENAI: CREATIVE DIRECTOR (rich output) ===
-async function generateDirections(company: string, research: string, key: string) {
+// === OPENAI: 10-SLIDE STRUCTURED CONTENT ===
+async function generateSlides(company: string, service: string, research: string, answers: string, key: string) {
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: `You are a world-class creative director at a premium design agency. Based on this research, create 3 distinct creative directions for "${company}".
+    body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: `You are a world-class strategy consultant and creative director producing a brand vision deck. You MUST return valid JSON only — no markdown, no backticks, no explanation. Every field must be filled. If data is unavailable, infer from context and add [Assumption] tag. NEVER return empty strings.` }, { role: "user", content: `Create a 10-slide brand vision deck for "${company}" (${service}).
 
 RESEARCH:
 ${research}
 
-For each direction provide ALL of these:
-- name: 2-4 word evocative name (e.g. "Quiet Authority", "Raw Momentum")
-- concept: 3 sentences — strategic angle, emotional territory, what makes it different
-- colorPalette: array of 5 objects with "hex" and "name" (e.g. {"hex":"#2C3E50","name":"Midnight Navy"})
-- fonts: object with "display" (headline font), "body" (paragraph font), "accent" (detail font) — use real font names from Google Fonts or premium type foundries
-- mood: array of 4-5 adjective keywords
-- inspiration: array of 3-4 real brand/publication names this direction channels
-- visualPrompt: 80-word DALL-E prompt for an abstract mood board. Describe specific colors, textures, materials, lighting, composition. No text, no logos, no people. Atmospheric and editorial.
+CLIENT INTAKE:
+${answers}
 
-Respond ONLY with a JSON array of 3 objects. No markdown, no backticks, no explanation.` }], max_tokens: 2500, temperature: 0.9 }),
-  });
-  if (!res.ok) throw new Error(`OpenAI ${res.status}`);
-  const d = await res.json();
-  const raw = d.choices?.[0]?.message?.content ?? "[]";
-  try { return JSON.parse(raw.replace(/```json|```/g, "").trim()); }
-  catch { return []; }
+Return a JSON array of exactly 10 objects. Each object:
+{
+  "slideNumber": 1,
+  "title": "Slide title",
+  "subtitle": "Brief subtitle",
+  "points": ["Point 1 with detail", "Point 2 with detail", "Point 3 with detail", "Point 4 with detail"],
+  "keyMetric": { "value": "85%", "label": "Market growth YoY" },
+  "speakerNotes": "2-3 sentences of context"
 }
 
-// === DALL·E ===
+SLIDE REQUIREMENTS:
+1. EXECUTIVE SUMMARY: Company overview, business challenge, opportunity, recommended direction. keyMetric = most compelling market stat.
+2. BUSINESS OVERVIEW: What they do, products/services, current positioning, brand maturity. keyMetric = relevant business stat.
+3. TARGET AUDIENCE: ICP description, pain points, motivations, buying triggers. keyMetric = audience size or behavior stat.
+4. MARKET RESEARCH: Industry trends, market size, growth opportunities, emerging tech. keyMetric = market size or growth rate.
+5. COMPETITIVE ANALYSIS: Top 4 competitors with strengths/weaknesses. keyMetric = market share or competitive gap.
+6. STRATEGIC RECOMMENDATIONS: Key initiatives, prioritization, risks, opportunities. keyMetric = projected impact.
+7. CREATIVE DIRECTION: Brand themes, visual style, messaging pillars, tone of voice. Include 3 direction names. keyMetric = brand perception stat.
+8. MOODBOARD: Describe 4 visual concepts for DALL-E generation. points = 4 detailed visual descriptions (80 words each). keyMetric = design trend stat.
+9. ROADMAP: Phase 1 (weeks 1-2), Phase 2 (weeks 3-4), Phase 3 (weeks 5-6), success metrics. keyMetric = timeline stat.
+10. NEXT STEPS: Recommended actions, deliverables, timeline, investment. keyMetric = ROI or engagement stat.
+
+Each point must be 1-2 full sentences with specific detail. No generic filler. If you lack data, make a smart inference.` }], max_tokens: 4000, temperature: 0.7 }),
+  });
+  if (!res.ok) throw new Error(`OpenAI ${res.status}`);
+  const raw = (await res.json()).choices?.[0]?.message?.content ?? "[]";
+  try { return JSON.parse(raw.replace(/```json|```/g, "").trim()); }
+  catch { console.error("JSON parse failed:", raw.slice(0, 200)); return []; }
+}
+
+// === DALL·E MOOD BOARDS ===
 async function generateVisual(prompt: string, key: string): Promise<string> {
   const res = await fetch("https://api.openai.com/v1/images/generations", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "dall-e-3", prompt: `Brand mood board: ${prompt}. Abstract, atmospheric, no text, no logos, no people. Cinematic editorial photography.`, n: 1, size: "1792x1024", quality: "standard" }),
+    body: JSON.stringify({ model: "dall-e-3", prompt: `Brand mood board concept: ${prompt}. Abstract, atmospheric, no text, no logos, no people. Editorial photography aesthetic, cinematic lighting, premium feel.`, n: 1, size: "1792x1024", quality: "standard" }),
   });
   if (!res.ok) throw new Error(`DALL-E ${res.status}`);
-  const d = await res.json();
-  return d.data?.[0]?.url ?? "";
+  return (await res.json()).data?.[0]?.url ?? "";
 }
 
-// === BUILD RICH DECK HTML ===
-function buildDeckHTML(company: string, service: string, research: string, directions: any[]): string {
+// === CONTENT VALIDATION ===
+function validateSlides(slides: any[]): any[] {
+  const SLIDE_TITLES = ["Executive Summary","Business Overview","Target Audience","Market Research","Competitive Analysis","Strategic Recommendations","Creative Direction","Moodboard","Roadmap","Next Steps"];
+  // Ensure exactly 10 slides, fill gaps
+  const result = SLIDE_TITLES.map((title, i) => {
+    const existing = slides.find((s: any) => s.slideNumber === i + 1) || slides[i] || {};
+    return {
+      slideNumber: i + 1,
+      title: existing.title || title,
+      subtitle: existing.subtitle || `${title} for ${existing.company || "your brand"}`,
+      points: Array.isArray(existing.points) && existing.points.length >= 3
+        ? existing.points.map((p: any) => typeof p === "string" && p.length > 10 ? p : `[To be completed] ${title} insight ${existing.points?.indexOf(p) + 1}`)
+        : [`[Pending] Key insight about ${title.toLowerCase()} will be generated.`, `[Pending] Analysis of ${title.toLowerCase()} factors.`, `[Pending] Strategic recommendation based on ${title.toLowerCase()}.`, `[Pending] Additional context for ${title.toLowerCase()}.`],
+      keyMetric: existing.keyMetric && existing.keyMetric.value ? existing.keyMetric : { value: "—", label: "Data pending" },
+      speakerNotes: existing.speakerNotes || `Review and expand ${title.toLowerCase()} section.`,
+    };
+  });
+  return result;
+}
+
+// === BUILD HTML DECK ===
+function buildDeckHTML(company: string, slides: any[], imageUrls: string[]): string {
   const date = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
-  const researchHTML = research.split(/\n\n+/).filter(p => p.trim()).map(p => {
-    const lines = p.split("\n");
-    const first = lines[0].replace(/^\d+\.\s*/, "").replace(/[*_#]/g, "").trim();
-    if (/^[A-Z]{2,}/.test(first) || /^\d+\./.test(p.trim())) {
-      return `<p style="margin: 28px 0 6px; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #3E7D5A;">${first}</p><p style="margin: 0 0 14px; font-size: 15.5px; line-height: 1.7; color: #17160F;">${lines.slice(1).join(" ").trim()}</p>`;
+  const slideHTML = slides.map((s: any, i: number) => {
+    const isHeader = i === 0;
+    const isMoodboard = i === 7;
+    const bg = isHeader ? "background:#17160F;color:#FAF8F2;" : "";
+    const titleColor = isHeader ? "#FAF8F2" : "#17160F";
+    const textColor = isHeader ? "#ADA897" : "#514E44";
+    const accentColor = "#3E7D5A";
+
+    let content = "";
+
+    if (isMoodboard && imageUrls.length) {
+      content = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
+        ${imageUrls.map((url, j) => `<div><img src="${url}" alt="Mood board ${j+1}" style="width:100%;border-radius:8px;border:1px solid #DFD9C9;" /><p style="font-size:11px;color:#847F71;margin:6px 0 0;font-style:italic;">${s.points?.[j] ? s.points[j].slice(0, 80) + "..." : `Concept ${j+1}`}</p></div>`).join("")}
+      </div>`;
+    } else {
+      const metric = s.keyMetric || {};
+      content = `
+        ${metric.value ? `<div style="margin:20px 0 24px;padding:20px 24px;background:${isHeader ? "rgba(255,255,255,0.08)" : "#F5F3ED"};border-radius:8px;display:inline-flex;align-items:baseline;gap:12px;">
+          <span style="font-size:36px;font-weight:700;color:${accentColor};letter-spacing:-0.02em;">${metric.value}</span>
+          <span style="font-size:14px;color:${textColor};">${metric.label || ""}</span>
+        </div>` : ""}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 32px;">
+          ${(s.points || []).map((p: string, j: number) => `<div style="padding:16px 0;${j < (s.points?.length || 0) - 1 ? `border-bottom:1px solid ${isHeader ? "rgba(255,255,255,0.1)" : "#DFD9C9"};` : ""}">
+            <span style="font-family:monospace;font-size:10px;color:${accentColor};display:block;margin-bottom:4px;">0${j+1}</span>
+            <p style="margin:0;font-size:15px;line-height:1.6;color:${isHeader ? "#CDCABD" : "#17160F"};">${p}</p>
+          </div>`).join("")}
+        </div>`;
     }
-    return `<p style="margin: 0 0 14px; font-size: 15.5px; line-height: 1.7; color: #17160F;">${p.replace(/\n/g, " ").trim()}</p>`;
-  }).join("\n");
-
-  const directionsHTML = directions.map((d, i) => {
-    const colors = (d.colorPalette || []).map((c: any) =>
-      `<div style="display:inline-flex;align-items:center;gap:8px;margin:0 14px 8px 0;">
-        <div style="width:32px;height:32px;border-radius:4px;background:${c.hex};border:1px solid #DFD9C9;"></div>
-        <div><span style="font-size:12px;font-weight:600;color:#17160F;">${c.name}</span><br/><span style="font-size:11px;color:#847F71;font-family:monospace;">${c.hex}</span></div>
-      </div>`).join("");
-
-    const fonts = d.fonts || {};
-    const fontsHTML = `<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:4px;">
-      ${fonts.display ? `<div><span style="font-size:11px;color:#847F71;text-transform:uppercase;letter-spacing:0.06em;">Display</span><br/><span style="font-size:16px;font-weight:600;">${fonts.display}</span></div>` : ""}
-      ${fonts.body ? `<div><span style="font-size:11px;color:#847F71;text-transform:uppercase;letter-spacing:0.06em;">Body</span><br/><span style="font-size:16px;font-weight:600;">${fonts.body}</span></div>` : ""}
-      ${fonts.accent ? `<div><span style="font-size:11px;color:#847F71;text-transform:uppercase;letter-spacing:0.06em;">Accent</span><br/><span style="font-size:16px;font-weight:600;">${fonts.accent}</span></div>` : ""}
-    </div>`;
-
-    const mood = (d.mood || []).map((m: string) => `<span style="display:inline-block;padding:4px 12px;background:#F5F3ED;border:1px solid #DFD9C9;border-radius:100px;font-size:12px;color:#514E44;margin:0 6px 6px 0;">${m}</span>`).join("");
-    const inspo = (d.inspiration || []).map((b: string) => `<span style="display:inline-block;padding:4px 12px;background:#EBF5EF;border:1px solid #C8DFD0;border-radius:100px;font-size:12px;color:#3E7D5A;margin:0 6px 6px 0;">${b}</span>`).join("");
 
     return `
-    <div style="margin-bottom: 56px; padding-bottom: 48px; ${i < directions.length - 1 ? "border-bottom: 1px solid #DFD9C9;" : ""}">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;">
-        <span style="font-family:monospace;font-size:11px;color:#3E7D5A;">0${i+1}</span>
-        <h3 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-0.025em;color:#17160F;">${d.name || `Direction ${i+1}`}</h3>
+    <div style="padding:48px 40px;${bg}${i > 0 ? "border-top:2px solid #DFD9C9;" : ""}">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+        <span style="font-family:monospace;font-size:10px;color:${accentColor};">SLIDE ${String(i+1).padStart(2,"0")} / 10</span>
       </div>
-      <p style="font-size:16.5px;line-height:1.6;color:#514E44;margin:0 0 24px;max-width:640px;">${d.concept || ""}</p>
-
-      ${d.imageUrl ? `<img src="${d.imageUrl}" alt="Mood board for ${d.name}" style="width:100%;max-width:860px;border-radius:8px;border:1px solid #DFD9C9;margin-bottom:24px;" />` : ""}
-      <p style="margin:0 0 24px;font-size:11px;color:#ADA897;font-style:italic;">AI concept placeholder — licensed imagery for finals</p>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-        <div>
-          <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#3E7D5A;font-weight:600;">Color palette</p>
-          <div style="display:flex;flex-wrap:wrap;">${colors}</div>
-        </div>
-        <div>
-          <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#3E7D5A;font-weight:600;">Typography</p>
-          ${fontsHTML}
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:20px;">
-        <div>
-          <p style="margin:0 0 8px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#3E7D5A;font-weight:600;">Mood</p>
-          <div>${mood}</div>
-        </div>
-        <div>
-          <p style="margin:0 0 8px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#3E7D5A;font-weight:600;">Inspiration</p>
-          <div>${inspo}</div>
-        </div>
-      </div>
+      <h2 style="margin:0 0 4px;font-size:32px;font-weight:600;letter-spacing:-0.025em;color:${titleColor};">${s.title}</h2>
+      <p style="margin:0 0 16px;font-size:15px;color:${textColor};opacity:0.8;">${s.subtitle || ""}</p>
+      ${content}
     </div>`;
   }).join("\n");
 
-  return `
-<div style="font-family:system-ui,-apple-system,sans-serif;color:#17160F;max-width:900px;margin:0 auto;">
-  <div style="padding:80px 40px;text-align:center;border-bottom:2px solid #DFD9C9;margin-bottom:48px;">
-    <p style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#847F71;margin:0 0 28px;">Spazio — Brand Intelligence Report</p>
-    <h1 style="font-size:52px;font-weight:600;line-height:1;letter-spacing:-0.035em;margin:0 0 16px;">${company || "Your Brand"}</h1>
-    <p style="font-size:20px;color:#514E44;margin:0 0 8px;">${service || "Strategic Brief"}</p>
-    <p style="font-size:13px;color:#ADA897;margin:28px 0 0;">${date}</p>
-  </div>
-  <div style="padding:0 40px 48px;border-bottom:2px solid #DFD9C9;margin-bottom:48px;">
-    <p style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3E7D5A;margin:0 0 28px;">Market & Brand Intelligence</p>
-    ${researchHTML}
-  </div>
-  <div style="padding:0 40px 48px;border-bottom:2px solid #DFD9C9;margin-bottom:48px;">
-    <p style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3E7D5A;margin:0 0 8px;">Creative Directions</p>
-    <p style="font-size:15px;color:#847F71;margin:0 0 40px;">Three strategic territories. Each includes a color palette, typography, mood board, and brand inspiration.</p>
-    ${directionsHTML}
-  </div>
-  <div style="padding:0 40px 48px;">
-    <p style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3E7D5A;margin:0 0 24px;">Next Steps</p>
-    <div style="font-size:16px;line-height:1.6;color:#514E44;padding:28px;background:#FBF9F3;border:1px solid #DFD9C9;border-radius:8px;">
-      <p style="margin:0 0 14px;"><strong>1. Review & select</strong> — Choose the direction that resonates, or tell us what to adjust.</p>
-      <p style="margin:0 0 14px;"><strong>2. Design development</strong> — Full brand system built from your selected direction.</p>
-      <p style="margin:0 0 14px;"><strong>3. Refinement</strong> — Two rounds to dial in every detail.</p>
-      <p style="margin:0;"><strong>Human-led, AI-accelerated.</strong> Every creative decision is made by a real designer.</p>
+  return `<div style="font-family:system-ui,-apple-system,sans-serif;color:#17160F;max-width:900px;margin:0 auto;">
+    <div style="padding:80px 40px;text-align:center;background:#17160F;color:#FAF8F2;">
+      <p style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#847F71;margin:0 0 28px;">Spazio — Brand Vision Deck</p>
+      <h1 style="font-size:52px;font-weight:600;line-height:1;letter-spacing:-0.035em;margin:0 0 12px;">${company || "Your Brand"}</h1>
+      <p style="font-size:13px;color:#ADA897;margin:20px 0 0;">${date} · Confidential</p>
     </div>
-  </div>
-</div>`.trim();
+    ${slideHTML}
+  </div>`.trim();
 }
 
 export async function POST(request: Request) {
@@ -186,7 +194,7 @@ export async function POST(request: Request) {
 
   const atHeaders = { Authorization: `Bearer ${atToken}`, "Content-Type": "application/json" };
 
-  // Fetch lead + report data
+  // === FETCH LEAD + REPORT DATA ===
   let company = "", service = "", email = "", name = "", answers = "{}";
   try {
     const rr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}/${reportId}`, { headers: { Authorization: `Bearer ${atToken}` } });
@@ -210,56 +218,44 @@ export async function POST(request: Request) {
   } catch (err) { console.error("Data fetch failed", err); }
 
   // === 1. PERPLEXITY RESEARCH ===
-  let research = "Research pending.";
-  if (pplxKey) { try { research = await runResearch(company, service, answers, pplxKey); } catch (e) { console.error("Research failed", e); } }
+  let research = "";
+  if (pplxKey) { try { research = await runResearch(company, service, answers, pplxKey); } catch (e) { console.error("Research failed", e); research = "Research unavailable. Using intake data only."; } }
 
-  // === 2. OPENAI CREATIVE DIRECTIONS ===
-  let directions: any[] = [];
-  if (oaiKey) { try { directions = await generateDirections(company, research, oaiKey); } catch (e) { console.error("Directions failed", e); } }
-  if (!directions.length) {
-    directions = [
-      { name: "Direction A", concept: "Pending generation.", colorPalette: [], fonts: {}, mood: [], inspiration: [], visualPrompt: "" },
-      { name: "Direction B", concept: "Pending generation.", colorPalette: [], fonts: {}, mood: [], inspiration: [], visualPrompt: "" },
-      { name: "Direction C", concept: "Pending generation.", colorPalette: [], fonts: {}, mood: [], inspiration: [], visualPrompt: "" },
-    ];
+  // === 2. OPENAI 10-SLIDE CONTENT ===
+  let rawSlides: any[] = [];
+  if (oaiKey) { try { rawSlides = await generateSlides(company, service, research, answers, oaiKey); } catch (e) { console.error("Slides failed", e); } }
+  const slides = validateSlides(rawSlides);
+
+  // === 3. DALL·E MOOD BOARDS (4 images from slide 8 prompts) ===
+  const moodSlide = slides[7]; // slide 8 = moodboard
+  const visualPrompts = (moodSlide.points || []).slice(0, 4);
+  let imageUrls: string[] = [];
+  if (oaiKey && visualPrompts.length) {
+    const results = await Promise.all(visualPrompts.map(async (prompt: string) => {
+      try { return await generateVisual(prompt, oaiKey); }
+      catch (e) { console.error("Visual failed", e); return ""; }
+    }));
+    imageUrls = results.filter(Boolean);
   }
 
-  // === 3. DALL·E VISUALS (parallel) ===
-  const enriched = await Promise.all(directions.map(async (d: any) => {
-    let imageUrl = "";
-    if (oaiKey && d.visualPrompt) { try { imageUrl = await generateVisual(d.visualPrompt, oaiKey); } catch (e) { console.error(`Visual failed: ${d.name}`, e); } }
-    return { ...d, imageUrl };
-  }));
-
-  // === 4. SAVE IMAGES TO AIRTABLE (permanent storage) ===
-  const imageUrls = enriched.map((d: any) => d.imageUrl).filter(Boolean);
-  const attachments = imageUrls.map((url: string) => ({ url }));
+  // === 4. PERMANENT IMAGE STORAGE ===
   let permanentUrls: string[] = [];
-  if (attachments.length) {
+  if (imageUrls.length) {
     try {
       const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
         method: "PATCH", headers: atHeaders,
-        body: JSON.stringify({ records: [{ id: reportId, fields: { "fldPVXauT9v4GqVZm": attachments } }] }),
+        body: JSON.stringify({ records: [{ id: reportId, fields: { [IMG_FIELD]: imageUrls.map(url => ({ url })) } }] }),
       });
       if (res.ok) {
         const data = await res.json();
-        const imgs = data.records?.[0]?.fields?.["fldPVXauT9v4GqVZm"] || [];
-        permanentUrls = imgs.map((img: any) => img.url || "");
+        permanentUrls = (data.records?.[0]?.fields?.[IMG_FIELD] || []).map((img: any) => img.url || "");
       }
     } catch (e) { console.error("Image upload failed", e); }
   }
+  if (!permanentUrls.length) permanentUrls = imageUrls; // fallback to temp URLs
 
-  // Map permanent URLs back to directions
-  let urlIdx = 0;
-  const finalDirections = enriched.map((d: any) => {
-    if (d.imageUrl && urlIdx < permanentUrls.length) {
-      return { ...d, imageUrl: permanentUrls[urlIdx++] };
-    }
-    return d;
-  });
-
-  // === 5. BUILD + STORE HTML DECK ===
-  const deckHTML = buildDeckHTML(company, service, research, finalDirections);
+  // === 5. BUILD + STORE DECK ===
+  const deckHTML = buildDeckHTML(company, slides, permanentUrls);
   try {
     await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
       method: "PATCH", headers: atHeaders,
@@ -268,7 +264,6 @@ export async function POST(request: Request) {
   } catch (e) { console.error("Deck save failed", e); }
 
   // === 6. ASANA TASK ===
-  const dirNames = finalDirections.map((d: any) => d.name).join(", ");
   if (asanaToken) {
     try {
       await fetch("https://app.asana.com/api/1.0/tasks", {
@@ -276,7 +271,7 @@ export async function POST(request: Request) {
         headers: { Authorization: `Bearer ${asanaToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({ data: {
           name: `Review deck: ${company || name}`,
-          html_notes: `<body><strong>Brand intelligence deck ready for review.</strong>\n\n<strong>Client:</strong> ${name}\n<strong>Email:</strong> ${email}\n<strong>Company:</strong> ${company}\n<strong>Service:</strong> ${service}\n<strong>Directions:</strong> ${dirNames}\n\n<strong>Download deck (PPTX):</strong>\n<a href="https://www.spaziographics.com/api/export-deck?id=${reportId}">Download Vision Deck</a>\n\n<em>Images are permanently stored in Airtable.</em></body>`,
+          html_notes: `<body><strong>10-slide brand vision deck ready for review.</strong>\n\n<strong>Client:</strong> ${name}\n<strong>Email:</strong> ${email}\n<strong>Company:</strong> ${company}\n<strong>Service:</strong> ${service}\n\n<strong>Download PPTX:</strong>\n<a href="https://www.spaziographics.com/api/export-deck?id=${reportId}">Download Vision Deck</a>\n\n<strong>Slides:</strong> ${slides.map((s: any) => s.title).join(" → ")}\n<strong>Mood boards:</strong> ${permanentUrls.length} images generated\n\n<em>Images permanently stored in Airtable.</em></body>`,
           projects: [ASANA_PROJECT],
           due_on: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0],
         }}),
@@ -284,5 +279,5 @@ export async function POST(request: Request) {
     } catch (e) { console.error("Asana failed", e); }
   }
 
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, slideCount: slides.length, imageCount: permanentUrls.length });
 }
