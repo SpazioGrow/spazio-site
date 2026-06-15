@@ -101,7 +101,7 @@ export default function LeadCaptureForm() {
 
       setStatus("success");
       redirectTimer.current = setTimeout(() => {
-        window.location.hash = "#foundation";
+        window.location.href = "/#foundation";
       }, 2000);
     } catch (err) {
       setStatus("error");
