@@ -23,7 +23,7 @@ function BriefReviewModal({ briefHTML, onApprove, onReject, approving }) {
         }}>
           <div>
             <span className="tag tag--accent" style={{ letterSpacing: "0.12em" }}>Brand Intelligence Report</span>
-            <p style={{ margin: "6px 0 0", fontSize: 14, color: "var(--ink-3)" }}>Review before sending to client</p>
+            <p style={{ margin: "6px 0 0", fontSize: 14, color: "var(--ink-3)" }}>Review before sending to Spazio team</p>
           </div>
           <button type="button" onClick={onReject} disabled={approving}
             style={{ border: "none", background: "none", fontSize: 22, color: "var(--ink-3)", cursor: "pointer", padding: "4px 8px" }}>
@@ -47,7 +47,7 @@ function BriefReviewModal({ briefHTML, onApprove, onReject, approving }) {
           </button>
           <button type="button" className="btn btn--accent" onClick={onApprove}
             disabled={approving} style={{ padding: "12px 24px", opacity: approving ? 0.6 : 1 }}>
-            {approving ? "Sending…" : "Send to client"}
+            {approving ? "Sending…" : "Send to Spazio"}
             {!approving && <Arrow />}
           </button>
         </div>
