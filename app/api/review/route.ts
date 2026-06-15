@@ -25,9 +25,9 @@ export async function GET(request: Request) {
     const data = await res.json();
     return Response.json({
       ok: true,
-      briefHTML: data.fields?.[REPORT_FIELDS.briefHTML] || "",
-      status: data.fields?.[REPORT_FIELDS.status] || "Unknown",
-      ref: data.fields?.[REPORT_FIELDS.reportId] || "",
+      briefHTML: data.fields?.["Brief HTML"] || "",
+      status: data.fields?.["Status"] || "Unknown",
+      ref: data.fields?.["Report ID"] || "",
     });
   } catch { return Response.json({ error: "Could not fetch report." }, { status: 502 }); }
 }

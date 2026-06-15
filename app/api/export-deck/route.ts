@@ -40,9 +40,9 @@ export async function GET(request: Request) {
     });
     if (!res.ok) return new Response("Report not found", { status: 404 });
     const data = await res.json();
-    briefHTML = data.fields?.[REPORT_FIELDS.briefHTML] || "";
+    briefHTML = data.fields?.["Brief HTML"] || "";
 
-    const leadLinks = data.fields?.[REPORT_FIELDS.lead];
+    const leadLinks = data.fields?.["Lead"];
     const leadId = Array.isArray(leadLinks) && leadLinks.length ? leadLinks[0] : "";
     if (leadId) {
       const lr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${LEADS_TABLE}/${leadId}`, {
@@ -50,9 +50,9 @@ export async function GET(request: Request) {
       });
       if (lr.ok) {
         const ld = await lr.json();
-        name = ld.fields?.[LEAD_FIELDS.name] || "";
-        company = ld.fields?.[LEAD_FIELDS.company] || "";
-        const svc = ld.fields?.[LEAD_FIELDS.service];
+        name = ld.fields?.["Name"] || "";
+        company = ld.fields?.["Company "] || ld.fields?.["Company"] || "";
+        const svc = ld.fields?.["Service Interest"];
         service = typeof svc === "object" && svc?.name ? svc.name : (typeof svc === "string" ? svc : "");
       }
     }

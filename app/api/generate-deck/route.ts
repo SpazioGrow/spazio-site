@@ -176,17 +176,17 @@ export async function POST(request: Request) {
     const reportRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}/${reportId}`, { headers: { Authorization: `Bearer ${atToken}` } });
     if (reportRes.ok) {
       const rd = await reportRes.json();
-      answers = rd.fields?.[REPORT_FIELDS.answers] || "{}";
-      const lLinks = rd.fields?.[REPORT_FIELDS.lead];
+      answers = rd.fields?.["Answers"] || "{}";
+      const lLinks = rd.fields?.["Lead"];
       const lid = Array.isArray(lLinks) && lLinks.length ? lLinks[0] : leadId;
       if (lid) {
         const leadRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${LEADS_TABLE}/${lid}`, { headers: { Authorization: `Bearer ${atToken}` } });
         if (leadRes.ok) {
           const ld = await leadRes.json();
-          name = ld.fields?.[LEAD_FIELDS.name] || "";
-          company = ld.fields?.[LEAD_FIELDS.company] || "";
-          email = ld.fields?.[LEAD_FIELDS.email] || "";
-          const svc = ld.fields?.[LEAD_FIELDS.service];
+          name = ld.fields?.["Name"] || "";
+          company = ld.fields?.["Company "] || ld.fields?.["Company"] || "";
+          email = ld.fields?.["Email "] || ld.fields?.["Email"] || "";
+          const svc = ld.fields?.["Service Interest"];
           service = typeof svc === "object" && svc?.name ? svc.name : (typeof svc === "string" ? svc : "");
         }
       }

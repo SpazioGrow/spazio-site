@@ -57,9 +57,16 @@ function App() {
 
   const getHash = () => {
     const h = (window.location.hash || "#home").replace("#", "");
+    if (h.startsWith("review=")) return "review";
     return ROUTES.includes(h) ? h : "home";
   };
+  const getReviewId = () => {
+    const h = (window.location.hash || "").replace("#", "");
+    if (h.startsWith("review=")) return h.split("=")[1] || "";
+    return "";
+  };
   const [route, setRoute] = useState(getHash());
+  const [reviewId, setReviewId] = useState(getReviewId());
 
   const navigate = useCallback((id) => {
     if (!ROUTES.includes(id)) id = "home";
@@ -69,7 +76,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const onHash = () => setRoute(getHash());
+    const onHash = () => { setRoute(getHash()); setReviewId(getReviewId()); };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
@@ -83,6 +90,7 @@ function App() {
     case "subscribe":Page = <SubscribePage />; break;
     case "foundation": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><FoundationForm onSuccess={() => { window.location.hash = "brief-ready"; }} /></div></section></main>; break;
     case "brief-ready": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><BriefReadyPage /></div></section></main>; break;
+    case "review": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><ClientReviewPage reportId={reviewId} /></div></section></main>; break;
     default:         Page = <HomePage />;
   }
 
