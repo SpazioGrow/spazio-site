@@ -28,6 +28,30 @@ const BLANK = {
   timeline: "", budget: "", scope: "",
 };
 
+function FndInput({ field, label, placeholder, type, required, value, onChange, error }) {
+  return (
+    <div className="field" style={{ gap: 6 }}>
+      <label>{label}{!required && <span className="opt">optional</span>}</label>
+      <input className={"input" + (error ? " err" : "")} type={type || "text"}
+        value={value} onChange={onChange}
+        placeholder={placeholder} />
+      {error && <span className="err-msg">{error}</span>}
+    </div>
+  );
+}
+
+function FndTextArea({ field, label, placeholder, required, value, onChange, error }) {
+  return (
+    <div className="field" style={{ gap: 6 }}>
+      <label>{label}{!required && <span className="opt">optional</span>}</label>
+      <textarea className={"textarea" + (error ? " err" : "")}
+        value={value} onChange={onChange}
+        placeholder={placeholder} style={{ minHeight: 100 }} />
+      {error && <span className="err-msg">{error}</span>}
+    </div>
+  );
+}
+
 function FoundationForm({ onSuccess }) {
   const [step, setStep] = useState(0);
   const [f, setF] = useState({ ...BLANK });
@@ -35,7 +59,7 @@ function FoundationForm({ onSuccess }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  const set = (k, v) => { setF((p) => ({ ...p, [k]: v })); setErrors((e) => ({ ...e, [k]: undefined })); };
+  const set = (k, v) => { setF(function(p) { return Object.assign({}, p, { [k]: v }); }); setErrors(function(e) { return Object.assign({}, e, { [k]: undefined }); }); };
   const isLast = step === FOUNDATION_STEPS.length - 1;
 
   const validate = () => {
@@ -68,12 +92,11 @@ function FoundationForm({ onSuccess }) {
           body: JSON.stringify({
             name: f.name.trim(), email: f.email.trim(),
             company: f.company.trim(), website: f.website.trim(),
-            service: f.service, questionnaire,
+            service: f.service, questionnaire: questionnaire,
           }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Submission failed");
-        // Store IDs for brief generation
         window.__spazioReport = { reportId: data.reportId, leadId: data.leadId };
         if (onSuccess) onSuccess();
       } catch (err) {
@@ -83,106 +106,102 @@ function FoundationForm({ onSuccess }) {
       }
       return;
     }
-    setStep((s) => s + 1);
+    setStep(function(s) { return s + 1; });
   };
 
-  const back = () => { if (step > 0) setStep((s) => s - 1); };
+  const back = () => { if (step > 0) setStep(function(s) { return s - 1; }); };
 
-  const Input = ({ field, label, placeholder, type = "text", required }) => (
-    <div className="field" style={{ gap: 6 }}>
-      <label>{label}{!required && <span className="opt">optional</span>}</label>
-      <input className={`input${errors[field] ? " err" : ""}`} type={type}
-        value={f[field]} onChange={(e) => set(field, e.target.value)}
-        placeholder={placeholder} />
-      {errors[field] && <span className="err-msg">{errors[field]}</span>}
-    </div>
-  );
-
-  const TextArea = ({ field, label, placeholder, required }) => (
-    <div className="field" style={{ gap: 6 }}>
-      <label>{label}{!required && <span className="opt">optional</span>}</label>
-      <textarea className={`textarea${errors[field] ? " err" : ""}`}
-        value={f[field]} onChange={(e) => set(field, e.target.value)}
-        placeholder={placeholder} style={{ minHeight: 100 }} />
-      {errors[field] && <span className="err-msg">{errors[field]}</span>}
-    </div>
-  );
-
-  const stepContent = () => {
-    switch (step) {
-      case 0: return (
-        <div style={{ display: "grid", gap: 24 }}>
-          <Input field="name" label="Your name" placeholder="First and last" required />
-          <Input field="email" label="Email" placeholder="you@company.com" type="email" required />
-          <Input field="company" label="Company" placeholder="Company or brand name" />
-          <Input field="website" label="Website" placeholder="https://" />
-          <div className="field" style={{ gap: 6 }}>
-            <label>What are you looking for?</label>
-            <div className="chips">
-              {SERVICES.map((s) => (
-                <button type="button" key={s} className="chip"
-                  aria-pressed={f.service === s}
-                  onClick={() => set("service", f.service === s ? "" : s)}>{s}</button>
-              ))}
-            </div>
+  var stepContent;
+  switch (step) {
+    case 0: stepContent = (
+      <div style={{ display: "grid", gap: 24 }}>
+        <FndInput field="name" label="Your name" placeholder="First and last" required={true}
+          value={f.name} onChange={function(e) { set("name", e.target.value); }} error={errors.name} />
+        <FndInput field="email" label="Email" placeholder="you@company.com" type="email" required={true}
+          value={f.email} onChange={function(e) { set("email", e.target.value); }} error={errors.email} />
+        <FndInput field="company" label="Company" placeholder="Company or brand name"
+          value={f.company} onChange={function(e) { set("company", e.target.value); }} error={errors.company} />
+        <FndInput field="website" label="Website" placeholder="https://"
+          value={f.website} onChange={function(e) { set("website", e.target.value); }} error={errors.website} />
+        <div className="field" style={{ gap: 6 }}>
+          <label>What are you looking for?</label>
+          <div className="chips">
+            {SERVICES.map(function(s) { return (
+              <button type="button" key={s} className="chip"
+                aria-pressed={f.service === s}
+                onClick={function() { set("service", f.service === s ? "" : s); }}>{s}</button>
+            ); })}
           </div>
         </div>
-      );
-      case 1: return (
-        <div style={{ display: "grid", gap: 24 }}>
-          <TextArea field="whatYouDo" label="What does your company do?" placeholder="Describe your product or service in a sentence or two." />
-          <TextArea field="audience" label="Who is your ideal customer?" placeholder="Demographics, psychographics, the person who gets excited about what you offer." />
-          <TextArea field="competitors" label="Who are your main competitors?" placeholder="Names, links, or descriptions. What do they do well? Where do they fall short?" />
-        </div>
-      );
-      case 2: return (
-        <div style={{ display: "grid", gap: 24 }}>
-          <TextArea field="currentBrand" label="Describe your current brand" placeholder="What exists today — logo, colors, website, social presence. How put-together is it?" />
-          <TextArea field="brandPerception" label="How do people perceive your brand right now?" placeholder="What do customers say about you? What impression does your brand leave?" />
-          <TextArea field="brandGap" label="Where's the gap?" placeholder="What's the disconnect between how you're perceived and how you want to be perceived?" />
-        </div>
-      );
-      case 3: return (
-        <div style={{ display: "grid", gap: 24 }}>
-          <TextArea field="shortTermGoal" label="What's the immediate goal for this project?" placeholder="Launch a new identity, redesign the website, create a campaign — what's the first win?" />
-          <TextArea field="longTermVision" label="Where do you see the brand in 2–3 years?" placeholder="Growth targets, markets, perception shifts. What does success look like?" />
-          <TextArea field="biggestChallenge" label="What's your biggest challenge right now?" placeholder="The thing that keeps you up at night about your brand or business." />
-        </div>
-      );
-      case 4: return (
-        <div style={{ display: "grid", gap: 24 }}>
-          <TextArea field="visualLike" label="What brands or visuals do you love?" placeholder="Names, links, screenshots. What makes you think 'I want that energy'?" />
-          <TextArea field="visualDislike" label="What do you want to avoid?" placeholder="Styles, trends, or aesthetics that feel wrong for your brand." />
-          <TextArea field="inspiration" label="Any other references or inspiration?" placeholder="Links, mood boards, Instagram accounts, architecture, fashion — anything that captures the feeling." />
-        </div>
-      );
-      case 5: return (
-        <div style={{ display: "grid", gap: 24 }}>
-          <div className="field" style={{ gap: 6 }}>
-            <label>Timeline</label>
-            <div className="chips">
-              {["ASAP", "1–2 months", "3–6 months", "Just exploring"].map((t) => (
-                <button type="button" key={t} className="chip"
-                  aria-pressed={f.timeline === t}
-                  onClick={() => set("timeline", f.timeline === t ? "" : t)}>{t}</button>
-              ))}
-            </div>
+      </div>
+    ); break;
+    case 1: stepContent = (
+      <div style={{ display: "grid", gap: 24 }}>
+        <FndTextArea field="whatYouDo" label="What does your company do?" placeholder="Describe your product or service in a sentence or two."
+          value={f.whatYouDo} onChange={function(e) { set("whatYouDo", e.target.value); }} />
+        <FndTextArea field="audience" label="Who is your ideal customer?" placeholder="Demographics, psychographics, the person who gets excited about what you offer."
+          value={f.audience} onChange={function(e) { set("audience", e.target.value); }} />
+        <FndTextArea field="competitors" label="Who are your main competitors?" placeholder="Names, links, or descriptions. What do they do well? Where do they fall short?"
+          value={f.competitors} onChange={function(e) { set("competitors", e.target.value); }} />
+      </div>
+    ); break;
+    case 2: stepContent = (
+      <div style={{ display: "grid", gap: 24 }}>
+        <FndTextArea field="currentBrand" label="Describe your current brand" placeholder="What exists today — logo, colors, website, social presence. How put-together is it?"
+          value={f.currentBrand} onChange={function(e) { set("currentBrand", e.target.value); }} />
+        <FndTextArea field="brandPerception" label="How do people perceive your brand right now?" placeholder="What do customers say about you? What impression does your brand leave?"
+          value={f.brandPerception} onChange={function(e) { set("brandPerception", e.target.value); }} />
+        <FndTextArea field="brandGap" label="Where's the gap?" placeholder="What's the disconnect between how you're perceived and how you want to be perceived?"
+          value={f.brandGap} onChange={function(e) { set("brandGap", e.target.value); }} />
+      </div>
+    ); break;
+    case 3: stepContent = (
+      <div style={{ display: "grid", gap: 24 }}>
+        <FndTextArea field="shortTermGoal" label="What's the immediate goal for this project?" placeholder="Launch a new identity, redesign the website, create a campaign — what's the first win?"
+          value={f.shortTermGoal} onChange={function(e) { set("shortTermGoal", e.target.value); }} />
+        <FndTextArea field="longTermVision" label="Where do you see the brand in 2–3 years?" placeholder="Growth targets, markets, perception shifts. What does success look like?"
+          value={f.longTermVision} onChange={function(e) { set("longTermVision", e.target.value); }} />
+        <FndTextArea field="biggestChallenge" label="What's your biggest challenge right now?" placeholder="The thing that keeps you up at night about your brand or business."
+          value={f.biggestChallenge} onChange={function(e) { set("biggestChallenge", e.target.value); }} />
+      </div>
+    ); break;
+    case 4: stepContent = (
+      <div style={{ display: "grid", gap: 24 }}>
+        <FndTextArea field="visualLike" label="What brands or visuals do you love?" placeholder="Names, links, screenshots. What makes you think 'I want that energy'?"
+          value={f.visualLike} onChange={function(e) { set("visualLike", e.target.value); }} />
+        <FndTextArea field="visualDislike" label="What do you want to avoid?" placeholder="Styles, trends, or aesthetics that feel wrong for your brand."
+          value={f.visualDislike} onChange={function(e) { set("visualDislike", e.target.value); }} />
+        <FndTextArea field="inspiration" label="Any other references or inspiration?" placeholder="Links, mood boards, Instagram accounts, architecture, fashion — anything that captures the feeling."
+          value={f.inspiration} onChange={function(e) { set("inspiration", e.target.value); }} />
+      </div>
+    ); break;
+    case 5: stepContent = (
+      <div style={{ display: "grid", gap: 24 }}>
+        <div className="field" style={{ gap: 6 }}>
+          <label>Timeline</label>
+          <div className="chips">
+            {["ASAP", "1–2 months", "3–6 months", "Just exploring"].map(function(t) { return (
+              <button type="button" key={t} className="chip"
+                aria-pressed={f.timeline === t}
+                onClick={function() { set("timeline", f.timeline === t ? "" : t); }}>{t}</button>
+            ); })}
           </div>
-          <div className="field" style={{ gap: 6 }}>
-            <label>Budget range</label>
-            <div className="chips">
-              {["$2k–$5k", "$5k–$10k", "$10k–$25k", "$25k+", "Prefer to discuss"].map((b) => (
-                <button type="button" key={b} className="chip"
-                  aria-pressed={f.budget === b}
-                  onClick={() => set("budget", f.budget === b ? "" : b)}>{b}</button>
-              ))}
-            </div>
-          </div>
-          <TextArea field="scope" label="Anything else we should know?" placeholder="Context, constraints, dreams — whatever helps us understand your world." />
         </div>
-      );
-    }
-  };
+        <div className="field" style={{ gap: 6 }}>
+          <label>Budget range</label>
+          <div className="chips">
+            {["$2k–$5k", "$5k–$10k", "$10k–$25k", "$25k+", "Prefer to discuss"].map(function(b) { return (
+              <button type="button" key={b} className="chip"
+                aria-pressed={f.budget === b}
+                onClick={function() { set("budget", f.budget === b ? "" : b); }}>{b}</button>
+            ); })}
+          </div>
+        </div>
+        <FndTextArea field="scope" label="Anything else we should know?" placeholder="Context, constraints, dreams — whatever helps us understand your world."
+          value={f.scope} onChange={function(e) { set("scope", e.target.value); }} />
+      </div>
+    ); break;
+  }
 
   return (
     <div className="frame" style={{ position: "relative", background: "var(--surface)", padding: "clamp(24px,3.5vw,48px)" }}>
@@ -204,11 +223,11 @@ function FoundationForm({ onSuccess }) {
         {/* Step rail */}
         <div className="brail" style={{ borderRight: "1px solid var(--line)", paddingRight: "clamp(16px,2vw,28px)" }}>
           <div className="brail-list" style={{ display: "flex", flexDirection: "column" }}>
-            {FOUNDATION_STEPS.map((s, i) => {
-              const state = i < step ? "done" : i === step ? "active" : "pending";
+            {FOUNDATION_STEPS.map(function(s, i) {
+              var state = i < step ? "done" : i === step ? "active" : "pending";
               return (
                 <button key={s.key} className="brail-step" data-state={state}
-                  disabled={i > step} onClick={() => { if (i < step) setStep(i); }}>
+                  disabled={i > step} onClick={function() { if (i < step) setStep(i); }}>
                   <span className="brail-num">{String(i + 1).padStart(2, "0")}</span>
                   <div>
                     <div className="brail-ttl">{s.title}</div>
@@ -230,8 +249,8 @@ function FoundationForm({ onSuccess }) {
             <span className="tag" style={{ color: "var(--ink-3)" }}>{FOUNDATION_STEPS[step].title}</span>
           </div>
 
-          <div key={step} className="bstep" style={{ flex: 1 }}>
-            {stepContent()}
+          <div style={{ flex: 1 }}>
+            {stepContent}
           </div>
 
           {submitError && (
