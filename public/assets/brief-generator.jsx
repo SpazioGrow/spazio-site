@@ -301,6 +301,15 @@ function StepBody({ step, f, set, toggle, errors }) {
 }
 
 /* ---------------- the studio ---------------- */
+/* inject spin keyframe once (for submit spinner) */
+(function ensureSpinKf() {
+  if (typeof document === "undefined" || document.getElementById("spazio-spin-kf")) return;
+  const s = document.createElement("style");
+  s.id = "spazio-spin-kf";
+  s.textContent = "@keyframes spin { to { transform: rotate(360deg); } }";
+  document.head.appendChild(s);
+})();
+
 function BriefStudio() {
   const { navigate } = useRouter();
   const [step, setStep] = useState(0);
@@ -308,6 +317,10 @@ function BriefStudio() {
   const [f, setF] = useState(BRIEF_BLANK);
   const [errors, setErrors] = useState({});
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [briefHtml, setBriefHtml] = useState(null);
+  const [recordId, setRecordId] = useState(null);
   const topRef = useRef(null);
 
   const set = (k, v) => { setF((s) => ({ ...s, [k]: v })); setErrors((e) => ({ ...e, [k]: null })); };
@@ -345,16 +358,32 @@ function BriefStudio() {
   const back = () => { if (step > 0) { setStep(step - 1); goToTop(); } };
   const jump = (i) => { if (i <= maxReached) { setStep(i); goToTop(); } };
 
-  const submit = () => {
+  const submit = async () => {
     const payload = buildPayload(f);
-    // In production this POSTs to /api/brief → Make.com → Perplexity / OpenAI / DALL·E / Airtable.
-    try { console.info("[Spazio] creative brief payload →", payload); } catch (_) {}
-    setDone(true); goToTop();
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch("/api/brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: payload }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+      setBriefHtml(data.html || null);
+      setRecordId(data.recordId || null);
+      setDone(true);
+      goToTop();
+    } catch (err) {
+      setSubmitError(err.message || "Could not generate your brief. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const reset = () => { setF(BRIEF_BLANK); setErrors({}); setStep(0); setMaxReached(0); setDone(false); goToTop(); };
+  const reset = () => { setF(BRIEF_BLANK); setErrors({}); setStep(0); setMaxReached(0); setDone(false); setBriefHtml(null); setRecordId(null); setSubmitError(null); goToTop(); };
 
-  if (done) return <span ref={topRef}><BriefQueued f={f} onReset={reset} onHome={() => navigate("home")} /></span>;
+  if (done) return <span ref={topRef}><BriefQueued f={f} briefHtml={briefHtml} recordId={recordId} onReset={reset} onHome={() => navigate("home")} /></span>;
 
   const isLast = step === BRIEF_STEPS.length - 1;
 
@@ -388,14 +417,21 @@ function BriefStudio() {
               <svg className="arr" width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ transform: "scaleX(-1)" }}><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
               Back
             </button>
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              {step === 4 && (
+            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+              {submitError && (
+                <p style={{ margin: 0, fontSize: 13.5, color: "#C0331F", maxWidth: "32ch" }}>{submitError}</p>
+              )}
+              {step === 4 && !submitting && (
                 <button type="button" className="txtlink" onClick={next} style={{ border: 0, background: "none" }}>
-                  Skip — queue brief
+                  Skip — generate brief
                 </button>
               )}
-              <button type="button" className="btn btn--primary" onClick={next} style={{ padding: "14px 28px" }}>
-                {isLast ? "Queue my brief" : "Continue"} <Arrow />
+              <button type="button" className="btn btn--primary" onClick={next}
+                disabled={submitting}
+                style={{ padding: "14px 28px", opacity: submitting ? 0.7 : 1 }}>
+                {submitting
+                  ? <><span style={{ display:"inline-block",width:14,height:14,borderRadius:"50%",border:"2px solid rgba(28,36,24,.3)",borderTopColor:"#1C2418",animation:"spin .7s linear infinite",verticalAlign:"middle",marginRight:8 }} />Generating…</>
+                  : <>{isLast ? "Generate my brief" : "Continue"} <Arrow /></>}
               </button>
             </div>
           </div>
@@ -434,7 +470,7 @@ const Val = ({ children, muted }) => (
   <span style={{ fontSize: 16.5, lineHeight: 1.5, color: muted ? "var(--ink-4)" : "var(--ink)" }}>{children || (muted ? "—" : "")}</span>
 );
 
-function BriefQueued({ f, onReset, onHome }) {
+function BriefQueued({ f, briefHtml, recordId, onReset, onHome }) {
   const ref = ((f.industry || f.project_type || "SPZ").replace(/[^A-Za-z]/g, "").slice(0, 3).toUpperCase() || "SPZ") + "\u201326";
   const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
@@ -510,6 +546,17 @@ function BriefQueued({ f, onReset, onHome }) {
       {/* actions */}
       <div style={{ marginTop: "clamp(24px,3vw,34px)", paddingTop: "clamp(22px,3vw,30px)", borderTop: "1px solid var(--line)",
         display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
+        {briefHtml && (
+          <button className="btn btn--accent" style={{ padding: "14px 26px" }} onClick={() => {
+            try {
+              const blob = new Blob([briefHtml], { type: "text/html" });
+              const url = URL.createObjectURL(blob);
+              window.open(url, "_blank");
+            } catch (_) {}
+          }}>
+            View Intelligence Report <Arrow />
+          </button>
+        )}
         <button className="btn btn--primary" style={{ padding: "14px 26px" }} onClick={onReset}>Start another brief <Arrow /></button>
         <button className="btn btn--ghost" style={{ padding: "14px 22px" }} onClick={onHome}>Back to home</button>
       </div>
