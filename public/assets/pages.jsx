@@ -323,6 +323,9 @@ function HomeWhy() {
                 account managers in between. You work directly with me, the person making the
                 creative calls, and the work moves at the speed your stage actually needs.
               </p>
+              <p style={{ marginTop: 18, fontSize: 16, lineHeight: 1.6, color: "var(--ink-2)", maxWidth: "46ch" }}>
+                Before Spazio, I spent a decade building brands at StockX, Leo Burnett, and Stellantis.
+              </p>
               <p style={{ marginTop: 22, fontFamily: "var(--mono)", fontSize: 13, letterSpacing: "0.04em", color: "var(--ink-3)" }}>
                 — Christine, Founder
               </p>
@@ -781,6 +784,9 @@ function AboutPage() {
                 I’ve spent my career learning what actually makes a brand feel inevitable: the
                 strategy underneath, the craft on top, and the discipline to make every single
                 touchpoint say the same thing.
+              </p>
+              <p style={para}>
+                Before Spazio, I spent a decade building brands at StockX, Leo Burnett, and Stellantis.
               </p>
               <p style={para}>
                 Then I kept meeting founders with the opposite problem. The product was great —
