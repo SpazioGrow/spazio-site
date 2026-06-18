@@ -87,8 +87,6 @@ function App() {
     const META = {
       home:      ["Spazio — Brand Strategy and Identity for App and SaaS Founders", "Spazio helps app and SaaS founders close the gap between a great product and a brand that matches it — strategy, positioning, and identity. Start with a $750 Brand Gap Audit."],
       about:     ["About — Spazio | Brand Strategy for App and SaaS Founders", "Meet Christine, founder of Spazio. Agency-caliber brand strategy and identity for app and SaaS founders — delivered direct and fast, by the person doing the work."],
-      services:  ["Services — Spazio | Brand Strategy, Identity and Web", "Brand strategy and positioning, visual identity, creative direction, and brand-led web for app and SaaS founders."],
-      process:   ["Process — Spazio | From Audit to Identity in Weeks", "How Spazio works: from Brand Gap Audit to strategy, identity, and handoff — in weeks, not quarters."],
       work:      ["Work — Spazio | Selected Brand and Identity Projects", "Selected brand strategy and identity work for founders and growing digital products."],
       start:     ["Start a Brand Gap Audit — Spazio", "Start with a $750 Brand Gap Audit, credited toward your engagement."],
       subscribe: ["Subscribe — Spazio", "Occasional notes on brand, design, and digital work for founders."],
@@ -102,8 +100,6 @@ function App() {
 
   let Page;
   switch (route) {
-    case "services": Page = <ServicesPage />; break;
-    case "process":  Page = <ProcessPage />; break;
     case "work":     Page = <WorkPage />; break;
     case "about":    Page = <AboutPage />; break;
     case "start":    Page = <StartPage />; break;
