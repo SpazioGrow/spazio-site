@@ -108,7 +108,7 @@ function CtaBand() {
             You built the product. Let’s build the brand it deserves.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 36 }}>
-            <a href="#foundation" className="btn btn--accent" style={{ padding: "15px 28px" }}>
+            <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--accent" style={{ padding: "15px 28px" }}>
               Start with a Brand Gap Audit — $750 <Arrow />
             </a>
             <a href="mailto:hi@spaziographics.com?subject=15-min intro" className="btn btn--ghost"
@@ -256,7 +256,7 @@ const AUDIT_POINTS = [
 ];
 function HomeAudit() {
   return (
-    <section className="section">
+    <section className="section" id="audit" style={{ scrollMarginTop: 80 }}>
       <div className="wrap">
         <div className="frame" style={{ position: "relative", background: "var(--surface)", padding: "clamp(28px,4vw,56px)" }}>
           <CropMarks color="var(--accent)" />
@@ -272,7 +272,7 @@ function HomeAudit() {
                   In about five business days, you’ll get:
                 </p>
                 <div style={{ marginTop: 28 }}>
-                  <a href="#foundation" className="btn btn--primary" style={{ padding: "15px 28px" }}>
+                  <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--primary" style={{ padding: "15px 28px" }}>
                     Start with a Brand Gap Audit <Arrow />
                   </a>
                 </div>

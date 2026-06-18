@@ -32,6 +32,7 @@ function BriefReadyPage() {
             <strong style={{ color: "var(--ink)" }}>3.</strong> You'll receive a link to review and approve your brief.
           </p>
         </div>
+        <BookACall />
         <button className="btn btn--ghost" style={{ marginTop: 32, padding: "14px 28px" }}
           onClick={function() { window.location.hash = "home"; }}>
           Back to home
