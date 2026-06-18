@@ -4,7 +4,7 @@
 
 /* ---------------- DATA ---------------- */
 
-const WHO = ["Founders", "Early-stage startups", "Established businesses / legacy brands"];
+const WHO = ["Consumer apps", "B2C SaaS", "Platforms & marketplaces", "Founder-led teams"];
 
 const SERVICES_DATA = [
   {
@@ -153,40 +153,37 @@ function SectionHead({ label, title, lede, linkTo, linkLabel }) {
 
 /* ---------------- HERO ---------------- */
 function Hero() {
-  const { navigate } = useRouter();
-  const go = (id) => navigate(id);
   return (
     <section style={{ paddingTop: "clamp(48px,7vw,96px)", paddingBottom: "clamp(48px,6vw,84px)" }}>
       <div className="wrap">
         <Reveal>
           <p className="label label--accent label-dot" style={{ marginBottom: "clamp(28px,4vw,44px)" }}>
-            Digital design agency
+            Brand strategy + identity for founders
           </p>
         </Reveal>
 
-        <h1 className="display d1 hero-headline" style={{ maxWidth: "16ch" }}>
-          <Reveal as="span" style={{ display: "block" }}>We design the </Reveal>
+        <h1 className="display d1 hero-headline" style={{ maxWidth: "15ch" }}>
+          <Reveal as="span" style={{ display: "block" }}>You built the product.</Reveal>
           <Reveal as="span" delay={90} style={{ display: "block" }}>
-            <em className="grace" style={{ fontSize: "0.92em" }}>space</em> your brand
+            Let’s build the <em className="grace">brand</em>.
           </Reveal>
-          <Reveal as="span" delay={180} style={{ display: "block" }}>grows into.</Reveal>
         </h1>
 
         <div className="grid12" style={{ marginTop: "clamp(36px,5vw,60px)", rowGap: 32, alignItems: "end" }}>
           <div className="col-span-6">
             <Reveal delay={120}>
-              <p className="lede" style={{ maxWidth: "44ch" }}>
-                Spazio builds brand identities, digital products, and marketing systems
-                for founders, startups, and growing brands — designed for clarity,
-                scale, and modern digital performance.
+              <p className="lede" style={{ maxWidth: "46ch" }}>
+                Spazio works with app and SaaS founders to close the gap between a great product
+                and a brand that finally matches it — strategy and identity that make you look
+                like the category leader you’re becoming.
               </p>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
-                <button className="btn btn--primary" onClick={() => go("foundation")} style={{ padding: "15px 26px" }}>
-                  Start a project <Arrow />
-                </button>
-                <button className="btn btn--ghost" onClick={() => go("work")} style={{ padding: "15px 26px" }}>
-                  See our work
-                </button>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 30, alignItems: "center" }}>
+                <a href="#foundation" className="btn btn--primary" style={{ padding: "15px 26px" }}>
+                  Start with a Brand Gap Audit — $750 <Arrow />
+                </a>
+                <a href="mailto:hi@spaziographics.com?subject=15-min intro" className="txtlink">
+                  Not ready? Book a 15-min intro
+                </a>
               </div>
             </Reveal>
           </div>
@@ -194,11 +191,11 @@ function Hero() {
           <div className="col-span-6">
             <Reveal delay={200}>
               <div style={{ display: "flex", flexDirection: "column", gap: 14, marginLeft: "auto", maxWidth: 360 }}>
-                <p className="label" style={{ color: "var(--ink-3)" }}>Who we help</p>
+                <p className="label" style={{ color: "var(--ink-3)" }}>Who it’s for</p>
                 {WHO.map((w, i) => (
                   <div key={w} style={{ display: "flex", alignItems: "center", gap: 14, paddingBlock: 12, borderTop: "1px solid var(--line)" }}>
                     <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--accent-deep)" }}>0{i + 1}</span>
-                    <span style={{ fontFamily: "var(--display)", fontWeight: 500, fontSize: 21, letterSpacing: "-0.02em" }}>{w}</span>
+                    <span style={{ fontFamily: "var(--display)", fontWeight: 500, fontSize: 20, letterSpacing: "-0.02em" }}>{w}</span>
                   </div>
                 ))}
               </div>
