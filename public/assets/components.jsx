@@ -8,7 +8,7 @@ const { useState, useEffect, useRef, useContext, createContext, useCallback } = 
 const RouterCtx = createContext({ route: "home", navigate: () => {} });
 const useRouter = () => useContext(RouterCtx);
 
-const ROUTES = ["home", "services", "process", "work", "start", "subscribe"];
+const ROUTES = ["home", "services", "process", "work", "about", "start", "subscribe"];
 
 /* ---------- Scroll reveal ---------- */
 function useReveal() {
@@ -134,6 +134,7 @@ const NAV_LINKS = [
   { id: "work", label: "Work" },
   { id: "services", label: "Services" },
   { id: "process", label: "Process" },
+  { id: "about", label: "About" },
 ];
 
 function Nav() {
@@ -169,7 +170,7 @@ function Nav() {
           <span className="nav-meta tag" style={{
             display: "none", color: "var(--ink-3)", paddingLeft: 16,
             borderLeft: "1px solid var(--line-2)",
-          }}>Digital Design Studio</span>
+          }}>Brand &amp; Identity Studio</span>
         </div>
 
         <nav style={{ display: "flex", alignItems: "center", gap: 4 }} className="nav-desktop">
@@ -191,7 +192,7 @@ function Nav() {
           >Subscribe</a>
           <a href="/lead" className="btn btn--primary"
              style={{ marginLeft: 10, padding: "11px 20px" }}>
-            Start a project <Arrow />
+            Brand Gap Audit <Arrow />
           </a>
         </nav>
 
@@ -231,7 +232,7 @@ function Nav() {
           ))}
           <a href="/lead" className="btn btn--primary"
              style={{ width: "100%", justifyContent: "center", marginTop: 18, padding: "15px" }}>
-            Start a project <Arrow />
+            Brand Gap Audit <Arrow />
           </a>
         </div>
       </div>
@@ -313,20 +314,20 @@ function Footer() {
             </div>
             <p style={{ color: "color-mix(in oklab, var(--bg) 66%, transparent)", maxWidth: "34ch",
               fontSize: 18, lineHeight: 1.5, margin: 0 }}>
-              A digital design agency for founders and growing brands. <em className="grace" style={{ color: "var(--accent)" }}>Human-led</em>, AI-accelerated.
+              Brand strategy and identity for app and SaaS founders. <em className="grace" style={{ color: "var(--accent)" }}>Direct</em>, fast, and senior-led.
             </p>
           </div>
 
           <div className="col-span-3" style={{ gridColumn: "span 3" }}>
             <p className="label" style={{ color: "color-mix(in oklab, var(--bg) 50%, transparent)", marginBottom: 18 }}>Explore</p>
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 12 }}>
-              {[["work","Work"],["services","Services"],["process","Process"]].map(([id,l]) => (
+              {[["work","Work"],["services","Services"],["process","Process"],["about","About"]].map(([id,l]) => (
                 <li key={id}><a href={`#${id}`}
                   onClick={(e)=>{ go(e,id); }}
                   style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>{l}</a></li>
               ))}
               <li><a href="/lead"
-                style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>Start a project</a></li>
+                style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>Brand Gap Audit</a></li>
             </ul>
           </div>
 
@@ -341,7 +342,7 @@ function Footer() {
           color: "color-mix(in oklab, var(--bg) 50%, transparent)", fontFamily: "var(--mono)", fontSize: 12,
           letterSpacing: "0.04em" }}>
           <span>© {year} Spazio Studio</span>
-          <span>Designed in the open · Built for growth</span>
+          <span>Brand strategy &amp; identity · Built for founders</span>
         </div>
       </div>
     </footer>

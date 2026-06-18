@@ -97,22 +97,24 @@ function SubscribeSection() {
 
 /* ---------- CTA band ---------- */
 function CtaBand() {
-  const { navigate } = useRouter();
   return (
     <section className="section" style={{ background: "var(--ink)", color: "var(--bg)" }}>
       <div className="wrap" style={{ textAlign: "center" }}>
         <Reveal>
-          <p className="display d2" style={{ margin: "0 auto", maxWidth: "16ch", color: "var(--bg)" }}>
-            Let's design the space your brand <em className="grace" style={{ color: "var(--accent)" }}>grows into</em>.
+          <h2 className="display d2" style={{ margin: "0 auto", maxWidth: "16ch", color: "var(--bg)" }}>
+            Ready to close the <em className="grace" style={{ color: "var(--accent)" }}>gap</em>?
+          </h2>
+          <p className="lede" style={{ margin: "20px auto 0", color: "color-mix(in oklab, var(--bg) 70%, transparent)" }}>
+            You built the product. Let’s build the brand it deserves.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 36 }}>
             <a href="/lead" className="btn btn--accent" style={{ padding: "15px 28px" }}>
-              Start a project <Arrow />
+              Start with a Brand Gap Audit — $750 <Arrow />
             </a>
-            <button className="btn btn--ghost" style={{ padding: "15px 28px", color: "var(--bg)", borderColor: "color-mix(in oklab, var(--bg) 30%, transparent)" }}
-              onClick={() => navigate("work")}>
-              See our work
-            </button>
+            <a href="mailto:hi@spaziographics.com?subject=15-min intro" className="btn btn--ghost"
+              style={{ padding: "15px 28px", color: "var(--bg)", borderColor: "color-mix(in oklab, var(--bg) 30%, transparent)" }}>
+              Book a 15-min intro
+            </a>
           </div>
         </Reveal>
       </div>
@@ -121,10 +123,339 @@ function CtaBand() {
 }
 
 /* ================= HOME ================= */
+
+/* ---- The Gap ---- */
+function HomeGap() {
+  return (
+    <section className="section band">
+      <div className="wrap">
+        <div className="grid12" style={{ rowGap: 28, alignItems: "start" }}>
+          <div className="col-span-7">
+            <Reveal>
+              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>The gap</p>
+              <h2 className="section-title" style={{ maxWidth: "16ch" }}>
+                Your product’s ahead of your brand. You can <em className="grace">feel</em> it.
+              </h2>
+            </Reveal>
+          </div>
+          <div className="col-span-5">
+            <Reveal delay={80}>
+              <p className="lede" style={{ marginBottom: 18 }}>
+                You’ve built something genuinely good — but the brand around it is a step behind,
+                and your users feel it before they can name it. They decide you’re “fine” before
+                they ever sign up.
+              </p>
+              <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-2)", margin: 0, maxWidth: "46ch" }}>
+                That gap quietly costs you: installs that don’t convert, raises that take a quarter
+                longer, hires who pick the competitor who simply looked the part. Closing it is the
+                whole job — and it’s the part I love.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Who it's for ---- */
+const HOME_AUDIENCE = [
+  ["Consumer apps", "Mobile-first products with real users and real ambition."],
+  ["B2C SaaS", "Subscription products that live or die on first impressions."],
+  ["Platforms & marketplaces", "Two-sided products that have to feel trustworthy fast."],
+  ["Founder-led, product-first teams", "You make the calls — and you sweat the details."],
+];
+function HomeWho() {
+  return (
+    <section className="section">
+      <div className="wrap">
+        <div className="grid12" style={{ rowGap: 20, alignItems: "end", marginBottom: "clamp(36px,5vw,60px)" }}>
+          <div className="col-span-7">
+            <Reveal>
+              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Who it’s for</p>
+              <h2 className="section-title" style={{ maxWidth: "18ch" }}>
+                For founders whose product is ahead of their brand.
+              </h2>
+            </Reveal>
+          </div>
+          <div className="col-span-5">
+            <Reveal delay={80}>
+              <p className="lede" style={{ marginLeft: "auto" }}>
+                If you’ve got real traction and a brand that hasn’t caught up to the ambition —
+                and you’re about to raise, launch, or scale — this is for you.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+        <div className="grid12" style={{ rowGap: 0 }}>
+          {HOME_AUDIENCE.map(([t, d], i) => (
+            <Reveal as="div" key={t} delay={i * 60} className="col-span-6"
+              style={{ display: "flex", gap: 16, padding: "22px 0", borderTop: "1px solid var(--line)" }}>
+              <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--accent-deep)", paddingTop: 4 }}>{String(i + 1).padStart(2, "0")}</span>
+              <div>
+                <h3 style={{ margin: 0, fontFamily: "var(--display)", fontWeight: 600, fontSize: 22, letterSpacing: "-0.02em" }}>{t}</h3>
+                <p style={{ margin: "6px 0 0", fontSize: 15.5, color: "var(--ink-2)", lineHeight: 1.5 }}>{d}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- What we do ---- */
+const HOME_SERVICES = [
+  ["Brand Strategy & Positioning", "The sharp, defensible story of why you win — before a single pixel."],
+  ["Visual Identity", "Logo, type, color, and a system built to hold up across product, web, and app store."],
+  ["Creative Direction", "One consistent point of view across every surface your users touch."],
+  ["Brand & Web", "Messaging and a site that make the product feel inevitable."],
+];
+function HomeWhatWeDo() {
+  return (
+    <section className="section band-soft">
+      <div className="wrap">
+        <div className="grid12" style={{ rowGap: 20, alignItems: "end", marginBottom: "clamp(36px,5vw,60px)" }}>
+          <div className="col-span-7">
+            <Reveal>
+              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>What we do</p>
+              <h2 className="section-title" style={{ maxWidth: "16ch" }}>
+                Strategy first. Then the identity to <em className="grace">carry</em> it.
+              </h2>
+            </Reveal>
+          </div>
+          <div className="col-span-5">
+            <Reveal delay={80}>
+              <p className="lede" style={{ marginLeft: "auto" }}>
+                We start with the thinking and end with a brand system your team can actually run
+                with — not a logo and a shrug.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+        <div className="grid12" style={{ rowGap: 0 }}>
+          {HOME_SERVICES.map(([t, d], i) => (
+            <Reveal as="div" key={t} delay={i * 60} className="col-span-6"
+              style={{ padding: "26px 0", borderTop: "1px solid var(--line)" }}>
+              <h3 style={{ margin: 0, fontFamily: "var(--display)", fontWeight: 600, fontSize: "clamp(22px,2vw,28px)", letterSpacing: "-0.02em" }}>{t}</h3>
+              <p style={{ margin: "10px 0 0", fontSize: 16, color: "var(--ink-2)", lineHeight: 1.55, maxWidth: "42ch" }}>{d}</p>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- The Brand Gap Audit ---- */
+const AUDIT_POINTS = [
+  "A clear read on exactly where your brand lags your product",
+  "How you stack up in your category, and the opening you’re missing",
+  "2–3 strategic directions to close the gap",
+  "A tight deck, plus a 30-minute walkthrough with me",
+];
+function HomeAudit() {
+  return (
+    <section className="section">
+      <div className="wrap">
+        <div className="frame" style={{ position: "relative", background: "var(--surface)", padding: "clamp(28px,4vw,56px)" }}>
+          <CropMarks color="var(--accent)" />
+          <div className="grid12" style={{ rowGap: 32, alignItems: "start" }}>
+            <div className="col-span-6">
+              <Reveal>
+                <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>The Brand Gap Audit</p>
+                <h2 className="section-title" style={{ maxWidth: "13ch" }}>
+                  Start here. <span style={{ color: "var(--accent-deep)" }}>$750</span>, credited toward your engagement.
+                </h2>
+                <p className="lede" style={{ marginTop: 20, maxWidth: "42ch" }}>
+                  The fastest way to see what’s holding the brand back — and whether we’re a fit.
+                  In about five business days, you’ll get:
+                </p>
+                <div style={{ marginTop: 28 }}>
+                  <a href="/lead" className="btn btn--primary" style={{ padding: "15px 28px" }}>
+                    Start with a Brand Gap Audit <Arrow />
+                  </a>
+                </div>
+              </Reveal>
+            </div>
+            <div className="col-span-6">
+              <Reveal delay={80}>
+                <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                  {AUDIT_POINTS.map((p) => (
+                    <li key={p} style={{ display: "flex", gap: 14, alignItems: "baseline", padding: "16px 0", borderTop: "1px solid var(--line)", fontSize: 16.5, lineHeight: 1.5 }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto", transform: "translateY(-2px)" }} />
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p style={{ marginTop: 22, fontSize: 15, color: "var(--ink-2)", lineHeight: 1.6, maxWidth: "44ch" }}>
+                  If you move into a full engagement, the $750 comes right off the top. So it’s
+                  risk-free if you’re serious — and genuinely useful even if the timing’s not right yet.
+                </p>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Why Spazio ---- */
+const WHY_POINTS = [
+  ["Direct access", "No hand-offs, no telephone game. You talk to the decision-maker."],
+  ["Speed you can feel", "Weeks, not quarters — at the same bar."],
+  ["Senior-level craft", "The thinking and care of a top studio, applied to your stage — without the layers in between."],
+];
+function HomeWhy() {
+  return (
+    <section className="section band">
+      <div className="wrap">
+        <div className="grid12" style={{ rowGap: 36, alignItems: "start" }}>
+          <div className="col-span-7">
+            <Reveal>
+              <p className="label label--accent label-dot" style={{ marginBottom: 24 }}>Why Spazio</p>
+              <h2 className="section-title" style={{ maxWidth: "16ch" }}>
+                You, talking to the person who actually <em className="grace">does the work</em>.
+              </h2>
+              <p className="lede" style={{ marginTop: 22, maxWidth: "46ch" }}>
+                Spazio brings a senior standard to your stage — without the layers, the lag, or the
+                account managers in between. You work directly with me, the person making the
+                creative calls, and the work moves at the speed your stage actually needs.
+              </p>
+              <p style={{ marginTop: 22, fontFamily: "var(--mono)", fontSize: 13, letterSpacing: "0.04em", color: "var(--ink-3)" }}>
+                — Christine, Founder
+              </p>
+            </Reveal>
+          </div>
+          <div className="col-span-5">
+            <Reveal delay={90}>
+              <div style={{ display: "grid", gap: 0 }}>
+                {WHY_POINTS.map(([t, d]) => (
+                  <div key={t} style={{ padding: "18px 0", borderTop: "1px solid var(--line)" }}>
+                    <h3 style={{ margin: 0, fontFamily: "var(--display)", fontWeight: 600, fontSize: 20, letterSpacing: "-0.02em" }}>{t}</h3>
+                    <p style={{ margin: "6px 0 0", fontSize: 15.5, color: "var(--ink-2)", lineHeight: 1.5 }}>{d}</p>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- How it works ---- */
+const HOW_STEPS = [
+  ["Brand Gap Audit", "We map the exact gap between how good you are and how good you look."],
+  ["Strategy & positioning", "Your story, sharpened into something defensible."],
+  ["Identity & system", "The look, built to scale across product and web."],
+  ["Handoff", "Assets and guidelines your team can run with right away."],
+];
+function HomeHow() {
+  return (
+    <section className="section">
+      <div className="wrap">
+        <div className="grid12" style={{ rowGap: 20, alignItems: "end", marginBottom: "clamp(36px,5vw,60px)" }}>
+          <div className="col-span-7">
+            <Reveal>
+              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>How it works</p>
+              <h2 className="section-title" style={{ maxWidth: "16ch" }}>
+                From audit to identity in <em className="grace">weeks</em>, not quarters.
+              </h2>
+            </Reveal>
+          </div>
+          <div className="col-span-5">
+            <Reveal delay={80}>
+              <p className="lede" style={{ marginLeft: "auto" }}>
+                A clear path from first read to a finished system — with you in the room for the
+                decisions that matter.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+        <div className="moves-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(10px,1.4vw,18px)" }}>
+          {HOW_STEPS.map(([t, d], i) => (
+            <Reveal as="div" key={t} delay={i * 60} style={{
+              background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 10,
+              padding: "22px 20px 24px", borderTop: "2px solid var(--accent)",
+              display: "flex", flexDirection: "column", gap: 10, minHeight: 178 }}>
+              <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--accent-deep)" }}>{String(i + 1).padStart(2, "0")}</span>
+              <h3 className="display" style={{ fontSize: "clamp(19px,1.5vw,23px)", fontWeight: 600, letterSpacing: "-0.02em" }}>{t}</h3>
+              <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.5, color: "var(--ink-2)", flex: 1 }}>{d}</p>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal delay={120}>
+          <p style={{ marginTop: 28, fontFamily: "var(--mono)", fontSize: 12, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+            Engagements run roughly six weeks.
+          </p>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Proof (placeholders — drop in real case studies + testimonial) ---- */
+function HomeProof() {
+  return (
+    <section className="section band-soft">
+      <div className="wrap">
+        <div className="grid12" style={{ rowGap: 20, alignItems: "end", marginBottom: "clamp(36px,5vw,60px)" }}>
+          <div className="col-span-7">
+            <Reveal>
+              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Proof</p>
+              <h2 className="section-title" style={{ maxWidth: "14ch" }}>
+                Proof, not <em className="grace">promises</em>.
+              </h2>
+            </Reveal>
+          </div>
+          <div className="col-span-5">
+            <Reveal delay={80}>
+              <p className="lede" style={{ marginLeft: "auto" }}>
+                A focused, founder-friendly practice — real results drop in here as engagements ship.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+        <div className="work-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "clamp(14px,2vw,24px)" }}>
+          {/* TODO: replace with real case studies — client, what we did, one hard result */}
+          {[1, 2].map((n) => (
+            <Reveal as="div" key={n} delay={n * 60}>
+              <div className="ph" style={{ aspectRatio: "16 / 10" }}>
+                <span className="ph__tag">Case study — coming soon</span>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal delay={140}>
+          <blockquote style={{ margin: "clamp(32px,4vw,52px) auto 0", maxWidth: 820, textAlign: "center" }}>
+            <p className="display d3" style={{ fontWeight: 600, lineHeight: 1.1 }}>
+              “A short testimonial in the client’s words goes here.”
+            </p>
+            <footer style={{ marginTop: 16, fontFamily: "var(--mono)", fontSize: 12, letterSpacing: "0.04em", color: "var(--ink-3)" }}>
+              — Name, Title, Company
+            </footer>
+          </blockquote>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 function HomePage() {
   return (
     <main>
       <Hero />
+      <HomeGap />
+      <HomeWho />
+      <HomeWhatWeDo />
+      <HomeAudit />
+      <HomeWhy />
+      <HomeHow />
+      <HomeProof />
+      <CtaBand />
     </main>
   );
 }
@@ -431,6 +762,68 @@ function WorkPage() {
   );
 }
 
+/* ================= ABOUT ================= */
+function AboutPage() {
+  const para = { fontSize: 17, lineHeight: 1.7, color: "var(--ink-2)", marginTop: 18 };
+  const sub = { fontSize: "clamp(24px,3vw,36px)", marginTop: "clamp(34px,4.5vw,56px)" };
+  return (
+    <main>
+      <PageHeader
+        label="About"
+        title="I make digital products look like the leader they’re becoming."
+        lede="I’m Christine, founder of Spazio."
+      />
+      <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,24px)" }}>
+        <div className="wrap">
+          <div style={{ maxWidth: 760 }}>
+            <Reveal>
+              <p style={{ fontSize: "clamp(18px,1.7vw,21px)", lineHeight: 1.6, color: "var(--ink)", marginTop: 0 }}>
+                I’ve spent my career learning what actually makes a brand feel inevitable: the
+                strategy underneath, the craft on top, and the discipline to make every single
+                touchpoint say the same thing.
+              </p>
+              <p style={para}>
+                Then I kept meeting founders with the opposite problem. The product was great —
+                genuinely ahead of the category — but the brand around it still looked like a side
+                project. They were raising, hiring, and competing against companies that simply
+                <em> looked</em> more established. The gap was costing them real money, and most
+                agencies wanted six figures and six months to close it.
+              </p>
+              <p style={para}>
+                So I built Spazio to close that gap differently: agency-caliber strategy and
+                identity, delivered direct and fast, by the person actually doing the work.
+              </p>
+            </Reveal>
+
+            <Reveal delay={60}>
+              <h2 className="section-title" style={sub}>How I work</h2>
+              <p style={para}>
+                When you work with Spazio, you work with me — not an account team, not a junior
+                pushing pixels through three rounds of internal review. You get senior-level
+                thinking applied to your stage, and a way of working that moves in weeks instead
+                of quarters.
+              </p>
+              <p style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "clamp(20px,2vw,26px)", color: "var(--accent-deep)", marginTop: 18 }}>
+                Same bar. Less drag.
+              </p>
+            </Reveal>
+
+            <Reveal delay={90}>
+              <h2 className="section-title" style={sub}>Where I’m from</h2>
+              <p style={para}>
+                Spazio is based in Detroit — a city that knows something about building things that
+                last, and about reinventing what a brand can be. That’s the energy I bring to every
+                product I touch.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+      <CtaBand />
+    </main>
+  );
+}
+
 /* ================= START (intake) ================= */
 function StartPage() {
   return (
@@ -481,7 +874,8 @@ function SubscribePage() {
 
 Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
-  HomePage, ServicesPage,
+  HomeGap, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow, HomeProof,
+  HomePage, AboutPage, ServicesPage,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
   WorkPage, StartPage, SubscribePage,
 });
