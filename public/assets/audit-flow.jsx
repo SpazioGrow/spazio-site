@@ -23,10 +23,11 @@ function PaidFoundationGate() {
   const [email, setEmail] = useState("");
 
   useEffect(function () {
-    var sid = new URLSearchParams(window.location.search).get("session_id");
-    if (!sid) { setStatus("blocked"); return; }
+    var params = new URLSearchParams(window.location.search);
+    var orderId = params.get("orderId") || params.get("order_id");
+    if (!orderId) { setStatus("blocked"); return; }
     var cancelled = false;
-    fetch("/api/verify-session?session_id=" + encodeURIComponent(sid))
+    fetch("/api/verify-session?order_id=" + encodeURIComponent(orderId))
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (cancelled) return;

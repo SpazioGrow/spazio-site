@@ -181,7 +181,8 @@ function Hero() {
                 <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--primary" style={{ padding: "15px 26px" }}>
                   Start with a Brand Gap Audit — $750 <Arrow />
                 </a>
-                <a href="mailto:hi@spaziographics.com?subject=15-min intro" className="txtlink">
+                <a href={(typeof window !== "undefined" && window.SPAZIO_SCHEDULER_URL) || "#"}
+                  target="_blank" rel="noopener noreferrer" className="txtlink">
                   Not ready? Book a 15-min intro
                 </a>
               </div>

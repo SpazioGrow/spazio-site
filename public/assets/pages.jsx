@@ -111,7 +111,8 @@ function CtaBand() {
             <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--accent" style={{ padding: "15px 28px" }}>
               Start with a Brand Gap Audit — $750 <Arrow />
             </a>
-            <a href="mailto:hi@spaziographics.com?subject=15-min intro" className="btn btn--ghost"
+            <a href={(typeof window !== "undefined" && window.SPAZIO_SCHEDULER_URL) || "#"}
+              target="_blank" rel="noopener noreferrer" className="btn btn--ghost"
               style={{ padding: "15px 28px", color: "var(--bg)", borderColor: "color-mix(in oklab, var(--bg) 30%, transparent)" }}>
               Book a 15-min intro
             </a>
