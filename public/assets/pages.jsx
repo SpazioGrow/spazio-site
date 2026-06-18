@@ -722,38 +722,31 @@ function AboutPage() {
     <main>
       <PageHeader
         label="About"
-        title="I make digital products look like the leader they’re becoming."
-        lede="I’m Christine, founder of Spazio."
+        title="We make products look like the leader they’re becoming."
+        lede="Spazio is a brand studio for app and SaaS founders."
       />
       <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,24px)" }}>
         <div className="wrap">
           <div style={{ maxWidth: 760 }}>
             <Reveal>
               <p style={{ fontSize: "clamp(18px,1.7vw,21px)", lineHeight: 1.6, color: "var(--ink)", marginTop: 0 }}>
-                I’ve spent my career learning what actually makes a brand feel inevitable: the
-                strategy underneath, the craft on top, and the discipline to make every single
-                touchpoint say the same thing.
+                We help founders close the gap between a great product and a brand that matches it.
               </p>
               <p style={para}>
-                Then I kept meeting founders with the opposite problem. The product was great —
-                genuinely ahead of the category — but the brand around it still looked like a side
-                project. They were raising, hiring, and competing against companies that simply
-                <em> looked</em> more established. The gap was costing them real money, and most
-                agencies wanted six figures and six months to close it.
+                The product is ahead; the brand hasn’t caught up. That gap quietly costs you — raises,
+                hires, and customers who pick the competitor that simply looked the part.
               </p>
               <p style={para}>
-                So I built Spazio to close that gap differently: agency-caliber strategy and
-                identity, delivered direct and fast, by the person actually doing the work.
+                So we built Spazio to close it differently: agency-caliber strategy and identity,
+                delivered direct and fast.
               </p>
             </Reveal>
 
             <Reveal delay={60}>
-              <h2 className="section-title" style={sub}>How I work</h2>
+              <h2 className="section-title" style={sub}>How we work</h2>
               <p style={para}>
-                When you work with Spazio, you work with me — not an account team, not a junior
-                pushing pixels through three rounds of internal review. You get senior-level
-                thinking applied to your stage, and a way of working that moves in weeks instead
-                of quarters.
+                You work with us directly — no account teams, no juniors, no three rounds of internal
+                review. Senior-level thinking at your stage, moving in weeks, not quarters.
               </p>
               <p style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "clamp(20px,2vw,26px)", color: "var(--accent-deep)", marginTop: 18 }}>
                 Same bar. Less drag.
@@ -761,11 +754,10 @@ function AboutPage() {
             </Reveal>
 
             <Reveal delay={90}>
-              <h2 className="section-title" style={sub}>Where I’m from</h2>
+              <h2 className="section-title" style={sub}>Where we’re from</h2>
               <p style={para}>
-                Spazio is based in Detroit — a city that knows something about building things that
-                last, and about reinventing what a brand can be. That’s the energy I bring to every
-                product I touch.
+                We’re based in Detroit — a city that knows how to build things that last and reinvent
+                what a brand can be. That’s the energy we bring to every product we touch.
               </p>
             </Reveal>
           </div>
