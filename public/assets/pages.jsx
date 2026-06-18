@@ -397,53 +397,6 @@ function HomeHow() {
   );
 }
 
-/* ---- Proof (placeholders — drop in real case studies + testimonial) ---- */
-function HomeProof() {
-  return (
-    <section className="section band-soft">
-      <div className="wrap">
-        <div className="grid12" style={{ rowGap: 20, alignItems: "end", marginBottom: "clamp(36px,5vw,60px)" }}>
-          <div className="col-span-7">
-            <Reveal>
-              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Proof</p>
-              <h2 className="section-title" style={{ maxWidth: "14ch" }}>
-                Proof, not <em className="grace">promises</em>.
-              </h2>
-            </Reveal>
-          </div>
-          <div className="col-span-5">
-            <Reveal delay={80}>
-              <p className="lede" style={{ marginLeft: "auto" }}>
-                A focused, founder-friendly practice — real results drop in here as engagements ship.
-              </p>
-            </Reveal>
-          </div>
-        </div>
-        <div className="work-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "clamp(14px,2vw,24px)" }}>
-          {/* TODO: replace with real case studies — client, what we did, one hard result */}
-          {[1, 2].map((n) => (
-            <Reveal as="div" key={n} delay={n * 60}>
-              <div className="ph" style={{ aspectRatio: "16 / 10" }}>
-                <span className="ph__tag">Case study — coming soon</span>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-        <Reveal delay={140}>
-          <blockquote style={{ margin: "clamp(32px,4vw,52px) auto 0", maxWidth: 820, textAlign: "center" }}>
-            <p className="display d3" style={{ fontWeight: 600, lineHeight: 1.1 }}>
-              “A short testimonial in the client’s words goes here.”
-            </p>
-            <footer style={{ marginTop: 16, fontFamily: "var(--mono)", fontSize: 12, letterSpacing: "0.04em", color: "var(--ink-3)" }}>
-              — Name, Title, Company
-            </footer>
-          </blockquote>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
 function HomePage() {
   return (
     <main>
@@ -454,7 +407,6 @@ function HomePage() {
       <HomeAudit />
       <HomeWhy />
       <HomeHow />
-      <HomeProof />
       <CtaBand />
     </main>
   );
@@ -874,7 +826,7 @@ function SubscribePage() {
 
 Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
-  HomeGap, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow, HomeProof,
+  HomeGap, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
   HomePage, AboutPage, ServicesPage,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
   WorkPage, StartPage, SubscribePage,
