@@ -358,19 +358,23 @@ function buildManualHTML(d: any): string {
 }
 
 /* ---------------- Asana review task ---------------- */
-async function createAsanaTask(recordId: string, info: { creatorName: string; handle: string; email: string; pillarsCount: number; flags: string[] }): Promise<void> {
+async function createAsanaTask(recordId: string, info: { creatorName: string; handle: string; email: string; pillarsCount: number; ready: boolean; flags: string[] }): Promise<void> {
   const token = process.env.ASANA_TOKEN;
   const project = process.env.ASANA_CONTENT_OS_PROJECT_GID;
   if (!token || !project) return; // not configured — record is still complete and re-runnable
   const recordUrl = `https://airtable.com/${CONTENT_OS_BASE_ID}/${CONTENT_OS_TABLE_ID}/${recordId}`;
   const flagLine = info.flags.length ? `\n\n<strong>Auto-flags (needs a look):</strong> ${esc(info.flags.join("; "))}` : "";
+  const who = info.creatorName || info.handle || "new creator";
+  const headline = info.ready
+    ? "Content OS drafts ready for review."
+    : "Content OS build needs manual attention — use the Prompt Package in Airtable.";
   try {
     const r = await fetch("https://app.asana.com/api/1.0/tasks", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ data: {
-        name: `Review Content OS: ${info.creatorName || info.handle || "new creator"}`,
-        html_notes: `<body><strong>Content OS drafts ready for review.</strong>\n\n<strong>Creator:</strong> ${esc(info.creatorName)}\n<strong>Handle:</strong> ${esc(info.handle)}\n<strong>Email:</strong> ${esc(info.email)}\n<strong>Pillars drafted:</strong> ${info.pillarsCount} candidates (cut to 3–5)\n<strong>Format:</strong> Brand template kit — pending brand-swap\n\nCurate the build in Airtable: ${recordUrl}${flagLine}</body>`,
+        name: `${info.ready ? "Review" : "Manual attention"} Content OS: ${who}`,
+        html_notes: `<body><strong>${esc(headline)}</strong>\n\n<strong>Creator:</strong> ${esc(info.creatorName)}\n<strong>Handle:</strong> ${esc(info.handle)}\n<strong>Email:</strong> ${esc(info.email)}\n<strong>Pillars drafted:</strong> ${info.pillarsCount} candidates (cut to 3–5)\n<strong>Format:</strong> Brand template kit — pending brand-swap\n\nCurate the build in Airtable: ${recordUrl}${flagLine}</body>`,
         projects: [project],
         due_on: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0],
       } }),
@@ -454,14 +458,19 @@ async function runGenerate(recordId: string): Promise<void> {
   const manualHTML = buildManualHTML({ creatorName, foundationText, differentiation: differentiationStore, pillars, voice: voiceObj, cadence: cadenceObj });
   await safeUpdate(recordId, { operatingManualHtml: manualHTML, formatStatus: COS_FORMAT_STATUS.PendingFigmaSwap }, flags);
 
-  // H. Persist full blob + mark ready
-  const buildJSON = JSON.stringify({ categoryScan, foundation: foundationObj, pillars: pillarsObj, voice: voiceObj, cadence: cadenceObj, flags });
-  await safeUpdate(recordId, { buildJson: buildJSON, status: COS_STATUS.ReadyForReview }, flags);
+  // H. Status reflects state: Ready for Review only if we actually produced something to
+  // review; otherwise stay Drafting (the Prompt Package + flags are the recovery path).
+  const producedAny = Boolean(foundationText || pillars.length || voiceObj || cadenceObj);
+  await safeUpdate(recordId, { status: producedAny ? COS_STATUS.ReadyForReview : COS_STATUS.Drafting }, flags);
 
   // I. Asana review task (only if not already stamped — keeps re-runs from duplicating)
   if (!existingGid) {
-    await createAsanaTask(recordId, { creatorName, handle: s(intake.handle), email: s(intake.email), pillarsCount: pillars.length, flags });
+    await createAsanaTask(recordId, { creatorName, handle: s(intake.handle), email: s(intake.email), pillarsCount: pillars.length, ready: producedAny, flags });
   }
+
+  // Persist the full blob LAST so Build JSON captures every flag (including Asana).
+  const buildJSON = JSON.stringify({ categoryScan, foundation: foundationObj, pillars: pillarsObj, voice: voiceObj, cadence: cadenceObj, ready: producedAny, flags });
+  await safeUpdate(recordId, { buildJson: buildJSON }, flags);
 }
 
 export async function POST(request: Request) {
