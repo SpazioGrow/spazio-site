@@ -58,6 +58,9 @@ function App() {
   const getHash = () => {
     const h = (window.location.hash || "#home").replace("#", "");
     if (h.startsWith("review=")) return "review";
+    // After Square checkout, the buyer is redirected to /?orderId=... — send
+    // them into the gated Foundation flow regardless of hash.
+    if (new URLSearchParams(window.location.search).get("orderId")) return "foundation";
     return ROUTES.includes(h) ? h : "home";
   };
   const getReviewId = () => {
@@ -104,7 +107,7 @@ function App() {
     case "about":    Page = <AboutPage />; break;
     case "start":    Page = <StartPage />; break;
     case "subscribe":Page = <SubscribePage />; break;
-    case "foundation": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><FoundationForm onSuccess={() => { window.location.hash = "brief-ready"; }} /></div></section></main>; break;
+    case "foundation": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><PaidFoundationGate /></div></section></main>; break;
     case "brief-ready": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><BriefReadyPage /></div></section></main>; break;
     case "review": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><ClientReviewPage reportId={reviewId} /></div></section></main>; break;
     default:         Page = <HomePage />;

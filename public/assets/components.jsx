@@ -188,7 +188,7 @@ function Nav() {
              style={{ fontSize: 15, fontWeight: 500, padding: "8px 14px", borderRadius: 100,
                color: route === "subscribe" ? "var(--ink)" : "var(--ink-2)" }}
           >Subscribe</a>
-          <a href="#foundation" onClick={(e) => go(e, "foundation")} className="btn btn--primary"
+          <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--primary"
              style={{ marginLeft: 10, padding: "11px 20px" }}>
             Brand Gap Audit <Arrow />
           </a>
@@ -228,7 +228,7 @@ function Nav() {
               {l.label} <Arrow size={16} />
             </a>
           ))}
-          <a href="#foundation" onClick={(e) => go(e, "foundation")} className="btn btn--primary"
+          <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--primary"
              style={{ width: "100%", justifyContent: "center", marginTop: 18, padding: "15px" }}>
             Brand Gap Audit <Arrow />
           </a>
@@ -323,7 +323,7 @@ function Footer() {
                 <li key={id}><a href={`#${id}`} onClick={(e)=>go(e,id)}
                   style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>{l}</a></li>
               ))}
-              <li><a href="#foundation" onClick={(e)=>go(e,"foundation")}
+              <li><a href="/api/checkout?tier=brand-gap-audit"
                 style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>Brand Gap Audit</a></li>
             </ul>
           </div>

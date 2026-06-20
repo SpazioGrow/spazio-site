@@ -178,10 +178,11 @@ function Hero() {
                 like the category leader you’re becoming.
               </p>
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 30, alignItems: "center" }}>
-                <a href="#foundation" className="btn btn--primary" style={{ padding: "15px 26px" }}>
+                <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--primary" style={{ padding: "15px 26px" }}>
                   Start with a Brand Gap Audit — $750 <Arrow />
                 </a>
-                <a href="mailto:hi@spaziographics.com?subject=15-min intro" className="txtlink">
+                <a href={(typeof window !== "undefined" && window.SPAZIO_SCHEDULER_URL) || "#"}
+                  target="_blank" rel="noopener noreferrer" className="txtlink">
                   Not ready? Book a 15-min intro
                 </a>
               </div>
@@ -467,7 +468,7 @@ function WorkRow({ w, index }) {
             </div>
           )}
 
-          <a href="#foundation" onClick={(e)=>{e.preventDefault();navigate("foundation");}} className="txtlink" style={{ marginTop: 26 }}>
+          <a href="/api/checkout?tier=brand-gap-audit" className="txtlink" style={{ marginTop: 26 }}>
             Start one like this <Arrow />
           </a>
         </div>
