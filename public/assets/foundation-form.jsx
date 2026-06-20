@@ -52,7 +52,7 @@ function FndTextArea({ field, label, placeholder, required, value, onChange, err
   );
 }
 
-function FoundationForm({ onSuccess, prefillEmail }) {
+function FoundationForm({ onSuccess, prefillEmail, comped }) {
   const [step, setStep] = useState(0);
   const [f, setF] = useState(Object.assign({}, BLANK, prefillEmail ? { email: prefillEmail } : {}));
   const [errors, setErrors] = useState({});
@@ -93,6 +93,7 @@ function FoundationForm({ onSuccess, prefillEmail }) {
             name: f.name.trim(), email: f.email.trim(),
             company: f.company.trim(), website: f.website.trim(),
             service: f.service, questionnaire: questionnaire,
+            comped: comped === true,
           }),
         });
         const data = await res.json();

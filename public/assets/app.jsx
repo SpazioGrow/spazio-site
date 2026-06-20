@@ -58,9 +58,10 @@ function App() {
   const getHash = () => {
     const h = (window.location.hash || "#home").replace("#", "");
     if (h.startsWith("review=")) return "review";
-    // After Square checkout, the buyer is redirected to /?orderId=... — send
-    // them into the gated Foundation flow regardless of hash.
-    if (new URLSearchParams(window.location.search).get("orderId")) return "foundation";
+    // After Square checkout (?orderId=...) or a comp bypass (?access=...), send
+    // the visitor into the gated Foundation flow regardless of hash.
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get("orderId") || sp.get("access")) return "foundation";
     return ROUTES.includes(h) ? h : "home";
   };
   const getReviewId = () => {

@@ -29,11 +29,15 @@ export async function POST(request: Request) {
   const name = str(body.name), email = str(body.email), company = str(body.company), service = str(body.service);
   if (!name || !email) return Response.json({ error: "Name and email are required." }, { status: 400 });
 
+  // Comped (free test-run) audits are tagged distinctly so they're filterable from paid.
+  const comped = body.comped === true;
+
   const atHeaders = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
   // Create Lead
   const leadFields: Record<string, string> = {
-    [LEAD_FIELDS.name]: name, [LEAD_FIELDS.email]: email, [LEAD_FIELDS.source]: "Foundation Form",
+    [LEAD_FIELDS.name]: name, [LEAD_FIELDS.email]: email,
+    [LEAD_FIELDS.source]: comped ? "Comp / Test" : "Foundation Form",
   };
   if (company) leadFields[LEAD_FIELDS.company] = company;
   if (str(body.website)) leadFields[LEAD_FIELDS.website] = str(body.website);
@@ -51,7 +55,7 @@ export async function POST(request: Request) {
 
   // Create Report
   const questionnaire = body.questionnaire ?? {};
-  const allAnswers = { company, service, email, ...questionnaire as object };
+  const allAnswers = { company, service, email, comped, ...questionnaire as object };
   const ref = (company || name).replace(/[^A-Za-z]/g, "").slice(0, 4).toUpperCase() + "-" + Date.now().toString(36).slice(-4).toUpperCase();
 
   let reportId: string;
