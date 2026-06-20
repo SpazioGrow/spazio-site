@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   const locationId = process.env.SQUARE_LOCATION_ID;
   const catalogObjectId = process.env.SQUARE_CATALOG_ITEM_ID; // item VARIATION id
   if (!token || !locationId || !catalogObjectId) {
-    return Response.json({ error: "Payments are not configured yet." }, { status: 500 });
+return Response.redirect(new URL("/", request.url), 303);
   }
 
   const client = new SquareClient({ token, environment: squareEnv() });
