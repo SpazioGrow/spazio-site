@@ -21,17 +21,21 @@ function GateFrame({ children }) {
 function PaidFoundationGate() {
   const [status, setStatus] = useState("checking"); // checking | paid | blocked
   const [email, setEmail] = useState("");
+  const [comped, setComped] = useState(false);
 
   useEffect(function () {
     var params = new URLSearchParams(window.location.search);
-    var orderId = params.get("orderId") || params.get("order_id");
-    if (!orderId) { setStatus("blocked"); return; }
+    var access = params.get("access") || "";
+    var orderId = params.get("orderId") || params.get("order_id") || "";
+    if (!access && !orderId) { setStatus("blocked"); return; }
+    // Comp code takes precedence; otherwise verify the Square order.
+    var qs = access ? ("access=" + encodeURIComponent(access)) : ("order_id=" + encodeURIComponent(orderId));
     var cancelled = false;
-    fetch("/api/verify-session?order_id=" + encodeURIComponent(orderId))
+    fetch("/api/verify-session?" + qs)
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (cancelled) return;
-        if (d && d.paid) { setEmail((d && d.email) || ""); setStatus("paid"); }
+        if (d && d.paid) { setEmail((d && d.email) || ""); setComped(!!(d && d.comped)); setStatus("paid"); }
         else setStatus("blocked");
       })
       .catch(function () { if (!cancelled) setStatus("blocked"); });
@@ -53,7 +57,7 @@ function PaidFoundationGate() {
   }
 
   if (status === "paid") {
-    return <FoundationForm prefillEmail={email} onSuccess={function () { window.location.hash = "brief-ready"; }} />;
+    return <FoundationForm prefillEmail={email} comped={comped} onSuccess={function () { window.location.hash = "brief-ready"; }} />;
   }
 
   // blocked — no paid session on this visit
