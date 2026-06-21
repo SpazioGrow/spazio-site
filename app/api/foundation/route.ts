@@ -1,5 +1,6 @@
-// Foundation endpoint — creates Lead + Report, returns fast.
-// The heavy pipeline (research/visuals/deck) runs via /api/generate-deck.
+// Foundation endpoint — creates Lead + Report, then fires the heavy pipeline.
+// The research/visuals/deck work runs in /api/generate-deck, triggered here via
+// waitUntil so it survives after this route returns its response.
 //
 // Lead capture is hardened: a select value NEVER blocks the save.
 // - Values are validated against the shared vocab (lib/foundation-options) — the
@@ -8,9 +9,12 @@
 // - Off-vocab values are stashed in Notes. And if a value that IS in-vocab isn't
 //   yet a defined Airtable option, the create is retried with the selects folded
 //   into Notes — the Lead always saves.
+import { waitUntil } from "@vercel/functions";
 import {
   BUDGET_OPTIONS, TIMELINE_OPTIONS, SERVICE_OPTIONS, SOURCE_OPTIONS,
 } from "@/lib/foundation-options";
+
+export const maxDuration = 60; // Vercel Pro — covers the pipeline trigger
 
 const BASE_ID = "appv2sIRwDvNPjV7j";
 const LEADS_TABLE = "tbl5qLZO9mAN9LQ0P";
@@ -123,6 +127,22 @@ export async function POST(request: Request) {
     if (!res.ok) { console.error("Report failed:", await res.text()); return Response.json({ error: "Could not create report." }, { status: 502 }); }
     reportId = (await res.json()).records[0].id;
   } catch { return Response.json({ error: "Could not reach database." }, { status: 502 }); }
+
+  // Fire the heavy pipeline. THIS is the line that was missing — without it the
+  // Report sits at "Generating" forever and Perplexity never runs. waitUntil keeps
+  // the call alive after we return the response below.
+  const origin = new URL(request.url).origin;
+  waitUntil(
+    fetch(`${origin}/api/generate-deck`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reportId, leadId }),
+    })
+      .then(async (r) => {
+        if (!r.ok) console.error("generate-deck trigger failed:", r.status, await r.text());
+      })
+      .catch((e) => console.error("generate-deck trigger error:", e))
+  );
 
   return Response.json({ ok: true, leadId, reportId }, { status: 201 });
 }
