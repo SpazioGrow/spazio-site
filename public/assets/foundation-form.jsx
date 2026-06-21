@@ -5,10 +5,13 @@
    On submit → POST /api/foundation → redirects to #brief-ready
    ============================================================ */
 
-const SERVICES = [
-  "Brand Identity", "Website", "Digital Product",
-  "Creative Direction", "Marketing System", "Packaging", "Not sure yet"
-];
+// Select vocabularies come from the shared source of truth (lib/foundation-options),
+// injected by app/route.ts as window.SPAZIO_FOUNDATION_OPTIONS, so the form's chips
+// and /api/foundation's validation can never drift.
+function fopt(key) {
+  try { return (window.SPAZIO_FOUNDATION_OPTIONS && window.SPAZIO_FOUNDATION_OPTIONS[key]) || []; }
+  catch (e) { return []; }
+}
 
 const FOUNDATION_STEPS = [
   { key: "contact",    title: "You",           rail: "Name · email · company" },
@@ -133,7 +136,7 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
         <div className="field" style={{ gap: 6 }}>
           <label>What are you looking for?</label>
           <div className="chips">
-            {SERVICES.map(function(s) { return (
+            {fopt("service").map(function(s) { return (
               <button type="button" key={s} className="chip"
                 aria-pressed={f.service === s}
                 onClick={function() { set("service", f.service === s ? "" : s); }}>{s}</button>
@@ -187,7 +190,7 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
         <div className="field" style={{ gap: 6 }}>
           <label>Timeline</label>
           <div className="chips">
-            {["ASAP", "1–2 months", "3–6 months", "Just exploring"].map(function(t) { return (
+            {fopt("timeline").map(function(t) { return (
               <button type="button" key={t} className="chip"
                 aria-pressed={f.timeline === t}
                 onClick={function() { set("timeline", f.timeline === t ? "" : t); }}>{t}</button>
@@ -197,7 +200,7 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
         <div className="field" style={{ gap: 6 }}>
           <label>Budget range</label>
           <div className="chips">
-            {["$2k–$5k", "$5k–$10k", "$10k–$25k", "$25k+", "Prefer to discuss"].map(function(b) { return (
+            {fopt("budget").map(function(b) { return (
               <button type="button" key={b} className="chip"
                 aria-pressed={f.budget === b}
                 onClick={function() { set("budget", f.budget === b ? "" : b); }}>{b}</button>
