@@ -43,17 +43,8 @@ function PaidFoundationGate() {
   }, []);
 
   if (status === "checking") {
-    return (
-      <GateFrame>
-        <p className="label label--accent label-dot" style={{ marginBottom: 16, justifyContent: "center" }}>Brand Gap Audit</p>
-        <h2 className="display" style={{ fontSize: "clamp(26px,3.4vw,40px)", fontWeight: 600, letterSpacing: "-0.025em", lineHeight: 1.05, margin: "0 0 14px" }}>
-          Confirming your <em className="grace">payment</em>…
-        </h2>
-        <p style={{ fontSize: 15.5, color: "var(--ink-2)", lineHeight: 1.6, margin: 0 }}>
-          One moment while we verify your checkout.
-        </p>
-      </GateFrame>
-    );
+    // No interstitial while verifying — render nothing until we know the result.
+    return null;
   }
 
   if (status === "paid") {
