@@ -2,9 +2,8 @@
    SPAZIO — Foundation Form (6-page stepper)
    Page 1: Contact + service interest
    Pages 2–6: Brand questionnaire
-   On submit → POST /api/foundation → redirects to #brief-ready
+   On submit → POST /api/foundation → shows the confirmation screen
    ============================================================ */
-
 // Select vocabularies come from the shared source of truth (lib/foundation-options),
 // injected by app/route.ts as window.SPAZIO_FOUNDATION_OPTIONS, so the form's chips
 // and /api/foundation's validation can never drift.
@@ -12,7 +11,6 @@ function fopt(key) {
   try { return (window.SPAZIO_FOUNDATION_OPTIONS && window.SPAZIO_FOUNDATION_OPTIONS[key]) || []; }
   catch (e) { return []; }
 }
-
 const FOUNDATION_STEPS = [
   { key: "contact",    title: "You",           rail: "Name · email · company" },
   { key: "business",   title: "Business",      rail: "What you do · audience" },
@@ -21,7 +19,6 @@ const FOUNDATION_STEPS = [
   { key: "visual",     title: "Visual",        rail: "Look · feel · references" },
   { key: "practical",  title: "Practical",     rail: "Timeline · budget · scope" },
 ];
-
 const BLANK = {
   name: "", email: "", company: "", website: "", service: "",
   whatYouDo: "", audience: "", competitors: "",
@@ -30,7 +27,6 @@ const BLANK = {
   visualLike: "", visualDislike: "", inspiration: "",
   timeline: "", budget: "", scope: "",
 };
-
 function FndInput({ field, label, placeholder, type, required, value, onChange, error }) {
   return (
     <div className="field" style={{ gap: 6 }}>
@@ -42,7 +38,6 @@ function FndInput({ field, label, placeholder, type, required, value, onChange, 
     </div>
   );
 }
-
 function FndTextArea({ field, label, placeholder, required, value, onChange, error }) {
   return (
     <div className="field" style={{ gap: 6 }}>
@@ -54,17 +49,15 @@ function FndTextArea({ field, label, placeholder, required, value, onChange, err
     </div>
   );
 }
-
 function FoundationForm({ onSuccess, prefillEmail, comped }) {
   const [step, setStep] = useState(0);
   const [f, setF] = useState(Object.assign({}, BLANK, prefillEmail ? { email: prefillEmail } : {}));
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
-
+  const [submitted, setSubmitted] = useState(false); // <-- drives the confirmation screen
   const set = (k, v) => { setF(function(p) { return Object.assign({}, p, { [k]: v }); }); setErrors(function(e) { return Object.assign({}, e, { [k]: undefined }); }); };
   const isLast = step === FOUNDATION_STEPS.length - 1;
-
   const validate = () => {
     const e = {};
     if (step === 0) {
@@ -75,7 +68,6 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
     setErrors(e);
     return Object.keys(e).length === 0;
   };
-
   const next = async () => {
     if (!validate()) return;
     if (isLast) {
@@ -102,13 +94,10 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Submission failed");
         window.__spazioReport = { reportId: data.reportId, leadId: data.leadId };
-        // Fire deck generation in background — client doesn't wait
-        fetch("/api/generate-deck", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ reportId: data.reportId, leadId: data.leadId }),
-        }).catch(function() {}); // fire and forget
-        if (onSuccess) onSuccess();
+        // NOTE: /api/foundation already fires generate-deck server-side (via waitUntil),
+        // so we do NOT call it again here — that was double-generating the deck.
+        setSubmitted(true);          // <-- show the confirmation screen
+        if (onSuccess) onSuccess();  // still notify the parent (analytics, etc.)
       } catch (err) {
         setSubmitError(err.message || "Something went wrong. Please try again.");
       } finally {
@@ -118,8 +107,29 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
     }
     setStep(function(s) { return s + 1; });
   };
-
   const back = () => { if (step > 0) setStep(function(s) { return s - 1; }); };
+
+  // ---- Confirmation screen: shown after a successful submit ----
+  if (submitted) {
+    const firstName = (f.name || "").trim().split(/\s+/)[0];
+    return (
+      <div className="frame" style={{ position: "relative", background: "var(--surface)", padding: "clamp(24px,3.5vw,48px)" }}>
+        <CropMarks color="var(--accent)" />
+        <div style={{ maxWidth: "56ch" }}>
+          <p className="label label--accent label-dot" style={{ marginBottom: 16 }}>Foundation</p>
+          <h2 className="display" style={{ fontSize: "clamp(28px,3.8vw,48px)", fontWeight: 600, letterSpacing: "-0.028em", lineHeight: 1.05, maxWidth: "20ch" }}>
+            We've got it. Your <em className="grace">brief</em> is in motion.
+          </h2>
+          <p style={{ marginTop: 18, fontSize: 16, color: "var(--ink-2)", lineHeight: 1.6 }}>
+            Thanks{firstName ? ", " + firstName : ""} — your answers are in, and we're already putting your brand brief together. You'll hear from us shortly with the next step.
+          </p>
+          <p style={{ marginTop: 14, fontSize: 14, color: "var(--ink-3)", lineHeight: 1.6 }}>
+            Watch {f.email ? f.email : "your inbox"} — that's where it lands.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   var stepContent;
   switch (step) {
@@ -212,11 +222,9 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
       </div>
     ); break;
   }
-
   return (
     <div className="frame" style={{ position: "relative", background: "var(--surface)", padding: "clamp(24px,3.5vw,48px)" }}>
       <CropMarks color="var(--accent)" />
-
       {/* Header */}
       <div style={{ marginBottom: "clamp(24px,3vw,36px)", paddingBottom: "clamp(20px,2.6vw,28px)", borderBottom: "1px solid var(--line)" }}>
         <p className="label label--accent label-dot" style={{ marginBottom: 16 }}>Foundation</p>
@@ -227,7 +235,6 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
           Six short pages. Takes about five minutes. Every answer sharpens what we build for you.
         </p>
       </div>
-
       {/* Rail + Content */}
       <div className="bstudio-grid" style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "clamp(24px,3vw,40px)" }}>
         {/* Step rail */}
@@ -248,7 +255,6 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
             })}
           </div>
         </div>
-
         {/* Body */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12,
@@ -258,17 +264,14 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
             </span>
             <span className="tag" style={{ color: "var(--ink-3)" }}>{FOUNDATION_STEPS[step].title}</span>
           </div>
-
           <div style={{ flex: 1 }}>
             {stepContent}
           </div>
-
           {submitError && (
             <div style={{ marginTop: 16, padding: "12px 16px", background: "#FDF2F0", border: "1px solid #E8C4BD", borderRadius: 4 }}>
               <span className="err-msg">{submitError}</span>
             </div>
           )}
-
           {/* Nav */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap",
             marginTop: "clamp(34px,4vw,52px)", paddingTop: 24, borderTop: "1px solid var(--line)" }}>
@@ -290,5 +293,4 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
     </div>
   );
 }
-
 Object.assign(window, { FoundationForm });
