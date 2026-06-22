@@ -187,9 +187,9 @@ function Nav() {
              style={{ fontSize: 15, fontWeight: 500, padding: "8px 14px", borderRadius: 100,
                color: route === "subscribe" ? "var(--ink)" : "var(--ink-2)" }}
           >Subscribe</a>
-          <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--primary"
+          <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--primary"
              style={{ marginLeft: 10, padding: "11px 20px" }}>
-            Brand Gap Audit <Arrow />
+            Schedule Call <Arrow />
           </a>
         </nav>
 
@@ -227,9 +227,9 @@ function Nav() {
               {l.label} <Arrow size={16} />
             </a>
           ))}
-          <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--primary"
+          <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--primary"
              style={{ width: "100%", justifyContent: "center", marginTop: 18, padding: "15px" }}>
-            Brand Gap Audit <Arrow />
+            Schedule Call <Arrow />
           </a>
         </div>
       </div>
