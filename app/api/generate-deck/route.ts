@@ -236,7 +236,7 @@ export async function POST(request: Request) {
   const previewHTML = renderAuditHTML(company, audit, finalUrls);
   const deckJSON = audit ? JSON.stringify(audit) : "";
   try {
-    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
+    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
       method: "PATCH", headers: atHeaders,
       body: JSON.stringify({ records: [{ id: reportId, fields: {
         [REPORT_FIELDS.briefHTML]: previewHTML,
@@ -244,14 +244,15 @@ export async function POST(request: Request) {
         [REPORT_FIELDS.status]: "Review Pending",
       } }], typecast: true }),
     });
-  } catch (e) { console.error("[deck] deck save failed:", (e as Error).message); }
+    if (!res.ok) console.error("[deck] deck save failed:", res.status, await res.text().catch(() => ""));
+  } catch (e) { console.error("[deck] deck save error:", (e as Error).message); }
 
   // === 6. ASANA TASK ===
   const score = audit?.brand_assessment_score || "n/a";
   const slideCount = (audit?.slides || []).length;
   if (asanaToken) {
     try {
-      await fetch("https://app.asana.com/api/1.0/tasks", {
+      const res = await fetch("https://app.asana.com/api/1.0/tasks", {
         method: "POST",
         headers: { Authorization: `Bearer ${asanaToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({ data: {
@@ -261,7 +262,8 @@ export async function POST(request: Request) {
           due_on: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0],
         } }),
       });
-    } catch (e) { console.error("[deck] asana failed:", (e as Error).message); }
+      if (!res.ok) console.error("[deck] asana task failed:", res.status, await res.text().catch(() => ""));
+    } catch (e) { console.error("[deck] asana error:", (e as Error).message); }
   }
 
   return Response.json({ ok: true, sections: slideCount, images: finalUrls.length });
