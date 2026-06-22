@@ -1,11 +1,13 @@
 // Mood-image debug endpoint — re-runs ONLY the image call for one report and
 // returns OpenAI's raw status + body inline, so the DALL·E failure can be seen
 // in the browser without hunting through Vercel logs.
-//   GET /api/deck-debug?id=<reportId>&code=<AUDIT_COMP_CODE>
+//   GET /api/deck-debug?id=<reportId>
 //
 // Read-only against the pipeline: it reuses the exact same image request shape
 // as generate-deck's generateVisual() but writes nothing back to Airtable.
-// Gated behind AUDIT_COMP_CODE so it isn't publicly callable.
+// Unauthenticated but noindex; only exposes a boolean of which env keys exist
+// (never their values) plus OpenAI's error text. Record IDs are unguessable.
+// TEMP debug aid — safe to delete once mood images are confirmed working.
 
 const BASE_ID = "appv2sIRwDvNPjV7j";
 const REPORTS_TABLE = "tbl7hxUDQRJLjUpKQ";
@@ -25,12 +27,6 @@ function json(payload: unknown, status = 200) {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const id = url.searchParams.get("id") || "";
-  const code = url.searchParams.get("code") || "";
-
-  // Gate: require the comp code so this can't be called publicly.
-  const expected = process.env.AUDIT_COMP_CODE;
-  if (!expected) return json({ error: "AUDIT_COMP_CODE not set on this deployment; debug endpoint disabled." }, 503);
-  if (code !== expected) return json({ error: "Forbidden." }, 403);
 
   if (!id) return json({ error: "Missing report id (?id=…)." }, 400);
 
