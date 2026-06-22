@@ -1,7 +1,14 @@
 // Generate Deck — AI brand audit pipeline
-// Perplexity research -> GPT-4o 13-section brand audit (JSON, generated in two batches) -> DALL·E mood images
-// Stores: readable HTML preview (Brief HTML) + raw JSON (Deck JSON, for Plus AI) + images
-// Then creates an Asana review task. Final deck is built in Plus AI / Google Slides.
+// Perplexity research -> GPT-4o 13-section brand audit (JSON, two parallel batches)
+// -> DALL·E mood images -> stores visual Brief HTML + Deck JSON + image attachments
+// in Airtable, then creates an Asana review task.
+import { renderAuditHTML } from "@/lib/deck-render";
+
+// This is the heavy pipeline (research + 2 GPT-4o calls + image generation). Without
+// an explicit maxDuration it was being killed at Vercel's default (~15s), which
+// truncated batch B (section 11) and the mood images. Give it real headroom.
+export const runtime = "nodejs";
+export const maxDuration = 300; // Vercel Pro
 
 const BASE_ID = "appv2sIRwDvNPjV7j";
 const LEADS_TABLE = "tbl5qLZO9mAN9LQ0P";
@@ -9,12 +16,8 @@ const REPORTS_TABLE = "tbl7hxUDQRJLjUpKQ";
 const ASANA_PROJECT = "1215677774689770";
 const IMG_FIELD = "fldPVXauT9v4GqVZm";
 const REPORT_FIELDS = { status: "fldLUKmsHhqidDFWb", briefHTML: "fld3ZgwxOlFRK27Qx" } as const;
-// NEW: create a long-text field named exactly "Deck JSON" in the Brand Intelligence Reports table.
+// A long-text field named exactly "Deck JSON" in the Brand Intelligence Reports table.
 const DECK_JSON_FIELD = "Deck JSON";
-
-function esc(s: string): string {
-  return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
 
 // === PERPLEXITY: RESEARCH ===
 async function runResearch(company: string, service: string, answers: string, links: string, key: string): Promise<string> {
@@ -28,28 +31,48 @@ Client intake: ${answers}
 
 Deliver a concise research dossier covering: industry size and growth (with figures), category trends, 4-5 named competitors (direct + aspirational) with visual + strategic strengths/weaknesses, target audience profile, brand positioning opportunity, and the visual landscape (overused vs. fresh). ~700 words. Use real names and numbers, and cite sources inline. Mark inferences [Inferred].` }], max_tokens: 1800 }),
   });
-  if (!res.ok) throw new Error(`Perplexity ${res.status}`);
+  if (!res.ok) throw new Error(`Perplexity ${res.status}: ${await res.text().catch(() => "")}`);
   return (await res.json()).choices?.[0]?.message?.content ?? "";
 }
 
 const AUDIT_SYS = "You are a senior brand strategist, creative director, and research analyst at the level of Pentagram, Wolff Olins, and BCG. You produce sharp, opinionated brand audits — never neutral, never generic. Return ONLY a valid JSON object. No markdown, no backticks, no commentary.";
 
-const SLIDE_SCHEMA = `Each slide object: { "section_number": N, "title": "string", "headline_insight": "one sharp sentence", "insights": ["string","string","string"], "analysis": "2-4 sentence senior narrative", "recommendations": ["string"], "visual": { "type": "chart|table|diagram|framework|scorecard|image_prompt|palette", "title": "string", "description": "what it shows and how to lay it out", "data": {} }, "key_metric": { "value": "string", "label": "string", "source": "from RESEARCH or empty" }, "speaker_notes": "2-3 sentences", "sources": [ { "claim": "string", "source": "from RESEARCH only" } ] }`;
+// The visual is RENDERED as a real graphic from visual.data — so data must match the
+// shape for its type exactly. Empty/freeform data renders nothing, so never leave it blank.
+const SLIDE_SCHEMA = `Each slide object:
+{ "section_number": N, "title": "string", "headline_insight": "one sharp sentence",
+  "insights": ["string","string","string"], "analysis": "2-4 sentence senior narrative",
+  "recommendations": ["string"],
+  "visual": { "type": "<one of the types below>", "title": "string", "data": { ...shape for that type... } },
+  "key_metric": { "value": "string", "label": "string", "source": "from RESEARCH or empty" },
+  "speaker_notes": "2-3 sentences", "sources": [ { "claim": "string", "source": "from RESEARCH only" } ] }
 
-const BATCH_A_SECTIONS = `1 Executive Summary — what the brand is today, key issues, key opportunities, a sharp 1-2 sentence diagnosis. ALSO set the top-level "brand_assessment_score" (X/100).
-2 Brand Overview — mission (infer if missing), offerings, market category, reconstructed positioning statement.
-3 Audience Analysis — primary + secondary personas; for each: pain points, jobs-to-be-done, emotional drivers, purchase triggers.
-4 Market Research & Intelligence — trends, category evolution, white space; CITE real sources from RESEARCH; visual = chart of a real market figure.
-5 Competitor Benchmarking — direct + aspirational competitors; what they do well, where they fail (visual + strategic); CITE; visual = comparison table.
-6 Brand Positioning — current / perceived / ideal + gap analysis; visual = 2x2 positioning map.
-7 Visual Identity Benchmarking — category visual standards: table-stakes, overused, what would feel fresh.`;
+visual.type MUST be one of these, and visual.data MUST match its shape EXACTLY with real values
+(these are drawn as live graphics — never leave data empty, never put a hex or font name in prose):
+- "chart":       { "labels": ["..."], "values": [number,...], "unit": "" }        // bar chart of real figures
+- "table":       { "columns": ["..."], "rows": [["...","..."], ["...","..."]] }
+- "scorecard":   { "items": [ { "label": "", "score": number, "max": 100 } ] }
+- "palette":     { "swatches": [ { "name": "", "hex": "#RRGGBB" } ] }
+- "positioning": { "x_axis": "", "y_axis": "", "points": [ { "label": "", "x": 0-100, "y": 0-100 } ] }
+- "matrix":      same shape as positioning (used for impact vs effort)
+- "roadmap":     { "phases": [ { "name": "", "items": ["",""] } ] }
+- "diagram":     { "steps": ["","",""] }                                          // also for "framework"
+- "image_prompt": section 11 ONLY — put 6-8 DALL-E prompt strings in "insights"; data may be {}`;
 
-const BATCH_B_SECTIONS = `8 Visual Identity Audit — logo (or typical category issues if unknown), typography, color psychology, design-system maturity, UI/brand consistency, aesthetic scorecard; visual = scorecard.
-9 Messaging & Tone Audit — clarity, consistency, emotional resonance; evaluate or propose a tagline; visual = before/after table.
-10 Creative Direction — moodboard description, style references, typography direction, color palette with hex codes, personality keywords; visual = palette.
-11 Visual Moodboard — put 6-8 DALL-E image prompts as separate strings in "insights" (abstract, atmospheric, no text, no logos, no people).
-12 Strategic Recommendations — ranked by priority; visual = impact vs effort matrix.
-13 Next Steps — immediate actions, strategic priorities, Spazio deliverables; visual = 3-phase roadmap; close toward a full brand-system engagement.`;
+const BATCH_A_SECTIONS = `1 Executive Summary — what the brand is today, key issues, opportunities, a sharp 1-2 sentence diagnosis. ALSO set top-level "brand_assessment_score" (X/100). visual type "scorecard" rating Strategy/Identity/Messaging/Consistency.
+2 Brand Overview — mission (infer if missing), offerings, market category, reconstructed positioning statement. visual type "diagram" (data.steps = the offering/value flow).
+3 Audience Analysis — primary + secondary personas; pain points, jobs-to-be-done, emotional drivers, purchase triggers. visual type "table" (columns = Persona, Pains, JTBD, Triggers).
+4 Market Research & Intelligence — trends, category evolution, white space; CITE real RESEARCH sources. visual type "chart" (data.values = a real market figure over time/segments).
+5 Competitor Benchmarking — direct + aspirational competitors; strengths/failures; CITE. visual type "table" (columns = Brand, Strength, Weakness).
+6 Brand Positioning — current / perceived / ideal + gap analysis. visual type "positioning" (2x2, plot the brand + competitors as points).
+7 Visual Identity Benchmarking — category visual standards: table-stakes, overused, what would feel fresh. visual type "table" (columns = Table-stakes, Overused, Fresh).`;
+
+const BATCH_B_SECTIONS = `8 Visual Identity Audit — logo, typography, color psychology, design-system maturity, consistency. visual type "scorecard" (items scored /100).
+9 Messaging & Tone Audit — clarity, consistency, emotional resonance; evaluate or propose a tagline. visual type "table" (columns = Dimension, Today, Recommended).
+10 Creative Direction — moodboard description, style references, typography direction, personality keywords, and a color palette. visual type "palette" (data.swatches with real hex codes).
+11 Visual Moodboard — put 6-8 DALL-E image prompts as separate plain strings in "insights" (abstract, atmospheric, no text, no logos, no people). visual type "image_prompt".
+12 Strategic Recommendations — ranked by priority. visual type "matrix" (impact vs effort; plot each recommendation as a point).
+13 Next Steps — immediate actions, strategic priorities, Spazio deliverables; close toward a full brand-system engagement. visual type "roadmap" (3 phases with items).`;
 
 // === OPENAI: one batch of audit sections ===
 async function generateAuditBatch(company: string, service: string, research: string, answers: string, links: string, key: string, sections: string, wantMeta: boolean) {
@@ -67,6 +90,7 @@ ${links || "(none provided)"}
 
 RULES:
 - Never leave a section empty: each slide needs a title + at least 3 substantive insights + a populated visual.
+- visual.data MUST be filled with the exact shape for visual.type (real numbers/values) — it is rendered as a live graphic.
 - Infer where data is missing and tag inline with [Assumption]. Be opinionated and specific.
 - Market Research and Competitor slides MUST carry real sources drawn from RESEARCH. Do not fabricate.
 
@@ -83,21 +107,23 @@ ${sections}`;
       model: "gpt-4o",
       response_format: { type: "json_object" },
       messages: [{ role: "system", content: AUDIT_SYS }, { role: "user", content: user }],
-      max_tokens: 7000, temperature: 0.8,
+      max_tokens: 8000, temperature: 0.8,
     }),
   });
   if (!res.ok) throw new Error(`OpenAI ${res.status}: ${await res.text()}`);
   const raw = (await res.json()).choices?.[0]?.message?.content ?? "{}";
   try { return JSON.parse(raw); }
-  catch (e) { console.error("Audit batch parse failed:", raw.slice(0, 300)); return null; }
+  catch (e) { console.error("[deck] audit batch JSON parse failed:", (e as Error).message, "raw head:", raw.slice(0, 300)); return null; }
 }
 
 // === Orchestrate: two batches in parallel, then merge ===
 async function generateAuditDeck(company: string, service: string, research: string, answers: string, links: string, key: string) {
   const [a, b] = await Promise.all([
-    generateAuditBatch(company, service, research, answers, links, key, BATCH_A_SECTIONS, true).catch(() => null),
-    generateAuditBatch(company, service, research, answers, links, key, BATCH_B_SECTIONS, false).catch(() => null),
+    generateAuditBatch(company, service, research, answers, links, key, BATCH_A_SECTIONS, true).catch((e) => { console.error("[deck] batch A failed:", e?.message || e); return null; }),
+    generateAuditBatch(company, service, research, answers, links, key, BATCH_B_SECTIONS, false).catch((e) => { console.error("[deck] batch B failed:", e?.message || e); return null; }),
   ]);
+  if (!a) console.warn("[deck] batch A (sections 1-7) returned nothing");
+  if (!b) console.warn("[deck] batch B (sections 8-13) returned nothing — section 11/mood images will be absent");
   if (!a && !b) return null;
   const slides = [...((a?.slides as any[]) || []), ...((b?.slides as any[]) || [])]
     .filter(Boolean)
@@ -116,53 +142,8 @@ async function generateVisual(prompt: string, key: string): Promise<string> {
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({ model: "dall-e-3", prompt: `High-end brand mood board: ${prompt}. Abstract, atmospheric, no text, no logos, no people. Cinematic editorial photography. Premium design agency quality.`, n: 1, size: "1792x1024", quality: "standard" }),
   });
-  if (!res.ok) throw new Error(`DALL-E ${res.status}`);
+  if (!res.ok) throw new Error(`DALL-E ${res.status}: ${await res.text().catch(() => "")}`);
   return (await res.json()).data?.[0]?.url ?? "";
-}
-
-// === READABLE HTML PREVIEW (for internal review in Airtable) ===
-function renderAuditHTML(company: string, audit: any, imageUrls: string[]): string {
-  const date = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-  const score = audit?.brand_assessment_score || "";
-  const slides = audit?.slides || [];
-  const moodImgs = imageUrls.filter(Boolean);
-
-  const sections = slides.map((s: any) => {
-    const insights = (s.insights || []).map((i: string) => `<li style="margin:0 0 8px;font-size:14.5px;line-height:1.6;color:#514E44;">${esc(i)}</li>`).join("");
-    const recs = (s.recommendations || []).length
-      ? `<p style="margin:14px 0 4px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#2C5F2D;font-weight:600;">Recommendations</p><ul style="margin:0 0 0 18px;padding:0;">${(s.recommendations || []).map((r: string) => `<li style="margin:0 0 6px;font-size:14px;color:#514E44;">${esc(r)}</li>`).join("")}</ul>` : "";
-    const metric = s.key_metric?.value
-      ? `<div style="display:inline-block;margin:0 0 12px;padding:10px 16px;background:#EBF5EF;border-radius:8px;"><span style="font-size:26px;font-weight:700;color:#2C5F2D;">${esc(s.key_metric.value)}</span> <span style="font-size:12px;color:#847F71;">${esc(s.key_metric.label || "")}</span></div>` : "";
-    const vis = s.visual
-      ? `<p style="margin:14px 0 4px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#847F71;font-weight:600;">Visual · ${esc(s.visual.type || "")}</p><p style="margin:0;font-size:13px;color:#847F71;font-style:italic;">${esc(s.visual.title ? s.visual.title + " — " : "")}${esc(s.visual.description || "")}</p>` : "";
-    const srcs = (s.sources || []).length
-      ? `<p style="margin:14px 0 4px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#847F71;font-weight:600;">Sources</p>${(s.sources || []).map((x: any) => `<p style="margin:0 0 4px;font-size:11px;color:#ADA897;">${esc(x.claim || "")} — ${esc(x.source || "")}</p>`).join("")}` : "";
-    const imgs = s.section_number === 11 && moodImgs.length
-      ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;">${moodImgs.map(u => `<img src="${u}" style="width:100%;border-radius:8px;" />`).join("")}</div>` : "";
-    return `<div style="padding:36px 40px;border-top:2px solid #DFD9C9;">
-      <span style="font-family:monospace;font-size:10px;color:#2C5F2D;">${String(s.section_number || "").padStart(2, "0")} / 13</span>
-      <h2 style="margin:6px 0 4px;font-size:30px;font-weight:600;letter-spacing:-.02em;color:#17160F;">${esc(s.title || "")}</h2>
-      ${s.headline_insight ? `<p style="margin:0 0 16px;font-size:17px;line-height:1.5;color:#2C5F2D;font-style:italic;">${esc(s.headline_insight)}</p>` : ""}
-      ${metric}
-      ${insights ? `<ul style="margin:0 0 0 18px;padding:0;">${insights}</ul>` : ""}
-      ${s.analysis ? `<p style="margin:14px 0 0;font-size:14.5px;line-height:1.65;color:#514E44;">${esc(s.analysis)}</p>` : ""}
-      ${recs}${imgs}${vis}${srcs}
-    </div>`;
-  }).join("");
-
-  return `<div style="font-family:system-ui,-apple-system,sans-serif;color:#17160F;max-width:920px;margin:0 auto;">
-    <div style="padding:80px 40px;background:#17160F;color:#FAF8F2;text-align:center;">
-      <p style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#847F71;margin:0 0 28px;">Spazio · Brand Audit</p>
-      <h1 style="font-size:52px;font-weight:600;line-height:.95;letter-spacing:-.04em;margin:0 0 14px;">${esc(company || "Your Brand")}</h1>
-      ${audit?.deck_title ? `<p style="font-size:16px;color:#ADA897;margin:0;">${esc(audit.deck_title)}</p>` : ""}
-      ${score ? `<p style="font-size:13px;color:#97BC62;margin:18px 0 0;">Brand Assessment: ${esc(score)}</p>` : ""}
-      <p style="font-size:12px;color:#847F71;margin:18px 0 0;">${date} · Confidential</p>
-    </div>
-    ${sections}
-    <div style="padding:36px 40px;background:#17160F;color:#FAF8F2;">
-      <p style="margin:0;font-size:12px;color:#847F71;font-style:italic;">Human-led, AI-accelerated. Every creative decision is made by a real designer.</p>
-    </div>
-  </div>`.trim();
 }
 
 export async function POST(request: Request) {
@@ -206,21 +187,33 @@ export async function POST(request: Request) {
 
   // === 1. RESEARCH ===
   let research = "";
-  if (pplxKey) { try { research = await runResearch(company, service, answers, links, pplxKey); } catch (e) { console.error("Research failed", e); } }
+  if (pplxKey) { try { research = await runResearch(company, service, answers, links, pplxKey); } catch (e) { console.error("[deck] research failed:", (e as Error).message); } }
+  else console.warn("[deck] PERPLEXITY_API_KEY missing — skipping research");
 
   // === 2. BRAND AUDIT (13 sections, two batches) ===
   let audit: any = null;
-  if (oaiKey) { try { audit = await generateAuditDeck(company, service, research, answers, links, oaiKey); } catch (e) { console.error("Audit failed", e); } }
+  if (oaiKey) { try { audit = await generateAuditDeck(company, service, research, answers, links, oaiKey); } catch (e) { console.error("[deck] audit failed:", (e as Error).message); } }
+  else console.warn("[deck] OPENAI_API_KEY missing — skipping audit");
+
+  const sectionNums = (audit?.slides || []).map((s: any) => s.section_number);
+  console.log(`[deck] audit: ${sectionNums.length} sections present [${sectionNums.join(",")}], score=${audit?.brand_assessment_score || "n/a"}`);
 
   // === 3. MOOD IMAGES (from section 11 prompts) ===
   const moodSlide = (audit?.slides || []).find((s: any) => s.section_number === 11);
-  const moodPrompts: string[] = Array.isArray(moodSlide?.insights) ? moodSlide.insights.filter(Boolean).slice(0, 4) : [];
+  if (!moodSlide) console.warn("[deck] section 11 (moodboard) MISSING — batch B likely failed/timed out; no mood images");
+  const moodPrompts: string[] = Array.isArray(moodSlide?.insights)
+    ? moodSlide.insights.filter((p: unknown) => typeof p === "string" && p.trim()).slice(0, 4)
+    : [];
+  if (moodSlide) console.log(`[deck] mood prompts: ${moodPrompts.length} usable (raw insights=${(moodSlide.insights || []).length}, types=[${(moodSlide.insights || []).map((p: unknown) => typeof p).join(",")}])`);
+
   let imageUrls: string[] = [];
   if (oaiKey && moodPrompts.length) {
     imageUrls = await Promise.all(moodPrompts.map(async (p) => {
-      try { return await generateVisual(p, oaiKey); } catch { return ""; }
+      try { return await generateVisual(p, oaiKey); }
+      catch (e) { console.error("[deck] DALL-E image failed:", (e as Error).message, "| prompt:", String(p).slice(0, 90)); return ""; }
     }));
   }
+  console.log(`[deck] mood images generated: ${imageUrls.filter(Boolean).length}/${moodPrompts.length}`);
 
   // === 4. PERMANENT IMAGE STORAGE ===
   let permanentUrls: string[] = [];
@@ -234,8 +227,8 @@ export async function POST(request: Request) {
       if (res.ok) {
         const data = await res.json();
         permanentUrls = (data.records?.[0]?.fields?.[IMG_FIELD] || []).map((img: any) => img.url || "");
-      }
-    } catch (e) { console.error("Image storage failed", e); }
+      } else { console.error("[deck] image storage failed:", res.status, await res.text().catch(() => "")); }
+    } catch (e) { console.error("[deck] image storage error:", (e as Error).message); }
   }
   const finalUrls = permanentUrls.length ? permanentUrls : validUrls;
 
@@ -243,7 +236,7 @@ export async function POST(request: Request) {
   const previewHTML = renderAuditHTML(company, audit, finalUrls);
   const deckJSON = audit ? JSON.stringify(audit) : "";
   try {
-    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
+    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
       method: "PATCH", headers: atHeaders,
       body: JSON.stringify({ records: [{ id: reportId, fields: {
         [REPORT_FIELDS.briefHTML]: previewHTML,
@@ -251,14 +244,15 @@ export async function POST(request: Request) {
         [REPORT_FIELDS.status]: "Review Pending",
       } }], typecast: true }),
     });
-  } catch (e) { console.error("Deck save failed", e); }
+    if (!res.ok) console.error("[deck] deck save failed:", res.status, await res.text().catch(() => ""));
+  } catch (e) { console.error("[deck] deck save error:", (e as Error).message); }
 
   // === 6. ASANA TASK ===
   const score = audit?.brand_assessment_score || "n/a";
   const slideCount = (audit?.slides || []).length;
   if (asanaToken) {
     try {
-      await fetch("https://app.asana.com/api/1.0/tasks", {
+      const res = await fetch("https://app.asana.com/api/1.0/tasks", {
         method: "POST",
         headers: { Authorization: `Bearer ${asanaToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({ data: {
@@ -268,7 +262,8 @@ export async function POST(request: Request) {
           due_on: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0],
         } }),
       });
-    } catch (e) { console.error("Asana failed", e); }
+      if (!res.ok) console.error("[deck] asana task failed:", res.status, await res.text().catch(() => ""));
+    } catch (e) { console.error("[deck] asana error:", (e as Error).message); }
   }
 
   return Response.json({ ok: true, sections: slideCount, images: finalUrls.length });
