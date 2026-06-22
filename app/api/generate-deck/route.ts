@@ -136,15 +136,38 @@ async function generateAuditDeck(company: string, service: string, research: str
   };
 }
 
-// === DALL·E ===
-async function generateVisual(prompt: string, key: string): Promise<string> {
+// === IMAGE GENERATION (gpt-image-1) ===
+// gpt-image-1 returns base64 (no URL option), so callers store the bytes
+// directly via Airtable's uploadAttachment endpoint. dall-e-3 was retired for
+// project-scoped keys ("model does not exist").
+async function generateMoodImage(prompt: string, key: string): Promise<string> {
   const res = await fetch("https://api.openai.com/v1/images/generations", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "dall-e-3", prompt: `High-end brand mood board: ${prompt}. Abstract, atmospheric, no text, no logos, no people. Cinematic editorial photography. Premium design agency quality.`, n: 1, size: "1792x1024", quality: "standard" }),
+    body: JSON.stringify({
+      model: "gpt-image-1",
+      prompt: `High-end brand mood board: ${prompt}. Abstract, atmospheric, no text, no logos, no people. Cinematic editorial photography. Premium design agency quality.`,
+      n: 1, size: "1536x1024", quality: "medium",
+    }),
   });
-  if (!res.ok) throw new Error(`DALL-E ${res.status}: ${await res.text().catch(() => "")}`);
-  return (await res.json()).data?.[0]?.url ?? "";
+  if (!res.ok) throw new Error(`gpt-image-1 ${res.status}: ${await res.text().catch(() => "")}`);
+  const b64 = (await res.json()).data?.[0]?.b64_json ?? "";
+  if (!b64) throw new Error("gpt-image-1 returned no image data");
+  return b64;
+}
+
+// Upload one base64 PNG to an attachment field and return the hosted URL Airtable
+// assigns it. Appends to the field; returns the URL of the attachment just added.
+async function uploadAttachment(recordId: string, fieldId: string, b64: string, filename: string, token: string): Promise<string> {
+  const res = await fetch(`https://content.airtable.com/v0/${BASE_ID}/${recordId}/${fieldId}/uploadAttachment`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ contentType: "image/png", file: b64, filename }),
+  });
+  if (!res.ok) throw new Error(`uploadAttachment ${res.status}: ${await res.text().catch(() => "")}`);
+  const data = await res.json();
+  const atts = data.fields?.[fieldId] || [];
+  return atts.length ? (atts[atts.length - 1].url || "") : "";
 }
 
 export async function POST(request: Request) {
@@ -207,31 +230,26 @@ export async function POST(request: Request) {
     : [];
   if (moodSlide) console.log(`[deck] mood prompts: ${moodPrompts.length} usable (raw insights=${(moodSlide.insights || []).length}, types=[${(moodSlide.insights || []).map((p: unknown) => typeof p).join(",")}])`);
 
-  let imageUrls: string[] = [];
+  const images: string[] = [];
   if (oaiKey && moodPrompts.length) {
-    imageUrls = await Promise.all(moodPrompts.map(async (p) => {
-      try { return await generateVisual(p, oaiKey); }
-      catch (e) { console.error("[deck] DALL-E image failed:", (e as Error).message, "| prompt:", String(p).slice(0, 90)); return ""; }
-    }));
+    for (const p of moodPrompts) {
+      try { images.push(await generateMoodImage(p, oaiKey)); }
+      catch (e) { console.error("[deck] gpt-image-1 failed:", (e as Error).message, "| prompt:", String(p).slice(0, 90)); }
+    }
   }
-  console.log(`[deck] mood images generated: ${imageUrls.filter(Boolean).length}/${moodPrompts.length}`);
+  console.log(`[deck] mood images generated: ${images.length}/${moodPrompts.length}`);
 
-  // === 4. PERMANENT IMAGE STORAGE ===
-  let permanentUrls: string[] = [];
-  const validUrls = imageUrls.filter(Boolean);
-  if (validUrls.length) {
+  // === 4. PERMANENT IMAGE STORAGE (base64 -> Airtable attachment) ===
+  // gpt-image-1 has no URL to hand Airtable, so upload the bytes directly.
+  // Sequential to avoid append races on the same field.
+  const finalUrls: string[] = [];
+  for (let i = 0; i < images.length; i++) {
     try {
-      const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
-        method: "PATCH", headers: atHeaders,
-        body: JSON.stringify({ records: [{ id: reportId, fields: { [IMG_FIELD]: validUrls.map(url => ({ url })) } }] }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        permanentUrls = (data.records?.[0]?.fields?.[IMG_FIELD] || []).map((img: any) => img.url || "");
-      } else { console.error("[deck] image storage failed:", res.status, await res.text().catch(() => "")); }
-    } catch (e) { console.error("[deck] image storage error:", (e as Error).message); }
+      const url = await uploadAttachment(reportId, IMG_FIELD, images[i], `mood-${i + 1}.png`, atToken);
+      if (url) finalUrls.push(url);
+    } catch (e) { console.error("[deck] image storage failed:", (e as Error).message); }
   }
-  const finalUrls = permanentUrls.length ? permanentUrls : validUrls;
+  console.log(`[deck] mood images stored: ${finalUrls.length}/${images.length}`);
 
   // === 5. BUILD PREVIEW + STORE JSON ===
   const previewHTML = renderAuditHTML(company, audit, finalUrls);

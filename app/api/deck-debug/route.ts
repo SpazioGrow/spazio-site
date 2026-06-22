@@ -65,12 +65,12 @@ export async function GET(request: Request) {
     return json({ env, error: "Deck JSON did not parse.", detail: (e as Error).message }, 200);
   }
   if (!prompts.length) {
-    return json({ env, moodPromptsFound: 0, note: "Section 11 had no usable string prompts — nothing to send to DALL·E." }, 200);
+    return json({ env, moodPromptsFound: 0, note: "Section 11 had no usable string prompts — nothing to send to the image model." }, 200);
   }
 
   // 2. Fire the exact same image request the pipeline uses — first prompt only.
   const promptUsed = prompts[0];
-  const reqBody = { model: "dall-e-3", prompt: moodPrompt(promptUsed), n: 1, size: "1792x1024", quality: "standard" };
+  const reqBody = { model: "gpt-image-1", prompt: moodPrompt(promptUsed), n: 1, size: "1536x1024", quality: "medium" };
 
   let openai: Record<string, unknown>;
   try {
@@ -80,13 +80,13 @@ export async function GET(request: Request) {
       body: JSON.stringify(reqBody),
     });
     const text = await res.text();
-    let imageUrl: string | null = null;
-    if (res.ok) { try { imageUrl = JSON.parse(text).data?.[0]?.url ?? null; } catch { /* leave raw */ } }
+    let b64Len = 0;
+    if (res.ok) { try { b64Len = (JSON.parse(text).data?.[0]?.b64_json || "").length; } catch { /* leave raw */ } }
     openai = {
       status: res.status,
       ok: res.ok,
-      imageUrl,
-      body: imageUrl ? "(ok — image url returned)" : text.slice(0, 2000),
+      imageReturned: b64Len > 0,
+      body: b64Len > 0 ? `(ok — ${b64Len} base64 chars returned)` : text.slice(0, 2000),
     };
   } catch (e) {
     openai = { error: "fetch to OpenAI threw", detail: (e as Error).message };
