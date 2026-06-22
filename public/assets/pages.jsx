@@ -108,13 +108,8 @@ function CtaBand() {
             You built the product. Let’s build the brand it deserves.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 36 }}>
-            <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--accent" style={{ padding: "15px 28px" }}>
-              Start with a Brand Gap Audit — $750 <Arrow />
-            </a>
-            <a href={(typeof window !== "undefined" && window.SPAZIO_SCHEDULER_URL) || "#"}
-              target="_blank" rel="noopener noreferrer" className="btn btn--ghost"
-              style={{ padding: "15px 28px", color: "var(--bg)", borderColor: "color-mix(in oklab, var(--bg) 30%, transparent)" }}>
-              Book a 15-min intro
+            <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--accent" style={{ padding: "15px 28px" }}>
+              Schedule call <Arrow />
             </a>
           </div>
         </Reveal>
