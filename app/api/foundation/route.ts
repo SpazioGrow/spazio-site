@@ -1,14 +1,7 @@
-// Foundation endpoint — creates Lead + Report, then fires the heavy pipeline.
-// The research/visuals/deck work runs in /api/generate-deck, triggered here via
-// waitUntil so it survives after this route returns its response.
-//
-// Lead capture is hardened: a select value NEVER blocks the save.
-// - Values are validated against the shared vocab (lib/foundation-options) — the
-//   same lists the form renders from, so the two can't drift.
-// - Writes use field IDs, typecast: false (we never create options).
-// - Off-vocab values are stashed in Notes. And if a value that IS in-vocab isn't
-//   yet a defined Airtable option, the create is retried with the selects folded
-//   into Notes — the Lead always saves.
+// Foundation endpoint — creates Lead + Report, fires the heavy pipeline,
+// and drops an internal Asana task so the answers can be reviewed.
+// The Asana task is created automatically on every submission (i.e. every time
+// a submission hits Airtable), in "Design Reviews (Internal)".
 import { waitUntil } from "@vercel/functions";
 import {
   BUDGET_OPTIONS, TIMELINE_OPTIONS, SERVICE_OPTIONS, SOURCE_OPTIONS,
@@ -19,6 +12,7 @@ export const maxDuration = 60; // Vercel Pro — covers the pipeline trigger
 const BASE_ID = "appv2sIRwDvNPjV7j";
 const LEADS_TABLE = "tbl5qLZO9mAN9LQ0P";
 const REPORTS_TABLE = "tbl7hxUDQRJLjUpKQ";
+const ASANA_REVIEW_PROJECT = "1215677774689770"; // "Design Reviews (Internal)"
 
 const LEAD_FIELDS = {
   name: "fldcNCcvpv3UYK7sR", email: "fld8bcTQhFU2ZBxKS",
@@ -36,6 +30,42 @@ const REPORT_FIELDS = {
 
 function str(v: unknown): string { return typeof v === "string" ? v.trim() : ""; }
 function inSet(v: string, allowed: readonly string[]): boolean { return allowed.includes(v); }
+
+// Auto-creates the internal review task. Runs in waitUntil so it never blocks the
+// response. This is the "task appears in Asana every time a form hits Airtable" piece.
+async function createReviewTask(opts: {
+  name: string; company: string; email: string; service: string; website: string;
+  answers: Record<string, unknown>; leadId: string; reportId: string; ref: string;
+}) {
+  const asanaToken = process.env.ASANA_TOKEN;
+  if (!asanaToken) { console.error("ASANA_TOKEN missing — skipping review task"); return; }
+
+  const lines = Object.entries(opts.answers)
+    .filter(([, v]) => v !== "" && v != null)
+    .map(([k, v]) => `\u2022 ${k}: ${typeof v === "object" ? JSON.stringify(v) : String(v)}`)
+    .join("\n");
+
+  const notes =
+    `New Foundation submission \u2014 review the answers, then move this to the client's Reviews project.\n\n` +
+    `Client: ${opts.name}\n` +
+    (opts.company ? `Company: ${opts.company}\n` : "") +
+    `Email: ${opts.email}\n` +
+    (opts.service ? `Service interest: ${opts.service}\n` : "") +
+    (opts.website ? `Website: ${opts.website}\n` : "") +
+    `\nFull answers:\n${lines}\n\n` +
+    `Airtable \u2014 Lead: ${opts.leadId} | Report: ${opts.ref} (${opts.reportId})`;
+
+  const taskName = `New submission \u2014 ${opts.name}${opts.company ? ` (${opts.company})` : ""}`;
+
+  try {
+    const res = await fetch("https://app.asana.com/api/1.0/tasks", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${asanaToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ data: { name: taskName, notes, projects: [ASANA_REVIEW_PROJECT] } }),
+    });
+    if (!res.ok) console.error("Asana review task failed:", res.status, await res.text());
+  } catch (e) { console.error("Asana review task error:", e); }
+}
 
 export async function POST(request: Request) {
   const token = process.env.AIRTABLE_TOKEN;
@@ -111,7 +141,7 @@ export async function POST(request: Request) {
     else { console.error("Lead create retry failed:", r2.err); return Response.json({ error: "Could not save lead." }, { status: 502 }); }
   }
 
-  // Create Report (unchanged — separate write, not in scope for the select hardening).
+  // Create Report.
   const allAnswers = { company, service, email, comped, budget, timeline, ...questionnaire as object };
   const ref = (company || name).replace(/[^A-Za-z]/g, "").slice(0, 4).toUpperCase() + "-" + Date.now().toString(36).slice(-4).toUpperCase();
 
@@ -128,9 +158,7 @@ export async function POST(request: Request) {
     reportId = (await res.json()).records[0].id;
   } catch { return Response.json({ error: "Could not reach database." }, { status: 502 }); }
 
-  // Fire the heavy pipeline. THIS is the line that was missing — without it the
-  // Report sits at "Generating" forever and Perplexity never runs. waitUntil keeps
-  // the call alive after we return the response below.
+  // Fire the heavy pipeline (Perplexity/visuals/deck).
   const origin = new URL(request.url).origin;
   waitUntil(
     fetch(`${origin}/api/generate-deck`, {
@@ -138,11 +166,15 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reportId, leadId }),
     })
-      .then(async (r) => {
-        if (!r.ok) console.error("generate-deck trigger failed:", r.status, await r.text());
-      })
+      .then(async (r) => { if (!r.ok) console.error("generate-deck trigger failed:", r.status, await r.text()); })
       .catch((e) => console.error("generate-deck trigger error:", e))
   );
+
+  // Auto-create the internal Asana review task with the client's answers.
+  waitUntil(createReviewTask({
+    name, company, email, service, website: str(body.website),
+    answers: allAnswers as Record<string, unknown>, leadId, reportId, ref,
+  }));
 
   return Response.json({ ok: true, leadId, reportId }, { status: 201 });
 }
