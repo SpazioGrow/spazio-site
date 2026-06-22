@@ -178,12 +178,12 @@ function Hero() {
                 like the category leader you’re becoming.
               </p>
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 30, alignItems: "center" }}>
-                <a href="/api/checkout?tier=brand-gap-audit" className="btn btn--primary" style={{ padding: "15px 26px" }}>
-                  Start with a Brand Gap Audit — $750 <Arrow />
+                <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--primary" style={{ padding: "15px 26px" }}>
+                  Schedule call <Arrow />
                 </a>
-                <a href={(typeof window !== "undefined" && window.SPAZIO_SCHEDULER_URL) || "#"}
-                  target="_blank" rel="noopener noreferrer" className="txtlink">
-                  Not ready? Book a 15-min intro
+                <a href="https://calendly.com/hi-spaziographics"
+                  target="_blank" rel="noopener" className="txtlink">
+                  Book intro
                 </a>
               </div>
             </Reveal>
