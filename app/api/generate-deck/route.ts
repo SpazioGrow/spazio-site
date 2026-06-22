@@ -15,6 +15,7 @@ const LEADS_TABLE = "tbl5qLZO9mAN9LQ0P";
 const REPORTS_TABLE = "tbl7hxUDQRJLjUpKQ";
 const ASANA_PROJECT = "1215677774689770";
 const IMG_FIELD = "fldPVXauT9v4GqVZm";
+const DECK_URL_FIELD = "fldm9x6UZngmYxN6b"; // "Deck URL" — browser link served by /api/deck
 const REPORT_FIELDS = { status: "fldLUKmsHhqidDFWb", briefHTML: "fld3ZgwxOlFRK27Qx" } as const;
 // A long-text field named exactly "Deck JSON" in the Brand Intelligence Reports table.
 const DECK_JSON_FIELD = "Deck JSON";
@@ -235,12 +236,16 @@ export async function POST(request: Request) {
   // === 5. BUILD PREVIEW + STORE JSON ===
   const previewHTML = renderAuditHTML(company, audit, finalUrls);
   const deckJSON = audit ? JSON.stringify(audit) : "";
+  // Browser link to the rendered deck. Origin is whatever host served this request
+  // (same origin /api/foundation called), so it resolves to the live domain.
+  const deckUrl = `${new URL(request.url).origin}/api/deck?id=${reportId}`;
   try {
     const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${REPORTS_TABLE}`, {
       method: "PATCH", headers: atHeaders,
       body: JSON.stringify({ records: [{ id: reportId, fields: {
         [REPORT_FIELDS.briefHTML]: previewHTML,
         [DECK_JSON_FIELD]: deckJSON,
+        [DECK_URL_FIELD]: deckUrl,
         [REPORT_FIELDS.status]: "Review Pending",
       } }], typecast: true }),
     });
@@ -257,7 +262,7 @@ export async function POST(request: Request) {
         headers: { Authorization: `Bearer ${asanaToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({ data: {
           name: `Review brand audit: ${company || name}`,
-          html_notes: `<body><strong>Brand audit ready for review.</strong>\n\n<strong>Client:</strong> ${name}\n<strong>Email:</strong> ${email}\n<strong>Company:</strong> ${company}\n<strong>Service:</strong> ${service}\n<strong>Assessment score:</strong> ${score}\n<strong>Sections:</strong> ${slideCount} / 13\n<strong>Mood images:</strong> ${finalUrls.length}\n\n<strong>To build the deck:</strong> open this report in Airtable, copy the <strong>Deck JSON</strong> field, and paste it into Plus AI inside Google Slides. Apply the Spazio template, curate (~15-20 min), then download as .pptx or PDF and share with the client.\n\n<em>Preview is in the Brief HTML field. Review at your pace.</em></body>`,
+          html_notes: `<body><strong>Brand audit ready for review.</strong>\n\n<strong>Client:</strong> ${name}\n<strong>Email:</strong> ${email}\n<strong>Company:</strong> ${company}\n<strong>Service:</strong> ${service}\n<strong>Assessment score:</strong> ${score}\n<strong>Sections:</strong> ${slideCount} / 13\n<strong>Mood images:</strong> ${finalUrls.length}\n\n<strong>View the rendered deck:</strong> <a href="${deckUrl}">${deckUrl}</a>\n\n<strong>To build the deck:</strong> open this report in Airtable, copy the <strong>Deck JSON</strong> field, and paste it into Plus AI inside Google Slides. Apply the Spazio template, curate (~15-20 min), then download as .pptx or PDF and share with the client.\n\n<em>Preview is in the Brief HTML field. Review at your pace.</em></body>`,
           projects: [ASANA_PROJECT],
           due_on: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0],
         } }),
