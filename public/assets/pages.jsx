@@ -403,12 +403,6 @@ function HomePage() {
     <main>
       <Hero />
       <HomeGap />
-      <HomeWho />
-      <HomeWhatWeDo />
-      <HomeAudit />
-      <HomeWhy />
-      <HomeHow />
-      <CtaBand />
     </main>
   );
 }
