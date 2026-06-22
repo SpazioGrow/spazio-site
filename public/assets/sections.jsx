@@ -181,10 +181,6 @@ function Hero() {
                 <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--primary" style={{ padding: "15px 26px" }}>
                   Schedule call <Arrow />
                 </a>
-                <a href="https://calendly.com/hi-spaziographics"
-                  target="_blank" rel="noopener" className="txtlink">
-                  Book intro
-                </a>
               </div>
             </Reveal>
           </div>
