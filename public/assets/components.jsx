@@ -311,7 +311,7 @@ function Footer() {
             </div>
             <p style={{ color: "color-mix(in oklab, var(--bg) 66%, transparent)", maxWidth: "34ch",
               fontSize: 18, lineHeight: 1.5, margin: 0 }}>
-              Brand strategy and identity for app and SaaS founders. <em className="grace" style={{ color: "var(--accent)" }}>Direct</em>, fast, and senior-led.
+              The brand operating studio for founder-led companies. <em className="grace" style={{ color: "var(--accent)" }}>Research-based</em>, designer-led, senior throughout.
             </p>
           </div>
 
