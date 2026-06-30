@@ -4,7 +4,7 @@
 
 /* ---------------- DATA ---------------- */
 
-const WHO = ["Consumer apps", "B2C SaaS", "Platforms & marketplaces", "Founder-led teams"];
+const WHO = ["App & SaaS founders", "Local & hospitality brands", "Professional & service groups", "Anyone going pro"];
 
 const SERVICES_DATA = [
   {
@@ -158,12 +158,12 @@ function Hero() {
       <div className="wrap">
         <Reveal>
           <p className="label label--accent label-dot" style={{ marginBottom: "clamp(28px,4vw,44px)" }}>
-            Brand strategy + identity for founders
+            The brand operating studio for founder-led companies
           </p>
         </Reveal>
 
         <h1 className="display d1 hero-headline" style={{ maxWidth: "15ch" }}>
-          <Reveal as="span" style={{ display: "block" }}>You built the product.</Reveal>
+          <Reveal as="span" style={{ display: "block" }}>You built the business.</Reveal>
           <Reveal as="span" delay={90} style={{ display: "block" }}>
             Let’s build the <em className="grace">brand</em>.
           </Reveal>
@@ -173,13 +173,13 @@ function Hero() {
           <div className="col-span-6">
             <Reveal delay={120}>
               <p className="lede" style={{ maxWidth: "46ch" }}>
-                Spazio works with app and SaaS founders to close the gap between a great product
-                and a brand that finally matches it — strategy and identity that make you look
-                like the category leader you’re becoming.
+                Spazio is a brand operating studio — research-based, designer-led — for founder-led
+                companies. We close the gap between a great business and a brand that finally matches
+                it: strategy and identity that make you look like the category leader you’re becoming.
               </p>
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 30, alignItems: "center" }}>
                 <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--primary" style={{ padding: "15px 26px" }}>
-                  Schedule call <Arrow />
+                  Start a conversation <Arrow />
                 </a>
               </div>
             </Reveal>

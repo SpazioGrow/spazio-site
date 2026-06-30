@@ -105,11 +105,11 @@ function CtaBand() {
             Ready to close the <em className="grace" style={{ color: "var(--accent)" }}>gap</em>?
           </h2>
           <p className="lede" style={{ margin: "20px auto 0", color: "color-mix(in oklab, var(--bg) 70%, transparent)" }}>
-            You built the product. Let’s build the brand it deserves.
+            You built the business. Let’s build the brand it deserves.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 36 }}>
             <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--accent" style={{ padding: "15px 28px" }}>
-              Schedule call <Arrow />
+              Start a conversation <Arrow />
             </a>
           </div>
         </Reveal>
@@ -130,7 +130,7 @@ function HomeGap() {
             <Reveal>
               <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>The gap</p>
               <h2 className="section-title" style={{ maxWidth: "16ch" }}>
-                Your product’s ahead of your brand. You can <em className="grace">feel</em> it.
+                Your business is ahead of your brand. You can <em className="grace">feel</em> it.
               </h2>
             </Reveal>
           </div>
@@ -142,8 +142,8 @@ function HomeGap() {
                 they ever sign up.
               </p>
               <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-2)", margin: 0, maxWidth: "46ch" }}>
-                That gap quietly costs you: installs that don’t convert, raises that take a quarter
-                longer, hires who pick the competitor who simply looked the part. Closing it is the
+                That gap quietly costs you: interest that doesn’t convert, deals that take longer to
+                close, the competitor who simply looked the part winning by default. Closing it is the
                 whole job — and it’s the part I love.
               </p>
             </Reveal>
