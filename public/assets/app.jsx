@@ -89,8 +89,8 @@ function App() {
   // carries the homepage/OG defaults; this updates them as the SPA navigates).
   useEffect(() => {
     const META = {
-      home:      ["Spazio — Brand Strategy and Identity for App and SaaS Founders", "Spazio helps app and SaaS founders close the gap between a great product and a brand that matches it — strategy, positioning, and identity. Start with a $750 Brand Gap Audit."],
-      about:     ["About — Spazio | Brand Strategy for App and SaaS Founders", "Meet Christine, founder of Spazio. Agency-caliber brand strategy and identity for app and SaaS founders — delivered direct and fast, by the person doing the work."],
+      home:      ["Spazio — The Brand Operating Studio for Founder-Led Companies", "Spazio is a brand operating studio — research-based, designer-led — that closes the gap between a great business and a brand that matches it. Strategy, positioning, and identity that make you look like the category leader you're becoming."],
+      about:     ["About — Spazio | The Brand Operating Studio for Founder-Led Companies", "Spazio is a brand operating studio for founder-led companies — research-based, designer-led, and senior throughout. How we work, and who it's for."],
       work:      ["Work — Spazio | Selected Brand and Identity Projects", "Selected brand strategy and identity work for founders and growing digital products."],
       start:     ["Start a Brand Gap Audit — Spazio", "Start with a $750 Brand Gap Audit, credited toward your engagement."],
       subscribe: ["Subscribe — Spazio", "Occasional notes on brand, design, and digital work for founders."],

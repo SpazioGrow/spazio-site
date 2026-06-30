@@ -312,7 +312,7 @@ function HomeWhy() {
             <Reveal>
               <p className="label label--accent label-dot" style={{ marginBottom: 24 }}>Why Spazio</p>
               <h2 className="section-title" style={{ maxWidth: "16ch" }}>
-                You, talking to the person who actually <em className="grace">does the work</em>.
+                You, talking to the people who actually <em className="grace">do the work</em>.
               </h2>
               <p className="lede" style={{ marginTop: 22, maxWidth: "46ch" }}>
                 Spazio brings a senior standard to your stage — without the layers, the lag, or the
@@ -320,7 +320,7 @@ function HomeWhy() {
                 creative calls, and the work moves at the speed your stage actually needs.
               </p>
               <p style={{ marginTop: 22, fontFamily: "var(--mono)", fontSize: 13, letterSpacing: "0.04em", color: "var(--ink-3)" }}>
-                — Christine, Founder
+                — The Spazio team
               </p>
             </Reveal>
           </div>
