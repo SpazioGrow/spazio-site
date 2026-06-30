@@ -144,7 +144,7 @@ function HomeGap() {
               <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-2)", margin: 0, maxWidth: "46ch" }}>
                 That gap quietly costs you: interest that doesn’t convert, deals that take longer to
                 close, the competitor who simply looked the part winning by default. Closing it is the
-                whole job — and it’s the part I love.
+                whole job — and it’s the part we love.
               </p>
             </Reveal>
           </div>
@@ -248,7 +248,7 @@ const AUDIT_POINTS = [
   "A clear read on exactly where your brand lags your product",
   "How you stack up in your category, and the opening you’re missing",
   "2–3 strategic directions to close the gap",
-  "A tight deck, plus a 30-minute walkthrough with me",
+  "A tight deck, plus a 30-minute walkthrough with us",
 ];
 function HomeAudit() {
   return (
@@ -316,7 +316,7 @@ function HomeWhy() {
               </h2>
               <p className="lede" style={{ marginTop: 22, maxWidth: "46ch" }}>
                 Spazio brings a senior standard to your stage — without the layers, the lag, or the
-                account managers in between. You work directly with me, the person making the
+                account managers in between. You work directly with us, the people making the
                 creative calls, and the work moves at the speed your stage actually needs.
               </p>
               <p style={{ marginTop: 22, fontFamily: "var(--mono)", fontSize: 13, letterSpacing: "0.04em", color: "var(--ink-3)" }}>
