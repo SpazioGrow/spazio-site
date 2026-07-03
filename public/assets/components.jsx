@@ -116,11 +116,15 @@ function Eye({ size = 14, live = false, style = {}, label }) {
     <span role="img" aria-label={label || "Spazio"} className={live ? "eye eye--live" : "eye"}
       style={{ display: "inline-flex", flex: "0 0 auto", ...style }}>
       <svg width={s} height={s} viewBox="0 0 24 24" style={{ display: "block", overflow: "visible" }}>
-        <circle cx="12" cy="12" r="11.5" fill="var(--ink)" />
-        <circle cx="12" cy="12" r="8" fill="var(--sand)" />
-        <circle cx="12" cy="12" r="8" fill="none" stroke="var(--clay)" strokeWidth="0.7" opacity="0.45" />
-        <circle className="eye__pupil" cx="12" cy="12" r="3.7" fill="var(--accent)" />
-        <circle cx="13.4" cy="10.6" r="1.15" fill="var(--paper)" opacity="0.92" />
+        <g className="eye__blink">
+          <circle cx="12" cy="12" r="11.5" fill="var(--ink)" />
+          <circle cx="12" cy="12" r="8" fill="var(--sand)" />
+          <circle cx="12" cy="12" r="8" fill="none" stroke="var(--clay)" strokeWidth="0.7" opacity="0.45" />
+          <g className="eye__look">
+            <circle cx="12" cy="12" r="3.7" fill="var(--accent)" />
+          </g>
+          <circle cx="13.4" cy="10.6" r="1.15" fill="var(--paper)" opacity="0.92" />
+        </g>
       </svg>
     </span>
   );
@@ -130,9 +134,9 @@ function Logo({ onClick, compact = false }) {
   return (
     <a href="#home" onClick={onClick} aria-label="Spazio — home"
        style={{ display: "inline-flex", alignItems: "center", gap: 11 }}>
-      <Eye size={26} live />
+      <Eye size={34} live />
       <span style={{
-        fontFamily: "var(--display)", fontWeight: 700, fontSize: 23,
+        fontFamily: "var(--display)", fontWeight: 700, fontSize: 24,
         letterSpacing: "-0.02em", color: "var(--ink)",
       }}>
         Spazio{compact ? "" : ""}
@@ -318,7 +322,7 @@ function Footer() {
         <div className="grid12" style={{ rowGap: 48 }}>
           <div className="col-span-5">
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
-              <Eye size={20} live />
+              <Eye size={26} live />
               <span style={{ fontFamily: "var(--display)", fontWeight: 600, fontSize: 22, letterSpacing: "-0.03em" }}>Spazio</span>
             </div>
             <p style={{ color: "color-mix(in oklab, var(--bg) 66%, transparent)", maxWidth: "34ch",
