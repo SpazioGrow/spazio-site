@@ -393,11 +393,96 @@ function HomeHow() {
   );
 }
 
+/* ================= PROCESS — spazioOS ================= */
+function ProcessEye({ pupil, scan }) {
+  return (
+    <svg width="62" height="62" viewBox="0 0 48 48" aria-hidden="true" style={{ display: "block" }}>
+      <circle cx="24" cy="24" r="23" fill="var(--ink)" />
+      <circle cx="24" cy="24" r="14.5" fill="var(--paper)" />
+      <circle cx="24" cy="24" r="6.6" fill={pupil} />
+      {scan ? <line x1="24" y1="9.5" x2="24" y2="38.5" stroke="var(--ink)" strokeWidth="1.5" /> : null}
+    </svg>
+  );
+}
+
+function ProcessStep({ n, label, title, body, pupil, scan }) {
+  return (
+    <div style={{
+      background: "var(--surface)", border: "1px solid var(--line)",
+      borderRadius: 16, padding: "clamp(22px,2.4vw,30px)", height: "100%",
+      display: "flex", flexDirection: "column",
+    }}>
+      <ProcessEye pupil={pupil} scan={scan} />
+      <p className="tag" style={{ color: "var(--clay)", marginTop: 22, letterSpacing: "0.14em" }}>{n} / {label}</p>
+      <h3 style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: "clamp(24px,2.4vw,30px)", letterSpacing: "-0.02em", color: "var(--ink)", margin: "10px 0 12px" }}>{title}</h3>
+      <p style={{ fontFamily: "var(--sans)", fontSize: 15.5, lineHeight: 1.55, color: "var(--ink-2)", margin: 0 }}>{body}</p>
+    </div>
+  );
+}
+
+function ProcessArrow() {
+  return (
+    <span className="oss-arrow" aria-hidden="true"
+      style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)", fontSize: 26, padding: "0 10px" }}>→</span>
+  );
+}
+
+function ProcessBlock() {
+  return (
+    <section className="section--tight">
+      <div className="wrap">
+        <Reveal>
+          <div style={{ background: "var(--bg-2)", border: "1px solid var(--line)", borderRadius: 26, padding: "clamp(26px,4vw,52px)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 20, flexWrap: "wrap" }}>
+              <span style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: "clamp(30px,4.4vw,46px)", letterSpacing: "-0.025em", color: "var(--ink)", lineHeight: 1 }}>
+                spazio<em style={{ fontStyle: "italic", color: "var(--accent)" }}>OS</em>
+              </span>
+              <span className="tag" style={{ color: "var(--clay)", letterSpacing: "0.2em" }}>The system behind the work</span>
+            </div>
+            <p style={{ fontFamily: "var(--serif)", fontSize: "clamp(19px,1.9vw,24px)", lineHeight: 1.4, color: "var(--ink)", margin: "16px 0 0", maxWidth: "42ch" }}>
+              One brain, three moves. Research becomes diagnosis becomes a brand the client can run.
+            </p>
+            <div className="oss-grid" style={{ marginTop: "clamp(28px,4vw,44px)" }}>
+              <Reveal delay={0} style={{ height: "100%" }}>
+                <ProcessStep n="01" label="INTELLIGENCE" title="Intelligence" pupil="var(--teal)"
+                  body="The research read. Category, competitors, and where the business already outpaces how it looks." />
+              </Reveal>
+              <ProcessArrow />
+              <Reveal delay={100} style={{ height: "100%" }}>
+                <ProcessStep n="02" label="AUDIT" title="Audit" pupil="var(--gold)" scan
+                  body="The verdict. Scored diagnostics turn the read into a clear gap — named, ranked, defensible." />
+              </Reveal>
+              <ProcessArrow />
+              <Reveal delay={200} style={{ height: "100%" }}>
+                <ProcessStep n="03" label="IDENTITY" title="Identity" pupil="var(--coral)"
+                  body="The system shipped. A running brand that makes them look like the leader they're becoming." />
+              </Reveal>
+            </div>
+            <div style={{ marginTop: "clamp(26px,4vw,44px)", borderTop: "1px solid var(--line)", paddingTop: 22, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
+              <span style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "clamp(19px,2vw,24px)", color: "var(--ink)" }}>Close the gap.</span>
+              <div style={{ width: 200, maxWidth: "42vw", height: 9, borderRadius: 99, background: "var(--line)", overflow: "hidden", display: "flex", justifyContent: "flex-end" }}>
+                <span style={{ display: "flex", width: "56%" }}>
+                  <i style={{ flex: 6, background: "var(--ink)" }} />
+                  <i style={{ flex: 2, background: "var(--coral)" }} />
+                  <i style={{ flex: 2, background: "var(--teal)" }} />
+                  <i style={{ flex: 2, background: "var(--gold)" }} />
+                  <i style={{ flex: 1, background: "var(--clay)" }} />
+                </span>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 function HomePage() {
   return (
     <main>
       <Hero />
       <HomeGap />
+      <ProcessBlock />
     </main>
   );
 }
@@ -810,6 +895,7 @@ Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
   HomeGap, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
   HomePage, AboutPage, ServicesPage,
+  ProcessEye, ProcessStep, ProcessArrow, ProcessBlock,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
   WorkPage, StartPage, SubscribePage,
 });
