@@ -322,8 +322,6 @@ function Footer() {
                 <li key={id}><a href={`#${id}`} onClick={(e)=>go(e,id)}
                   style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>{l}</a></li>
               ))}
-              <li><a href="/api/checkout?tier=brand-gap-audit"
-                style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>Brand Gap Audit</a></li>
             </ul>
           </div>
 

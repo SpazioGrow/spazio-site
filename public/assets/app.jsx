@@ -74,7 +74,15 @@ function App() {
 
   const navigate = useCallback((id) => {
     if (!ROUTES.includes(id)) id = "home";
-    if (window.location.hash !== `#${id}`) window.location.hash = id;
+    // Leaving the gated Foundation flow: strip the checkout/comp query params
+    // (?orderId / ?access). Otherwise getHash() re-forces "foundation" on the
+    // resulting hashchange and every nav click snaps back to that page.
+    const sp = new URLSearchParams(window.location.search);
+    if (id !== "foundation" && (sp.get("orderId") || sp.get("access"))) {
+      window.history.replaceState(null, "", window.location.pathname + `#${id}`);
+    } else if (window.location.hash !== `#${id}`) {
+      window.location.hash = id;
+    }
     setRoute(id);
     requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: "auto" }));
   }, []);
