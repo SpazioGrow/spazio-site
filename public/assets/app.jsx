@@ -4,7 +4,11 @@
 
 /* ---- Tweak presets ---- */
 const ACCENTS = {
-  "#3E7D5A": { // Pine (refined default)
+  "#E2654F": { // Coral (locked-system default)
+    accent: "#E2654F", deep: "#B5532F", bright: "#E97A63",
+    soft: "#FBEAE3", mid: "#F3C9BC", line: "#EAB6A6",
+  },
+  "#3E7D5A": { // Pine (legacy)
     accent: "oklch(0.52 0.115 156)", deep: "oklch(0.40 0.095 158)", bright: "oklch(0.60 0.125 154)",
     soft: "oklch(0.948 0.028 156)", mid: "oklch(0.885 0.055 156)", line: "oklch(0.825 0.05 157)",
   },
@@ -18,12 +22,12 @@ const ACCENTS = {
   },
 };
 const PAPERS = {
-  warm: { bg: "#F4F1E9", bg2: "#ECE8DD", bg3: "#E4DFD1", surface: "#FBF9F3", line: "#DFD9C9", line2: "#CFC8B5", line3: "#BCB4A0", ink: "#17160F", ink2: "#514E44", ink3: "#847F71", ink4: "#ADA897" },
+  warm: { bg: "#F7EEDC", bg2: "#F1E6D0", bg3: "#EADFC4", surface: "#FBF6EA", line: "#E1D3B8", line2: "#D6C5A5", line3: "#C8B48F", ink: "#211A12", ink2: "#4A4034", ink3: "#7A6E5C", ink4: "#A99B84" },
   cool: { bg: "#F4F5F4", bg2: "#EAECEA", bg3: "#E0E3E0", surface: "#FBFCFB", line: "#E0E3E0", line2: "#D0D4D1", line3: "#BEC4C0", ink: "#15171A", ink2: "#4C5157", ink3: "#828990", ink4: "#AEB4B8" },
 };
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accent": "#3E7D5A",
+  "accent": "#E2654F",
   "displayFont": "Grotesk",
   "paper": "warm",
   "motion": true
