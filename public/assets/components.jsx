@@ -130,6 +130,46 @@ function Eye({ size = 14, live = false, style = {}, label }) {
   );
 }
 
+/* ---------- Pattern — square grid of geometric units (one motif leads, 2 colors/tile) ---------- */
+const PATTERN_MOTIFS = ["quarter","dot","leaf","quarter","half","ring","quarter","tri","dot","quarter","leaf","half","quarter","ring","tri","quarter","dot","leaf","quarter","half","ring","quarter","tri","dot"];
+const PATTERN_COLORS = [
+  ["var(--sand)", "var(--ink)"],
+  ["var(--paper)", "var(--coral)"],
+  ["var(--mist)", "var(--teal)"],
+  ["var(--sand)", "var(--gold)"],
+  ["var(--paper)", "var(--clay)"],
+  ["var(--ink)", "var(--sand)"],
+];
+function PatternTile({ motif, bg, fg, rot }) {
+  const shape =
+    motif === "quarter" ? <path d="M0 0 L24 0 A24 24 0 0 1 0 24 Z" fill={fg} /> :
+    motif === "half"    ? <path d="M0 12 A12 12 0 0 1 24 12 Z" fill={fg} /> :
+    motif === "tri"     ? <path d="M0 24 L24 24 L24 0 Z" fill={fg} /> :
+    motif === "ring"    ? <circle cx="12" cy="12" r="7.5" fill="none" stroke={fg} strokeWidth="3" /> :
+    motif === "leaf"    ? <path d="M2 12 Q12 2 22 12 Q12 22 2 12 Z" fill={fg} /> :
+                          <circle cx="12" cy="12" r="6" fill={fg} />;
+  return (
+    <span style={{ display: "block", width: "100%", height: "100%", background: bg }}>
+      <svg viewBox="0 0 24 24" width="100%" height="100%" style={{ display: "block", transform: rot ? `rotate(${rot}deg)` : undefined, transformOrigin: "center" }}>
+        {shape}
+      </svg>
+    </span>
+  );
+}
+function Pattern({ size = 44, rows = 1, count = 72, style }) {
+  const tiles = [];
+  for (let i = 0; i < count; i++) {
+    const c = PATTERN_COLORS[(i * 5) % PATTERN_COLORS.length];
+    tiles.push(<PatternTile key={i} motif={PATTERN_MOTIFS[i % PATTERN_MOTIFS.length]} bg={c[0]} fg={c[1]} rot={(i % 4) * 90} />);
+  }
+  return (
+    <div aria-hidden="true" style={{
+      display: "grid", gridTemplateColumns: `repeat(auto-fill, ${size}px)`, gridAutoRows: `${size}px`,
+      height: rows * size, overflow: "hidden", ...style,
+    }}>{tiles}</div>
+  );
+}
+
 function Logo({ onClick, compact = false }) {
   return (
     <a href="#home" onClick={onClick} aria-label="Spazio — home"
@@ -318,6 +358,7 @@ function Footer() {
   const year = 2026;
   return (
     <footer className="foot" style={{ background: "var(--ink)", color: "var(--bg)" }}>
+      <Pattern rows={1} size={40} />
       <div className="wrap" style={{ paddingBlock: "clamp(56px,8vw,96px)" }}>
         <div className="grid12" style={{ rowGap: 48 }}>
           <div className="col-span-5">
@@ -362,5 +403,5 @@ function Footer() {
 Object.assign(window, {
   RouterCtx, useRouter, ROUTES, useReveal, Reveal, Arrow, ArrowDown,
   CropMarks, ColTicks, Measure,
-  Logo, Nav, Marquee, Footer,
+  Logo, Nav, Marquee, Footer, Eye, Pattern, PatternTile,
 });

@@ -481,6 +481,7 @@ function HomePage() {
   return (
     <main>
       <Hero />
+      <Pattern rows={1} size={46} style={{ borderBlock: "1px solid var(--line)" }} />
       <HomeGap />
       <ProcessBlock />
     </main>
