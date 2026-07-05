@@ -48,7 +48,12 @@ function PaidFoundationGate() {
   }
 
   if (status === "paid") {
-    return <FoundationForm prefillEmail={email} comped={comped} onSuccess={function () { window.location.hash = "brief-ready"; }} />;
+    return (
+      <div>
+        <Pattern rows={1} size={98} style={{ border: "1px solid var(--line)", borderRadius: 12, marginBottom: "clamp(22px,3vw,36px)" }} />
+        <FoundationForm prefillEmail={email} comped={comped} onSuccess={function () { window.location.hash = "brief-ready"; }} />
+      </div>
+    );
   }
 
   // blocked — no paid session on this visit
