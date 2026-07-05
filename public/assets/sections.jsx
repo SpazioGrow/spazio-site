@@ -117,6 +117,24 @@ const WORK_DATA = [
     services: ["Brand identity", "Packaging design", "Naming & copy", "Production artwork"],
     tone: "a",
   },
+  {
+    id: "amnesia", n: "05", client: "Amnesia", project: "THC Gummies — Brand Identity & Packaging",
+    sector: "Cannabis & edibles", year: "2026",
+    alt: "Amnesia THC gummies range — five stand-up pouches",
+    gallery: [
+      { src: "/work/amnesia/cherry-pie.png", alt: "Amnesia Cherry Pie (Hybrid) THC gummies pouch" },
+      { src: "/work/amnesia/blue-razz.png", alt: "Amnesia Blue Razz (Hybrid) THC gummies pouch" },
+      { src: "/work/amnesia/orange-soda.png", alt: "Amnesia Orange Soda (Hybrid) THC gummies pouch" },
+      { src: "/work/amnesia/watermelon-freeze.png", alt: "Amnesia Watermelon Freeze (Indica) THC gummies pouch" },
+      { src: "/work/amnesia/sour-apple.png", alt: "Amnesia Sour Apple (Indica) THC gummies pouch" },
+      { src: "/work/amnesia/strawberry-shortcake.png", alt: "Amnesia Strawberry Shortcake (Sativa) THC gummies pouch" },
+    ],
+    desc: "A retro-soda energy for a THC gummy line. We built a flexible identity — a script wordmark, bubbly display lettering, and a strain-badge system (Hybrid / Indica / Sativa) — that colour-codes every flavour while holding one unmistakable family look across a six-strong range.",
+    services: ["Brand identity", "Packaging design", "Naming & copy", "Range architecture"],
+    skus: ["Cherry Pie", "Blue Razz", "Orange Soda", "Watermelon Freeze", "Sour Apple", "Strawberry Shortcake"],
+    skusLabel: "Flavours in the range",
+    tone: "b",
+  },
 ];
 
 const TONE_BG = {
@@ -427,6 +445,21 @@ function ServiceTags({ items }) {
   );
 }
 
+/* Gallery tile with graceful placeholder until the real pouch image is added */
+function GalleryTile({ src, alt, label }) {
+  const [err, setErr] = useState(false);
+  return (
+    <div style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 8, overflow: "hidden", aspectRatio: "4 / 5" }}>
+      {err
+        ? <div className="ph" style={{ width: "100%", height: "100%", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+            <span className="ph__tag">{label || "Add image"}</span>
+          </div>
+        : <img src={src} alt={alt} loading="lazy" onError={() => setErr(true)}
+            style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />}
+    </div>
+  );
+}
+
 /* Full editorial row (Work page) */
 function WorkRow({ w, index }) {
   const { navigate } = useRouter();
@@ -439,7 +472,11 @@ function WorkRow({ w, index }) {
             <span className="tag tag--accent">FIG. {w.n}</span>
             <Measure label={`${w.sector}`} style={{ flex: 1 }} />
           </div>
-          <WorkVisual w={w} ratio="5 / 4" framed />
+          {w.gallery
+            ? <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+                {w.gallery.map((g, i) => <GalleryTile key={g.src} src={g.src} alt={g.alt} label={w.skus ? w.skus[i] : ""} />)}
+              </div>
+            : <WorkVisual w={w} ratio="5 / 4" framed />}
         </div>
         <div className="col-span-6 work-row__body" style={{ order: flip ? 1 : 2 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 18 }}>
@@ -528,5 +565,5 @@ Object.assign(window, {
   WHO, SERVICES_DATA, PROCESS_DATA, WORK_DATA, TONE_BG,
   SectionHead, Hero, ValueStatement, ServiceRow, ServicesPreview,
   ProcessStepCard, ProcessSteps, ProcessPreview,
-  WorkVisual, ServiceTags, WorkRow, WorkRows, CaseStudyCard, WorkPreview,
+  WorkVisual, ServiceTags, GalleryTile, WorkRow, WorkRows, CaseStudyCard, WorkPreview,
 });
