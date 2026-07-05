@@ -358,7 +358,7 @@ function Footer() {
   const year = 2026;
   return (
     <footer className="foot" style={{ background: "var(--ink)", color: "var(--bg)" }}>
-      <Pattern rows={1} size={40} />
+      <Pattern rows={1} size={72} />
       <div className="wrap" style={{ paddingBlock: "clamp(56px,8vw,96px)" }}>
         <div className="grid12" style={{ rowGap: 48 }}>
           <div className="col-span-5">
