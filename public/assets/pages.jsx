@@ -773,18 +773,95 @@ function ProcessPage() {
 }
 
 /* ================= WORK ================= */
+/* ---------- Brand-audit example gallery (Carlos) ---------- */
+function CarlosAuditGallery() {
+  const foundation = Array.from({ length: 10 }, (_, i) =>
+    `/work/carlos/foundation-${String(i + 1).padStart(2, "0")}.jpg`);
+  const kit = Array.from({ length: 7 }, (_, i) =>
+    `/work/carlos/kit-${String(i + 1).padStart(2, "0")}.jpg`);
+
+  const Group = ({ label, title, note, imgs }) => (
+    <div style={{ marginTop: "clamp(34px,5vw,64px)" }}>
+      <Reveal>
+        <p className="label label--accent label-dot" style={{ marginBottom: 14 }}>{label}</p>
+        <h3 className="display d3" style={{ maxWidth: "22ch" }}>{title}</h3>
+        <p className="lede" style={{ marginTop: 12, maxWidth: "48ch" }}>{note}</p>
+      </Reveal>
+      <div style={{
+        marginTop: 26, display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+        gap: "clamp(14px,2vw,24px)",
+      }}>
+        {imgs.map((src, i) => (
+          <Reveal as="figure" key={src} delay={i * 40} className="frame"
+            style={{ margin: 0, background: "var(--surface)", overflow: "hidden" }}>
+            <CropMarks color="var(--accent)" />
+            <img src={src} alt={`${title} — page ${i + 1}`} loading="lazy"
+              style={{ width: "100%", height: "auto", display: "block" }} />
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <section className="section--tight">
+      <div className="wrap">
+        <Reveal>
+          <p className="label label--accent label-dot" style={{ marginBottom: 20 }}>Example · Brand audit</p>
+          <h2 className="section-title" style={{ maxWidth: "18ch" }}>
+            A brand audit, <em className="grace">designed</em> — not generated.
+          </h2>
+          <p className="lede" style={{ marginTop: 18, maxWidth: "54ch" }}>
+            Every page below was built by a human designer. AI helps us move faster through research
+            and options, but the diagnosis, the layout, the typography, and the final call are ours.
+            This is a real estate brand system, start to finish.
+          </p>
+        </Reveal>
+        <Group
+          label="Foundation deck"
+          title="Real Estate Brand System — Foundation Deck"
+          note="The strategic read: positioning, audience, and the exact gap to close."
+          imgs={foundation} />
+        <Group
+          label="Master kit"
+          title="Real Estate Brand System — Master Kit"
+          note="The system that comes out of the audit — applied, consistent, and ready to run."
+          imgs={kit} />
+      </div>
+    </section>
+  );
+}
+
 function WorkPage() {
+  const [filter, setFilter] = useState("all");
+  const chips = [["all", "All"], ["work", "Work"], ["audit", "Brand audit"]];
+  const showWork = filter === "all" || filter === "work";
+  const showAudit = filter === "all" || filter === "audit";
   return (
     <main>
       <PageHeader
         label="Selected work" title="Brands we've helped find their space."
-        lede="Identity, packaging, naming, and systems work for founders and growing brands. Visuals are placeholders — drop in real project imagery where marked."
+        lede="Identity, packaging, naming, and systems work for founders and growing brands. Every project here is led by a human designer — not a template, not a generator. AI widens the field of ideas; the diagnosis, the craft, and the final call are always ours."
       />
-      <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,24px)" }}>
+      <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,24px)", paddingBottom: 0 }}>
         <div className="wrap">
-          <WorkRows />
+          <div className="chips" role="tablist" aria-label="Filter projects">
+            {chips.map(([id, label]) => (
+              <button key={id} type="button" className="chip" aria-pressed={filter === id}
+                onClick={() => setFilter(id)}>{label}</button>
+            ))}
+          </div>
         </div>
       </section>
+      {showWork && (
+        <section className="section--tight" style={{ paddingTop: "clamp(16px,2vw,28px)" }}>
+          <div className="wrap">
+            <WorkRows />
+          </div>
+        </section>
+      )}
+      {showAudit && <CarlosAuditGallery />}
       <CtaBand />
     </main>
   );
@@ -898,5 +975,5 @@ Object.assign(window, {
   HomePage, AboutPage, ServicesPage,
   ProcessEye, ProcessStep, ProcessArrow, ProcessBlock,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
-  WorkPage, StartPage, SubscribePage,
+  CarlosAuditGallery, WorkPage, StartPage, SubscribePage,
 });

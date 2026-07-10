@@ -187,7 +187,7 @@ function Logo({ onClick, compact = false }) {
 
 /* ---------- Navigation ---------- */
 const NAV_LINKS = [
-  { id: "work", label: "Work" },
+  { id: "work", label: "Projects" },
 ];
 
 function Nav() {
@@ -375,7 +375,7 @@ function Footer() {
           <div className="col-span-3" style={{ gridColumn: "span 3" }}>
             <p className="label" style={{ color: "color-mix(in oklab, var(--bg) 50%, transparent)", marginBottom: 18 }}>Explore</p>
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 12 }}>
-              {[["work","Work"],["about","About"]].map(([id,l]) => (
+              {[["work","Projects"],["about","About"]].map(([id,l]) => (
                 <li key={id}><a href={`#${id}`} onClick={(e)=>go(e,id)}
                   style={{ color: "color-mix(in oklab, var(--bg) 80%, transparent)", fontSize: 16, transition: "color .3s" }}>{l}</a></li>
               ))}
