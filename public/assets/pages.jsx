@@ -834,18 +834,34 @@ function CarlosAuditGallery() {
 }
 
 function WorkPage() {
+  const [filter, setFilter] = useState("all");
+  const chips = [["all", "All"], ["work", "Work"], ["audit", "Brand audit"]];
+  const showWork = filter === "all" || filter === "work";
+  const showAudit = filter === "all" || filter === "audit";
   return (
     <main>
       <PageHeader
         label="Selected work" title="Brands we've helped find their space."
         lede="Identity, packaging, naming, and systems work for founders and growing brands. Every project here is led by a human designer — not a template, not a generator. AI widens the field of ideas; the diagnosis, the craft, and the final call are always ours."
       />
-      <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,24px)" }}>
+      <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,24px)", paddingBottom: 0 }}>
         <div className="wrap">
-          <WorkRows />
+          <div className="chips" role="tablist" aria-label="Filter projects">
+            {chips.map(([id, label]) => (
+              <button key={id} type="button" className="chip" aria-pressed={filter === id}
+                onClick={() => setFilter(id)}>{label}</button>
+            ))}
+          </div>
         </div>
       </section>
-      <CarlosAuditGallery />
+      {showWork && (
+        <section className="section--tight" style={{ paddingTop: "clamp(16px,2vw,28px)" }}>
+          <div className="wrap">
+            <WorkRows />
+          </div>
+        </section>
+      )}
+      {showAudit && <CarlosAuditGallery />}
       <CtaBand />
     </main>
   );
