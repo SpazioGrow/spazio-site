@@ -815,17 +815,17 @@ function CarlosAuditGallery() {
           <p className="lede" style={{ marginTop: 18, maxWidth: "54ch" }}>
             Every page below was built by a human designer. AI helps us move faster through research
             and options, but the diagnosis, the layout, the typography, and the final call are ours.
-            This is the Carlos realtor audit, start to finish.
+            This is a real estate brand system, start to finish.
           </p>
         </Reveal>
         <Group
           label="Foundation deck"
-          title="Carlos Realtor — Foundation Deck"
+          title="Real Estate Brand System — Foundation Deck"
           note="The strategic read: positioning, audience, and the exact gap to close."
           imgs={foundation} />
         <Group
           label="Master kit"
-          title="Carlos Master Realtor Kit"
+          title="Real Estate Brand System — Master Kit"
           note="The system that comes out of the audit — applied, consistent, and ready to run."
           imgs={kit} />
       </div>
