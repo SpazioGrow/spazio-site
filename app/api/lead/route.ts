@@ -1,8 +1,14 @@
 // Lead capture endpoint for the "Start a Project" form.
 // Runs server-side only so AIRTABLE_TOKEN is never exposed to the browser.
+// On success it also drops a card into the Asana "Sales Pipeline" (New Inquiry).
+import { waitUntil } from "@vercel/functions";
 
 const AIRTABLE_URL =
   "https://api.airtable.com/v0/appv2sIRwDvNPjV7j/tbl5qLZO9mAN9LQ0P";
+
+// Asana Sales Pipeline — new website inquiries land in the "New Inquiry" section.
+const ASANA_SALES_PROJECT = "1216493114076820";
+const ASANA_NEW_INQUIRY_SECTION = "1216493114084534";
 
 // Airtable field NAMES have trailing spaces, so we address fields by ID.
 const FIELD_IDS = {
@@ -63,6 +69,41 @@ async function parseBody(request: Request): Promise<LeadInput> {
     ),
     message: readString(form.get("message") ?? form.get("details")),
   };
+}
+
+// Fire-and-forget: create a card in the Asana Sales Pipeline ("New Inquiry").
+// Never blocks or fails the lead capture — logs and moves on.
+async function createSalesTask(lead: {
+  name: string; email: string; company: string; website: string; service: string; message: string;
+}) {
+  const asanaToken = process.env.ASANA_TOKEN;
+  if (!asanaToken) { console.error("ASANA_TOKEN missing — skipping Sales Pipeline card"); return; }
+
+  const notes =
+    `New website inquiry — Start a Project.\n\n` +
+    `Name: ${lead.name}\n` +
+    `Email: ${lead.email}\n` +
+    (lead.company ? `Company: ${lead.company}\n` : "") +
+    (lead.website ? `Website: ${lead.website}\n` : "") +
+    (lead.service ? `Interest: ${lead.service}\n` : "") +
+    (lead.message ? `\nProject notes:\n${lead.message}\n` : "");
+  const taskName = `New inquiry — ${lead.name}${lead.company ? ` (${lead.company})` : ""}`;
+  const headers = { Authorization: `Bearer ${asanaToken}`, "Content-Type": "application/json" };
+
+  try {
+    const res = await fetch("https://app.asana.com/api/1.0/tasks", {
+      method: "POST", headers,
+      body: JSON.stringify({ data: { name: taskName, notes, projects: [ASANA_SALES_PROJECT] } }),
+    });
+    if (!res.ok) { console.error("Asana task create failed:", res.status, await res.text().catch(() => "")); return; }
+    const taskId = (await res.json())?.data?.gid;
+    if (taskId) {
+      const mv = await fetch(`https://app.asana.com/api/1.0/sections/${ASANA_NEW_INQUIRY_SECTION}/addTask`, {
+        method: "POST", headers, body: JSON.stringify({ data: { task: taskId } }),
+      });
+      if (!mv.ok) console.error("Asana move-to-section failed:", mv.status, await mv.text().catch(() => ""));
+    }
+  } catch (e) { console.error("Asana Sales Pipeline error:", (e as Error).message); }
 }
 
 export async function POST(request: Request) {
@@ -134,6 +175,13 @@ export async function POST(request: Request) {
       { status: 502 },
     );
   }
+
+  // Lead is saved. Drop a Sales Pipeline card in the background (never blocks).
+  waitUntil(createSalesTask({
+    name, email,
+    company: input.company ?? "", website: input.website ?? "",
+    service: input.service ?? "", message: input.message ?? "",
+  }));
 
   return Response.json({ ok: true }, { status: 201 });
 }
