@@ -24,4 +24,5 @@ export const SERVICE_OPTIONS = [
 export const SOURCE_OPTIONS = [
   "Website", "Referral", "Instagram", "Other", "Claude Research",
   "Website Form", "Foundation Form", "Festival Lead", "Positioned Ad Set",
+  "Start a Project",
 ] as const;

@@ -8,7 +8,7 @@ const { useState, useEffect, useRef, useContext, createContext, useCallback } = 
 const RouterCtx = createContext({ route: "home", navigate: () => {} });
 const useRouter = () => useContext(RouterCtx);
 
-const ROUTES = ["home", "work", "about", "start", "subscribe", "foundation", "brief-ready"];
+const ROUTES = ["home", "work", "about", "start", "start-project", "subscribe", "foundation", "brief-ready"];
 
 /* ---------- Scroll reveal ---------- */
 function useReveal() {
@@ -243,9 +243,9 @@ function Nav() {
              style={{ fontSize: 15, fontWeight: 500, padding: "8px 14px", borderRadius: 100,
                color: route === "subscribe" ? "var(--ink)" : "var(--ink-2)" }}
           >Subscribe</a>
-          <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--primary"
+          <a href="#start-project" onClick={(e) => go(e, "start-project")} className="btn btn--primary"
              style={{ marginLeft: 10, padding: "11px 20px" }}>
-            Schedule Call <Arrow />
+            Start a project <Arrow />
           </a>
         </nav>
 
@@ -283,9 +283,9 @@ function Nav() {
               {l.label} <Arrow size={16} />
             </a>
           ))}
-          <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--primary"
+          <a href="#start-project" onClick={(e) => { go(e, "start-project"); setOpen(false); }} className="btn btn--primary"
              style={{ width: "100%", justifyContent: "center", marginTop: 18, padding: "15px" }}>
-            Schedule Call <Arrow />
+            Start a project <Arrow />
           </a>
         </div>
       </div>

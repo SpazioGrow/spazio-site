@@ -12,7 +12,11 @@ const FIELD_IDS = {
   website: "fldJeI9yMHWp9CMaI",
   service: "fld15eMrZbh2n8Kev",
   source: "fldD97lODtKXRBp57",
+  notes: "fld3V6uS3RfOxS8ZV",
 } as const;
+
+// Every submission from the public Start-a-Project page is tagged with this Source.
+const LEAD_SOURCE = "Start a Project";
 
 type LeadInput = {
   name?: string;
@@ -20,6 +24,7 @@ type LeadInput = {
   company?: string;
   website?: string;
   service?: string;
+  message?: string;
 };
 
 function readString(value: unknown): string {
@@ -40,6 +45,7 @@ async function parseBody(request: Request): Promise<LeadInput> {
       service: readString(
         data.service ?? data.serviceInterest ?? data["service interest"],
       ),
+      message: readString(data.message ?? data.details ?? data.notes),
     };
   }
 
@@ -55,6 +61,7 @@ async function parseBody(request: Request): Promise<LeadInput> {
         form.get("serviceInterest") ??
         form.get("service interest"),
     ),
+    message: readString(form.get("message") ?? form.get("details")),
   };
 }
 
@@ -88,11 +95,12 @@ export async function POST(request: Request) {
   const fields: Record<string, string> = {
     [FIELD_IDS.name]: name,
     [FIELD_IDS.email]: email,
-    [FIELD_IDS.source]: "Website Form",
+    [FIELD_IDS.source]: LEAD_SOURCE,
   };
   if (input.company) fields[FIELD_IDS.company] = input.company;
   if (input.website) fields[FIELD_IDS.website] = input.website;
   if (input.service) fields[FIELD_IDS.service] = input.service;
+  if (input.message) fields[FIELD_IDS.notes] = input.message;
 
   let airtableResponse: Response;
   try {
