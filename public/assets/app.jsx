@@ -60,7 +60,9 @@ function App() {
   useEffect(() => { applyTweaks(t); }, [t]);
 
   const getHash = () => {
-    const h = (window.location.hash || "#home").replace("#", "");
+    // Fall back to a server-set initial route (e.g. /start-project) when there's no hash.
+    const raw = (window.location.hash || "").replace("#", "");
+    const h = raw || (typeof window !== "undefined" && window.SPAZIO_INITIAL_ROUTE) || "home";
     if (h.startsWith("review=")) return "review";
     // After Square checkout (?orderId=...) or a comp bypass (?access=...), send
     // the visitor into the gated Foundation flow regardless of hash.
@@ -104,7 +106,8 @@ function App() {
       home:      ["Spazio — The Brand Operating Studio for Founder-Led Companies", "Spazio is a brand operating studio — research-based, designer-led — that closes the gap between a great business and a brand that matches it. Strategy, positioning, and identity that make you look like the category leader you're becoming."],
       about:     ["About — Spazio | The Brand Operating Studio for Founder-Led Companies", "Spazio is a brand operating studio for founder-led companies — research-based, designer-led, and senior throughout. How we work, and who it's for."],
       work:      ["Work — Spazio | Selected Brand and Identity Projects", "Selected brand strategy and identity work for founders and growing digital products."],
-      start:     ["Start a Brand Gap Audit — Spazio", "Start with a $750 Brand Gap Audit, credited toward your engagement."],
+      start:            ["Start a project — Spazio", "Tell us about your project and what you need. A real designer reads every inquiry and replies within two business days."],
+      "start-project":  ["Start a project — Spazio", "Tell us about your project and what you need. A real designer reads every inquiry and replies within two business days."],
       subscribe: ["Subscribe — Spazio", "Occasional notes on brand, design, and digital work for founders."],
     };
     const [title, desc] = META[route] || META.home;
@@ -118,7 +121,8 @@ function App() {
   switch (route) {
     case "work":     Page = <WorkPage />; break;
     case "about":    Page = <AboutPage />; break;
-    case "start":    Page = <StartPage />; break;
+    case "start":
+    case "start-project": Page = <StartProjectPage />; break;
     case "subscribe":Page = <SubscribePage />; break;
     case "foundation": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><PaidFoundationGate /></div></section></main>; break;
     case "brief-ready": Page = <main><section style={{ paddingTop: "clamp(40px,6vw,84px)", paddingBottom: "clamp(56px,8vw,108px)" }}><div className="wrap"><BriefReadyPage /></div></section></main>; break;

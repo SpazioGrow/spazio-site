@@ -922,6 +922,159 @@ function AboutPage() {
 }
 
 /* ================= START (intake) ================= */
+/* ================= START A PROJECT (public inquiry — Journey 1) ================= */
+/* Client-facing lead capture. Submits to /api/lead (Airtable Leads, Source =
+   "Start a Project"). Separate from the paid Brand Intelligence Report pipeline. */
+function StartProjectForm() {
+  const [f, setF] = useState({ name: "", email: "", company: "", website: "", service: "", message: "" });
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [done, setDone] = useState(false);
+  const set = (k, v) => {
+    setF(function (p) { return Object.assign({}, p, { [k]: v }); });
+    setErrors(function (e) { return Object.assign({}, e, { [k]: undefined }); });
+  };
+  const services = (typeof window !== "undefined" && window.SPAZIO_FOUNDATION_OPTIONS && window.SPAZIO_FOUNDATION_OPTIONS.service)
+    || ["Brand Identity", "Packaging", "Website", "Digital Product", "Full Package", "UX", "Not Sure"];
+
+  const submit = async () => {
+    const e = {};
+    if (!f.name.trim()) e.name = "Your name, please.";
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.trim())) e.email = "A valid email, please.";
+    setErrors(e);
+    if (Object.keys(e).length) return;
+    setSubmitting(true); setSubmitError("");
+    try {
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: f.name, email: f.email, company: f.company, website: f.website, service: f.service, message: f.message }),
+      });
+      if (!res.ok) { const d = await res.json().catch(function () { return {}; }); throw new Error(d.error || "Something went wrong."); }
+      setDone(true);
+    } catch (err) {
+      setSubmitError((err && err.message) || "Could not send. Please try again.");
+    } finally { setSubmitting(false); }
+  };
+
+  const card = { border: "1px solid var(--line)", borderRadius: 14, background: "var(--surface)", padding: "clamp(24px,3.4vw,40px)" };
+
+  if (done) {
+    return (
+      <div style={card}>
+        <p className="label label--accent label-dot" style={{ marginBottom: 16 }}>Received</p>
+        <h2 className="display d3" style={{ maxWidth: "15ch" }}>Thank you — we've got it.</h2>
+        <p className="lede" style={{ marginTop: 14, maxWidth: "40ch" }}>
+          A real designer reads every inquiry. We'll get back to you within two business days.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={card}>
+      <div className="grid12" style={{ columnGap: 16, rowGap: 0 }}>
+        <div className="col-span-6">
+          <div className="field" style={{ gap: 6, marginBottom: 16 }}>
+            <label>Name <span className="breq">*</span></label>
+            <input className={"input" + (errors.name ? " err" : "")} value={f.name}
+              onChange={function (e) { set("name", e.target.value); }} placeholder="Your name" />
+            {errors.name && <span className="err-msg">{errors.name}</span>}
+          </div>
+        </div>
+        <div className="col-span-6">
+          <div className="field" style={{ gap: 6, marginBottom: 16 }}>
+            <label>Email <span className="breq">*</span></label>
+            <input className={"input" + (errors.email ? " err" : "")} type="email" value={f.email}
+              onChange={function (e) { set("email", e.target.value); }} placeholder="you@company.com" />
+            {errors.email && <span className="err-msg">{errors.email}</span>}
+          </div>
+        </div>
+        <div className="col-span-6">
+          <div className="field" style={{ gap: 6, marginBottom: 16 }}>
+            <label>Company <span className="opt">optional</span></label>
+            <input className="input" value={f.company}
+              onChange={function (e) { set("company", e.target.value); }} placeholder="Company name" />
+          </div>
+        </div>
+        <div className="col-span-6">
+          <div className="field" style={{ gap: 6, marginBottom: 16 }}>
+            <label>Website <span className="opt">optional</span></label>
+            <input className="input" value={f.website}
+              onChange={function (e) { set("website", e.target.value); }} placeholder="yoursite.com" />
+          </div>
+        </div>
+      </div>
+
+      <div className="field" style={{ gap: 8, marginBottom: 18 }}>
+        <label>What do you need? <span className="opt">optional</span></label>
+        <div className="chips">
+          {services.map(function (s) {
+            return (
+              <button key={s} type="button" className="chip" aria-pressed={f.service === s}
+                onClick={function () { set("service", f.service === s ? "" : s); }}>{s}</button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="field" style={{ gap: 6, marginBottom: 20 }}>
+        <label>Tell us about your project <span className="opt">optional</span></label>
+        <textarea className="textarea" value={f.message} onChange={function (e) { set("message", e.target.value); }}
+          placeholder="Where you are, what you're building, and what you're hoping to fix." style={{ minHeight: 120 }} />
+      </div>
+
+      {submitError && <p className="err-msg" style={{ marginBottom: 14 }}>{submitError}</p>}
+
+      <button type="button" className="btn btn--primary" onClick={submit} disabled={submitting}
+        style={{ padding: "15px 26px", opacity: submitting ? 0.7 : 1 }}>
+        {submitting ? "Sending…" : "Send inquiry"} <Arrow />
+      </button>
+    </div>
+  );
+}
+
+function StartProjectPage() {
+  return (
+    <main>
+      <section className="section--tight" style={{ paddingTop: "clamp(40px,6vw,88px)", paddingBottom: "clamp(56px,8vw,108px)" }}>
+        <div className="wrap">
+          <div className="grid12" style={{ rowGap: 44, alignItems: "start" }}>
+            <div className="col-span-6">
+              <Reveal>
+                <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Start a project</p>
+                <h1 className="display d2" style={{ maxWidth: "14ch" }}>
+                  Let's build the brand your business has <em className="grace">earned</em>.
+                </h1>
+                <p className="lede" style={{ marginTop: 24, maxWidth: "42ch" }}>
+                  Tell us where you are and what you need. We read every inquiry ourselves and reply
+                  within two business days — a real conversation, not a funnel.
+                </p>
+                <div style={{ marginTop: 34, display: "grid", gap: 0, maxWidth: 400 }}>
+                  {[["Human-led", "A designer reads and replies — every time."],
+                    ["No obligation", "A conversation first; scope and pricing come after."],
+                    ["Fast", "We reply within two business days."]].map(function (row) {
+                    return (
+                      <div key={row[0]} style={{ display: "flex", gap: 12, alignItems: "baseline", borderTop: "1px solid var(--line)", paddingBlock: 14 }}>
+                        <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto", transform: "translateY(-1px)" }} />
+                        <span style={{ fontSize: 15 }}><strong style={{ fontWeight: 600 }}>{row[0]}.</strong> <span className="muted">{row[1]}</span></span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Reveal>
+            </div>
+            <div className="col-span-6">
+              <Reveal delay={100}><StartProjectForm /></Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function StartPage() {
   return (
     <main>
@@ -975,5 +1128,5 @@ Object.assign(window, {
   HomePage, AboutPage, ServicesPage,
   ProcessEye, ProcessStep, ProcessArrow, ProcessBlock,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
-  CarlosAuditGallery, WorkPage, StartPage, SubscribePage,
+  CarlosAuditGallery, WorkPage, StartProjectForm, StartProjectPage, StartPage, SubscribePage,
 });
