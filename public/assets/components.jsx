@@ -188,6 +188,7 @@ function Logo({ onClick, compact = false }) {
 /* ---------- Navigation ---------- */
 const NAV_LINKS = [
   { id: "work", label: "Projects" },
+  { id: "about", label: "About" },
 ];
 
 function Nav() {
