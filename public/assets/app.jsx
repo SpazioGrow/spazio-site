@@ -104,7 +104,7 @@ function App() {
   useEffect(() => {
     const META = {
       home:      ["Spazio — The Brand Operating Studio for Founder-Led Companies", "Spazio is a brand operating studio — research-based, designer-led — that closes the gap between a great business and a brand that matches it. Strategy, positioning, and identity that make you look like the category leader you're becoming."],
-      about:     ["About — Spazio | The Brand Operating Studio for Founder-Led Companies", "Spazio is a brand operating studio for founder-led companies — research-based, designer-led, and senior throughout. How we work, and who it's for."],
+      about:     ["About — Spazio | Creating brands people feel.", "Spazio is a creative studio where strategy, storytelling, and design come together to build brands with depth. Founded by Christine Montalbano."],
       work:      ["Work — Spazio | Selected Brand and Identity Projects", "Selected brand strategy and identity work for founders and growing digital products."],
       start:            ["Start a project — Spazio", "Tell us about your project and what you need. A real designer reads every inquiry and replies within two business days."],
       "start-project":  ["Start a project — Spazio", "Tell us about your project and what you need. A real designer reads every inquiry and replies within two business days."],

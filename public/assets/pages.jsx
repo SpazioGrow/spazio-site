@@ -870,49 +870,43 @@ function WorkPage() {
 /* ================= ABOUT ================= */
 function AboutPage() {
   const para = { fontSize: 17, lineHeight: 1.7, color: "var(--ink-2)", marginTop: 18 };
-  const sub = { fontSize: "clamp(24px,3vw,36px)", marginTop: "clamp(34px,4.5vw,56px)" };
   return (
     <main>
       <PageHeader
         label="About"
-        title="We make products look like the leader they’re becoming."
-        lede="Spazio is a brand studio for app and SaaS founders."
+        title="Creating brands people feel."
+        lede="Spazio is a creative studio where strategy, storytelling, and design come together to build brands with depth."
       />
       <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,24px)" }}>
         <div className="wrap">
-          <div style={{ maxWidth: 760 }}>
-            <Reveal>
-              <p style={{ fontSize: "clamp(18px,1.7vw,21px)", lineHeight: 1.6, color: "var(--ink)", marginTop: 0 }}>
-                We help founders close the gap between a great product and a brand that matches it.
-              </p>
-              <p style={para}>
-                The product is ahead; the brand hasn’t caught up. That gap quietly costs you — raises,
-                hires, and customers who pick the competitor that simply looked the part.
-              </p>
-              <p style={para}>
-                So we built Spazio to close it differently: agency-caliber strategy and identity,
-                delivered direct and fast.
-              </p>
-            </Reveal>
-
-            <Reveal delay={60}>
-              <h2 className="section-title" style={sub}>How we work</h2>
-              <p style={para}>
-                You work with us directly — no account teams, no juniors, no three rounds of internal
-                review. Senior-level thinking at your stage, moving in weeks, not quarters.
-              </p>
-              <p style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "clamp(20px,2vw,26px)", color: "var(--accent-deep)", marginTop: 18 }}>
-                Same bar. Less drag.
-              </p>
-            </Reveal>
-
-            <Reveal delay={90}>
-              <h2 className="section-title" style={sub}>Where we’re from</h2>
-              <p style={para}>
-                We’re based in Detroit — a city that knows how to build things that last and reinvent
-                what a brand can be. That’s the energy we bring to every product we touch.
-              </p>
-            </Reveal>
+          <div className="grid12" style={{ rowGap: 44, alignItems: "start" }}>
+            <div className="col-span-7">
+              <Reveal>
+                <p style={{ fontSize: "clamp(18px,1.7vw,21px)", lineHeight: 1.65, color: "var(--ink)", marginTop: 0, maxWidth: "44ch" }}>
+                  Founded by <strong style={{ fontWeight: 600 }}>Christine Montalbano</strong>, a UX and brand designer
+                  with experience shaping global experiences and collaborating with founder-led businesses,
+                  Spazio was created from a desire to bring humanity back into branding.
+                </p>
+                <p style={Object.assign({}, para, { maxWidth: "52ch" })}>
+                  Backed by a collective of talented creatives, Spazio partners with founders and growing
+                  brands to craft distinctive identities, packaging, and digital experiences that capture
+                  not only what a brand looks like — but what it stands for.
+                </p>
+                <p style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "clamp(21px,2.4vw,30px)", lineHeight: 1.35, color: "var(--accent-deep)", marginTop: 36, maxWidth: "24ch" }}>
+                  We believe the most memorable brands are built through connection, intention, and a story worth sharing.
+                </p>
+              </Reveal>
+            </div>
+            <div className="col-span-5">
+              <Reveal delay={100}>
+                <figure className="frame" style={{ margin: 0, position: "relative", background: "var(--surface)", overflow: "hidden" }}>
+                  <CropMarks color="var(--accent)" />
+                  <img src="/about/christine-montalbano.jpg" alt="Christine Montalbano, founder of Spazio, at work in the studio"
+                    loading="lazy" style={{ width: "100%", height: "auto", display: "block" }} />
+                </figure>
+                <p className="label" style={{ marginTop: 14, color: "var(--ink-3)" }}>Christine Montalbano · Founder</p>
+              </Reveal>
+            </div>
           </div>
         </div>
       </section>
