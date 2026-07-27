@@ -50,7 +50,7 @@ function PaidFoundationGate() {
   if (status === "paid") {
     return (
       <div>
-        <IllustrationStrip height={72} items={["coffee-cup", "olive-branch", "eye", "flower"]} style={{ border: "1px solid var(--line)", borderRadius: 12, marginBottom: "clamp(22px,3vw,36px)" }} />
+        <IllustrationStrip height={72} items={["coffee-cup", "olive-branch", "sprig", "flower"]} style={{ border: "1px solid var(--line)", borderRadius: 12, marginBottom: "clamp(22px,3vw,36px)" }} />
         <FoundationForm prefillEmail={email} comped={comped} onSuccess={function () { window.location.hash = "brief-ready"; }} />
       </div>
     );

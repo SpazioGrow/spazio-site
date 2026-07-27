@@ -171,7 +171,7 @@ function Pattern({ size = 44, rows = 1, count = 72, style }) {
 }
 
 /* ---------- Hand-drawn illustrations (recolored to the palette) ---------- */
-const ILLOS = ["olive-branch", "flower", "leaf", "eye", "sun", "coffee-cup", "sprig", "lemon-branch"];
+const ILLOS = ["olive-branch", "flower", "leaf", "sun", "coffee-cup", "sprig", "lemon-branch"];
 function Illustration({ name, height = 90, style }) {
   return (
     <img src={`/illustrations/${name}.png`} alt="" aria-hidden="true" loading="lazy"
@@ -194,8 +194,8 @@ function IllustrationStrip({ height = 100, items, style }) {
 function Logo({ onClick, compact = false }) {
   return (
     <a href="#home" onClick={onClick} aria-label="Spazio — home"
-       style={{ display: "inline-flex", alignItems: "center", gap: 11 }}>
-      <Eye size={34} live />
+       style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+      <span aria-hidden="true" style={{ width: 11, height: 11, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto" }} />
       <span style={{
         fontFamily: "var(--display)", fontWeight: 700, fontSize: 24,
         letterSpacing: "-0.02em", color: "var(--ink)",
@@ -380,12 +380,12 @@ function Footer() {
   const year = 2026;
   return (
     <footer className="foot" style={{ background: "var(--ink)", color: "var(--bg)" }}>
-      <IllustrationStrip height={78} items={["olive-branch", "flower", "eye", "sun", "sprig"]} style={{ borderBottom: "1px solid color-mix(in oklab, var(--bg) 12%, transparent)" }} />
+      <IllustrationStrip height={78} items={["olive-branch", "flower", "leaf", "sun", "sprig"]} style={{ borderBottom: "1px solid color-mix(in oklab, var(--bg) 12%, transparent)" }} />
       <div className="wrap" style={{ paddingBlock: "clamp(56px,8vw,96px)" }}>
         <div className="grid12" style={{ rowGap: 48 }}>
           <div className="col-span-5">
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
-              <Eye size={26} live />
+              <span aria-hidden="true" style={{ width: 11, height: 11, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto" }} />
               <span style={{ fontFamily: "var(--display)", fontWeight: 600, fontSize: 22, letterSpacing: "-0.03em" }}>Spazio</span>
             </div>
             <p style={{ color: "color-mix(in oklab, var(--bg) 66%, transparent)", maxWidth: "34ch",
