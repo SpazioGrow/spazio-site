@@ -481,7 +481,7 @@ function HomePage() {
   return (
     <main>
       <Hero />
-      <Pattern rows={1} size={140} style={{ borderBlock: "1px solid var(--line)" }} />
+      <IllustrationStrip height={118} style={{ borderBlock: "1px solid var(--line)" }} />
       <HomeGap />
       <ProcessBlock />
     </main>

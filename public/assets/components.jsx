@@ -170,6 +170,27 @@ function Pattern({ size = 44, rows = 1, count = 72, style }) {
   );
 }
 
+/* ---------- Hand-drawn illustrations (recolored to the palette) ---------- */
+const ILLOS = ["olive-branch", "flower", "leaf", "eye", "sun", "coffee-cup", "sprig", "lemon-branch"];
+function Illustration({ name, height = 90, style }) {
+  return (
+    <img src={`/illustrations/${name}.png`} alt="" aria-hidden="true" loading="lazy"
+      style={{ height, width: "auto", objectFit: "contain", display: "block", flex: "0 0 auto", ...style }} />
+  );
+}
+function IllustrationStrip({ height = 100, items, style }) {
+  const list = items || ILLOS;
+  return (
+    <div aria-hidden="true" style={{
+      display: "flex", alignItems: "center", justifyContent: "space-around",
+      gap: "clamp(18px,4vw,52px)", flexWrap: "wrap",
+      padding: "clamp(22px,3vw,40px) var(--gutter)", ...style,
+    }}>
+      {list.map((n) => <Illustration key={n} name={n} height={height} />)}
+    </div>
+  );
+}
+
 function Logo({ onClick, compact = false }) {
   return (
     <a href="#home" onClick={onClick} aria-label="Spazio — home"
@@ -359,7 +380,7 @@ function Footer() {
   const year = 2026;
   return (
     <footer className="foot" style={{ background: "var(--ink)", color: "var(--bg)" }}>
-      <Pattern rows={1} size={108} />
+      <IllustrationStrip height={78} items={["olive-branch", "flower", "eye", "sun", "sprig"]} style={{ borderBottom: "1px solid color-mix(in oklab, var(--bg) 12%, transparent)" }} />
       <div className="wrap" style={{ paddingBlock: "clamp(56px,8vw,96px)" }}>
         <div className="grid12" style={{ rowGap: 48 }}>
           <div className="col-span-5">
@@ -404,5 +425,5 @@ function Footer() {
 Object.assign(window, {
   RouterCtx, useRouter, ROUTES, useReveal, Reveal, Arrow, ArrowDown,
   CropMarks, ColTicks, Measure,
-  Logo, Nav, Marquee, Footer, Eye, Pattern, PatternTile,
+  Logo, Nav, Marquee, Footer, Eye, Pattern, PatternTile, Illustration, IllustrationStrip,
 });
