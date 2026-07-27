@@ -4,7 +4,11 @@
 
 /* ---- Tweak presets ---- */
 const ACCENTS = {
-  "#E2654F": { // Coral (locked-system default)
+  "#034560": { // Teal (default) — Pantone 3035 / 2905
+    accent: "#034560", deep: "#023241", bright: "#0A5F82",
+    soft: "#E5F2F8", mid: "#BEE4F2", line: "#A7D3E3",
+  },
+  "#E2654F": { // Coral (legacy)
     accent: "#E2654F", deep: "#B5532F", bright: "#E97A63",
     soft: "#FBEAE3", mid: "#F3C9BC", line: "#EAB6A6",
   },
@@ -22,12 +26,12 @@ const ACCENTS = {
   },
 };
 const PAPERS = {
-  warm: { bg: "#F7EEDC", bg2: "#F1E6D0", bg3: "#EADFC4", surface: "#FBF6EA", line: "#E1D3B8", line2: "#D6C5A5", line3: "#C8B48F", ink: "#211A12", ink2: "#4A4034", ink3: "#7A6E5C", ink4: "#A99B84" },
+  warm: { bg: "#F7EFE1", bg2: "#F0E4D2", bg3: "#E8D9C3", surface: "#FCF7EE", line: "#E4D5BF", line2: "#D8C6AC", line3: "#CBB596", ink: "#2E1A10", ink2: "#5F4636", ink3: "#90786A", ink4: "#BBA695" },
   cool: { bg: "#F4F5F4", bg2: "#EAECEA", bg3: "#E0E3E0", surface: "#FBFCFB", line: "#E0E3E0", line2: "#D0D4D1", line3: "#BEC4C0", ink: "#15171A", ink2: "#4C5157", ink3: "#828990", ink4: "#AEB4B8" },
 };
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accent": "#E2654F",
+  "accent": "#034560",
   "displayFont": "Grotesk",
   "paper": "warm",
   "motion": true
