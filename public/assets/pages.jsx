@@ -123,29 +123,29 @@ function CtaBand() {
 /* ---- The Gap ---- */
 function HomeGap() {
   return (
-    <section className="section band">
+    <section className="section" style={{ background: "var(--teal)", color: "var(--accent-ink)", overflow: "hidden" }}>
       <div className="wrap">
-        <div className="grid12" style={{ rowGap: 28, alignItems: "start" }}>
+        <div className="grid12" style={{ rowGap: 36, alignItems: "center" }}>
           <div className="col-span-7">
             <Reveal>
-              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>The gap</p>
-              <h2 className="section-title" style={{ maxWidth: "16ch" }}>
-                Your business is ahead of your brand. You can <em className="grace">feel</em> it.
+              <p className="label" style={{ marginBottom: 22, color: "var(--sky)" }}>The gap</p>
+              <h2 className="display d2" style={{ maxWidth: "15ch", color: "var(--accent-ink)", lineHeight: 0.98 }}>
+                Your business is ahead of your brand. You can <em className="grace" style={{ color: "var(--sky)" }}>feel</em> it.
               </h2>
-            </Reveal>
-          </div>
-          <div className="col-span-5">
-            <Reveal delay={80}>
-              <p className="lede" style={{ marginBottom: 18 }}>
-                You’ve built something genuinely good — but the brand around it is a step behind,
-                and your users feel it before they can name it. They decide you’re “fine” before
-                they ever sign up.
+              <p className="lede" style={{ marginTop: 26, maxWidth: "44ch", color: "color-mix(in oklab, var(--accent-ink) 86%, transparent)" }}>
+                You’ve built something genuinely good — but the brand around it is a step behind, and
+                your users feel it before they can name it. They decide you’re “fine” before they ever sign up.
               </p>
-              <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-2)", margin: 0, maxWidth: "46ch" }}>
+              <p style={{ marginTop: 18, fontSize: 17, lineHeight: 1.6, maxWidth: "46ch", color: "color-mix(in oklab, var(--accent-ink) 70%, transparent)" }}>
                 That gap quietly costs you: interest that doesn’t convert, deals that take longer to
                 close, the competitor who simply looked the part winning by default. Closing it is the
                 whole job — and it’s the part we love.
               </p>
+            </Reveal>
+          </div>
+          <div className="col-span-5">
+            <Reveal delay={120}>
+              <Illustration name="lemon-branch-light" style={{ height: "auto", width: "100%", maxWidth: 380, marginLeft: "auto" }} />
             </Reveal>
           </div>
         </div>
@@ -481,7 +481,7 @@ function HomePage() {
   return (
     <main>
       <Hero />
-      <IllustrationStrip height={118} style={{ borderBlock: "1px solid var(--line)" }} />
+      <IllustrationStrip height={146} style={{ borderBlock: "1px solid var(--line)", background: "var(--bg-2)" }} />
       <HomeGap />
       <ProcessBlock />
     </main>
