@@ -544,7 +544,7 @@ function ServicesPage() {
       <PageHeader
         band="band-ink"
         label="What we do" title="Everything we make earns its place."
-        lede="Ways we help your brand become impossible to forget — from the first idea to the details that make it stick. You work directly with Christine, start to finish."
+        lede="Ways we help your brand become impossible to forget — from the first idea to the details that make it stick. You work directly with creatives and designers, start to finish."
       />
       <section className="section--tight">
         <div className="wrap">
@@ -1180,7 +1180,7 @@ function StartProjectForm() {
         <p className="label label--accent label-dot" style={{ marginBottom: 16 }}>Received</p>
         <h2 className="display d3" style={{ maxWidth: "15ch" }}>Thank you — we've got it.</h2>
         <p className="lede" style={{ marginTop: 14, maxWidth: "40ch" }}>
-          Christine reads every note personally. We'll get back to you within two business days.
+          We read every note personally. We'll get back to you within two business days.
         </p>
       </div>
     );
@@ -1262,11 +1262,11 @@ function StartProjectPage() {
                   Let's start with your <em className="grace">story</em>.
                 </h1>
                 <p className="lede" style={{ marginTop: 24, maxWidth: "42ch" }}>
-                  Tell us where you are and what you're building. Christine reads every note personally
-                  and replies within two business days — a real conversation, not a funnel.
+                  Tell us where you are and what you're building. We read every note personally
+                  and reply within two business days — a real conversation, not a funnel.
                 </p>
                 <div style={{ marginTop: 34, display: "grid", gap: 0, maxWidth: 400 }}>
-                  {[["Straight to Christine", "She reads and replies — every time."],
+                  {[["Straight to the studio", "We read and reply — every time."],
                     ["No obligation", "A conversation first; scope and pricing come after."],
                     ["Fast", "We reply within two business days."]].map(function (row) {
                     return (
