@@ -931,6 +931,151 @@ function AboutPage() {
   );
 }
 
+/* ================= WAYS TO PARTNER ================= */
+const PARTNER_WAYS = [
+  {
+    n: "01",
+    title: "Brand Foundation",
+    headline: "Find your space. Define your story.",
+    desc: "For founders who have something meaningful to build but need clarity around their positioning, audience, and how to communicate their value.",
+    include: ["Brand strategy & positioning", "Audience insights", "Brand story & messaging", "Visual direction", "Brand roadmap"],
+    bestFor: "New businesses, early-stage founders, or brands preparing for growth.",
+  },
+  {
+    n: "02",
+    title: "Brand Identity",
+    headline: "Turn your vision into a recognizable brand.",
+    desc: "For businesses ready to create a complete identity system that reflects who they are and where they’re going.",
+    include: ["Brand strategy", "Logo & identity systems", "Typography & colour direction", "Brand guidelines", "Creative direction", "Core brand assets"],
+    bestFor: "Founders ready to move beyond an idea and build a brand customers remember.",
+  },
+  {
+    n: "03",
+    title: "Product & Packaging Experience",
+    headline: "Create products people remember.",
+    desc: "For consumer brands bringing products to market or elevating an existing product line.",
+    include: ["Packaging strategy", "Product positioning", "Packaging design", "Label & structural design", "Production artwork", "Launch support"],
+    bestFor: "Food, beverage, wellness, beauty, lifestyle, and CPG brands.",
+  },
+  {
+    n: "04",
+    title: "Brand Growth Partnership",
+    headline: "Your creative partner for what’s next.",
+    desc: "For growing brands looking for ongoing strategic creative support.",
+    include: ["Ongoing creative direction", "Campaign development", "Marketing assets", "Website updates", "Product launches", "Brand evolution"],
+    bestFor: "Brands entering their next stage of growth.",
+  },
+];
+
+function PartnerWay({ w }) {
+  return (
+    <Reveal as="article" className="hover-slide" style={{ borderTop: "1px solid var(--line)", paddingBlock: "clamp(40px,6vw,86px)" }}>
+      <div className="grid12" style={{ rowGap: 30, alignItems: "start" }}>
+        <div className="col-span-5">
+          <span style={{ fontFamily: "var(--mono)", fontSize: 13, color: "var(--accent-deep)", letterSpacing: "0.08em" }}>{w.n} — Partnership</span>
+          <p className="label" style={{ color: "var(--ink-3)", margin: "20px 0 12px" }}>{w.title}</p>
+          <h2 className="display" style={{ fontSize: "clamp(28px,3.4vw,46px)", fontWeight: 600, letterSpacing: "-0.025em", lineHeight: 1.02, maxWidth: "15ch" }}>{w.headline}</h2>
+        </div>
+        <div className="col-span-6">
+          <p style={{ margin: 0, fontSize: "clamp(17px,1.5vw,20px)", lineHeight: 1.55, color: "var(--ink-2)", maxWidth: "46ch", textWrap: "pretty" }}>{w.desc}</p>
+          <p className="label label--accent" style={{ margin: "30px 0 16px" }}>What it can include</p>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: "12px 26px", maxWidth: 520 }}>
+            {w.include.map((it) => (
+              <li key={it} style={{ display: "flex", gap: 11, alignItems: "baseline", fontSize: 15.5, color: "var(--ink)", lineHeight: 1.45 }}>
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto", transform: "translateY(-2px)" }} />
+                {it}
+              </li>
+            ))}
+          </ul>
+          <p style={{ marginTop: 28, fontSize: 14.5, lineHeight: 1.5, color: "var(--ink-3)", maxWidth: "50ch" }}>
+            <span style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--accent-deep)", marginRight: 9 }}>Best for</span>
+            {w.bestFor}
+          </p>
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
+function WaysToPartnerPage() {
+  const { navigate } = useRouter();
+  const cta = (e) => { e.preventDefault(); navigate("start-project"); };
+  return (
+    <main>
+      {/* Hero */}
+      <section style={{ paddingTop: "clamp(60px,9vw,132px)", paddingBottom: "clamp(36px,5vw,64px)" }}>
+        <div className="wrap">
+          <Reveal>
+            <p className="label label--accent label-dot" style={{ marginBottom: 26 }}>Ways to Partner</p>
+          </Reveal>
+          <div className="grid12" style={{ rowGap: 34, alignItems: "end" }}>
+            <div className="col-span-7">
+              <Reveal delay={60}>
+                <h1 className="display" style={{ fontSize: "clamp(44px,7vw,104px)", fontWeight: 600, letterSpacing: "-0.03em", lineHeight: 0.98, maxWidth: "11ch" }}>
+                  Ways to <em className="grace">partner</em>.
+                </h1>
+              </Reveal>
+            </div>
+            <div className="col-span-5">
+              <Reveal delay={120}>
+                <p className="lede" style={{ marginLeft: "auto" }}>
+                  Every brand is at a different stage. Whether you’re defining your foundation, launching
+                  something new, or scaling into your next chapter, Spazio partners with founders to create
+                  brands that are clear, memorable, and built to grow.
+                </p>
+                <a href="#start-project" onClick={cta} className="btn btn--primary" style={{ marginTop: 30, padding: "15px 26px" }}>
+                  Start a conversation <Arrow />
+                </a>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Positioning line */}
+      <section className="section--tight band-teal">
+        <div className="wrap">
+          <Reveal>
+            <p className="display" style={{ fontSize: "clamp(28px,4vw,58px)", fontWeight: 600, letterSpacing: "-0.025em", lineHeight: 1.04, maxWidth: "18ch" }}>
+              We become the strategic creative <em className="grace">partner</em> behind ambitious founders.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* The four ways */}
+      <section className="section">
+        <div className="wrap">
+          <div style={{ borderBottom: "1px solid var(--line)" }}>
+            {PARTNER_WAYS.map((w) => <PartnerWay key={w.n} w={w} />)}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="section" style={{ background: "var(--ink)", color: "var(--bg)" }}>
+        <div className="wrap" style={{ textAlign: "center" }}>
+          <Reveal>
+            <p className="label" style={{ justifyContent: "center", color: "color-mix(in oklab, var(--bg) 58%, transparent)", marginBottom: 22 }}>Where to start</p>
+            <h2 className="display d2" style={{ margin: "0 auto", maxWidth: "16ch", color: "var(--bg)" }}>
+              Not sure where to <em className="grace" style={{ color: "var(--accent)" }}>start</em>?
+            </h2>
+            <p className="lede" style={{ margin: "22px auto 0", color: "color-mix(in oklab, var(--bg) 74%, transparent)", maxWidth: "46ch" }}>
+              Most founders don’t have a design problem. They have a clarity problem. Let’s talk through
+              where your brand is today and find the right path forward.
+            </p>
+            <div style={{ marginTop: 36 }}>
+              <a href="#start-project" onClick={cta} className="btn btn--accent" style={{ padding: "15px 28px" }}>
+                Start a conversation <Arrow />
+              </a>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 /* ================= START (intake) ================= */
 /* ================= START A PROJECT (public inquiry — Journey 1) ================= */
 /* Client-facing lead capture. Submits to /api/lead (Airtable Leads, Source =
@@ -1136,6 +1281,7 @@ Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
   HomeGap, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
   HomePage, AboutPage, ServicesPage,
+  PartnerWay, WaysToPartnerPage,
   ProcessMark, ProcessStep, ProcessArrow, ProcessBlock,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
   CarlosAuditGallery, WorkPage, StartProjectForm, StartProjectPage, StartPage, SubscribePage,

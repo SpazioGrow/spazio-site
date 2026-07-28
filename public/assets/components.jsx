@@ -8,7 +8,7 @@ const { useState, useEffect, useRef, useContext, createContext, useCallback } = 
 const RouterCtx = createContext({ route: "home", navigate: () => {} });
 const useRouter = () => useContext(RouterCtx);
 
-const ROUTES = ["home", "work", "about", "start", "start-project", "subscribe", "foundation", "brief-ready"];
+const ROUTES = ["home", "work", "ways-to-partner", "about", "start", "start-project", "subscribe", "foundation", "brief-ready"];
 
 /* ---------- Scroll reveal ---------- */
 function useReveal() {
@@ -209,6 +209,7 @@ function Logo({ onClick, compact = false }) {
 /* ---------- Navigation ---------- */
 const NAV_LINKS = [
   { id: "work", label: "Projects" },
+  { id: "ways-to-partner", label: "Ways to Partner" },
   { id: "about", label: "About" },
 ];
 
@@ -390,7 +391,7 @@ function Footer() {
             </div>
             <p style={{ color: "color-mix(in oklab, var(--bg) 66%, transparent)", maxWidth: "34ch",
               fontSize: 18, lineHeight: 1.5, margin: 0 }}>
-              A founder-first brand studio helping businesses become <em className="grace" style={{ color: "var(--accent)" }}>unforgettable</em> — with strategy, storytelling, and design. You work directly with Christine.
+              A founder-first brand studio helping businesses become <em className="grace" style={{ color: "var(--accent)" }}>unforgettable</em> — with strategy, storytelling, and design. You work directly with creatives and designers.
             </p>
           </div>
 
