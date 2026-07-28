@@ -110,6 +110,7 @@ function App() {
       home:      ["Spazio — A Founder-First Brand Studio", "Spazio helps founders become unforgettable — with brand strategy, storytelling, and design that make your brand as memorable as the business behind it."],
       about:     ["About — Spazio | Building a brand shouldn't feel like building alone.", "Spazio is a founder-first brand studio led by Christine Montalbano — sharp strategy paired with the warmth that makes a brand feel alive. No layers, no handoffs."],
       work:      ["Work — Spazio | Brands we've helped become unforgettable", "A look at brands we've helped become unforgettable, through strategy, storytelling, and design."],
+      "ways-to-partner": ["Ways to Partner | Spazio", "How founder-led brands partner with Spazio at every stage — brand foundation, identity, packaging, and ongoing creative partnership. Strategy, storytelling, and design for ambitious founders."],
       start:            ["Start a conversation — Spazio", "Tell us your story and what you're building. Christine reads every note personally and replies within two business days."],
       "start-project":  ["Start a conversation — Spazio", "Tell us your story and what you're building. Christine reads every note personally and replies within two business days."],
       subscribe: ["Subscribe — Spazio", "Occasional notes on brand, design, and building something people remember."],
@@ -124,6 +125,7 @@ function App() {
   let Page;
   switch (route) {
     case "work":     Page = <WorkPage />; break;
+    case "ways-to-partner": Page = <WaysToPartnerPage />; break;
     case "about":    Page = <AboutPage />; break;
     case "start":
     case "start-project": Page = <StartProjectPage />; break;
