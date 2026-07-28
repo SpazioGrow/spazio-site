@@ -981,6 +981,8 @@ const PARTNER_WAYS = [
     desc: "For founders who have something meaningful to build but need clarity around their positioning, audience, and how to communicate their value.",
     include: ["Brand strategy & positioning", "Audience insights", "Brand story & messaging", "Visual direction", "Brand roadmap"],
     bestFor: "New businesses, early-stage founders, or brands preparing for growth.",
+    img: "/brandstrategy.png",
+    alt: "Spazio brand strategy — brand book, guidelines, colour palette, and packaging on a studio desk",
   },
   {
     n: "02",
@@ -1008,6 +1010,21 @@ const PARTNER_WAYS = [
   },
 ];
 
+function PartnerImg({ src, alt }) {
+  const [err, setErr] = useState(false);
+  return (
+    <figure className="frame" style={{ margin: "28px 0 0", position: "relative", background: "var(--surface)", overflow: "hidden" }}>
+      <CropMarks color="var(--accent)" />
+      {err
+        ? <div className="ph" style={{ aspectRatio: "4 / 3", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+            <span className="ph__tag">Add {src}</span>
+          </div>
+        : <img src={src} alt={alt} loading="lazy" onError={() => setErr(true)}
+            style={{ width: "100%", height: "auto", display: "block" }} />}
+    </figure>
+  );
+}
+
 function PartnerWay({ w }) {
   return (
     <Reveal as="article" className="hover-slide" style={{ borderTop: "1px solid var(--line)", paddingBlock: "clamp(40px,6vw,86px)" }}>
@@ -1016,6 +1033,7 @@ function PartnerWay({ w }) {
           <span style={{ fontFamily: "var(--mono)", fontSize: 13, color: "var(--accent-deep)", letterSpacing: "0.08em" }}>{w.n} — Partnership</span>
           <p className="label" style={{ color: "var(--ink-3)", margin: "20px 0 12px" }}>{w.title}</p>
           <h2 className="display" style={{ fontSize: "clamp(28px,3.4vw,46px)", fontWeight: 600, letterSpacing: "-0.025em", lineHeight: 1.02, maxWidth: "15ch" }}>{w.headline}</h2>
+          {w.img && <PartnerImg src={w.img} alt={w.alt} />}
         </div>
         <div className="col-span-6">
           <p style={{ margin: 0, fontSize: "clamp(17px,1.5vw,20px)", lineHeight: 1.55, color: "var(--ink-2)", maxWidth: "46ch", textWrap: "pretty" }}>{w.desc}</p>
@@ -1322,7 +1340,7 @@ Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
   HomeGap, HomeStudio, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
   HomePage, AboutPage, ServicesPage,
-  PartnerWay, WaysToPartnerPage,
+  PartnerImg, PartnerWay, WaysToPartnerPage,
   ProcessMark, ProcessStep, ProcessArrow, ProcessBlock,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
   CarlosAuditGallery, WorkPage, StartProjectForm, StartProjectPage, StartPage, SubscribePage,
