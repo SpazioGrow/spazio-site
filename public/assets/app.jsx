@@ -107,12 +107,12 @@ function App() {
   // carries the homepage/OG defaults; this updates them as the SPA navigates).
   useEffect(() => {
     const META = {
-      home:      ["Spazio — The Brand Operating Studio for Founder-Led Companies", "Spazio is a brand operating studio — research-based, designer-led — that closes the gap between a great business and a brand that matches it. Strategy, positioning, and identity that make you look like the category leader you're becoming."],
-      about:     ["About — Spazio | Creating brands people feel.", "Spazio is a creative studio where strategy, storytelling, and design come together to build brands with depth. Founded by Christine Montalbano."],
-      work:      ["Work — Spazio | Selected Brand and Identity Projects", "Selected brand strategy and identity work for founders and growing digital products."],
-      start:            ["Start a project — Spazio", "Tell us about your project and what you need. A real designer reads every inquiry and replies within two business days."],
-      "start-project":  ["Start a project — Spazio", "Tell us about your project and what you need. A real designer reads every inquiry and replies within two business days."],
-      subscribe: ["Subscribe — Spazio", "Occasional notes on brand, design, and digital work for founders."],
+      home:      ["Spazio — A Founder-First Brand Studio", "Spazio helps founders become unforgettable — with brand strategy, storytelling, and design that make your brand as memorable as the business behind it."],
+      about:     ["About — Spazio | Building a brand shouldn't feel like building alone.", "Spazio is a founder-first brand studio led by Christine Montalbano — sharp strategy paired with the warmth that makes a brand feel alive. No layers, no handoffs."],
+      work:      ["Work — Spazio | Brands we've helped become unforgettable", "A look at brands we've helped become unforgettable, through strategy, storytelling, and design."],
+      start:            ["Start a conversation — Spazio", "Tell us your story and what you're building. Christine reads every note personally and replies within two business days."],
+      "start-project":  ["Start a conversation — Spazio", "Tell us your story and what you're building. Christine reads every note personally and replies within two business days."],
+      subscribe: ["Subscribe — Spazio", "Occasional notes on brand, design, and building something people remember."],
     };
     const [title, desc] = META[route] || META.home;
     document.title = title;

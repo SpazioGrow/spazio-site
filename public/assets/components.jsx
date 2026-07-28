@@ -267,7 +267,7 @@ function Nav() {
           >Subscribe</a>
           <a href="#start-project" onClick={(e) => go(e, "start-project")} className="btn btn--primary"
              style={{ marginLeft: 10, padding: "11px 20px" }}>
-            Start a project <Arrow />
+            Start a conversation <Arrow />
           </a>
         </nav>
 
@@ -307,7 +307,7 @@ function Nav() {
           ))}
           <a href="#start-project" onClick={(e) => { go(e, "start-project"); setOpen(false); }} className="btn btn--primary"
              style={{ width: "100%", justifyContent: "center", marginTop: 18, padding: "15px" }}>
-            Start a project <Arrow />
+            Start a conversation <Arrow />
           </a>
         </div>
       </div>
@@ -390,7 +390,7 @@ function Footer() {
             </div>
             <p style={{ color: "color-mix(in oklab, var(--bg) 66%, transparent)", maxWidth: "34ch",
               fontSize: 18, lineHeight: 1.5, margin: 0 }}>
-              The brand operating studio for founder-led companies. <em className="grace" style={{ color: "var(--accent)" }}>Research-based</em>, designer-led, senior throughout.
+              A founder-first brand studio helping businesses become <em className="grace" style={{ color: "var(--accent)" }}>unforgettable</em> — with strategy, storytelling, and design. You work directly with Christine.
             </p>
           </div>
 

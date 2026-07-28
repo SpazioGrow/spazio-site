@@ -9,43 +9,63 @@ const WHO = ["App & SaaS founders", "Local & hospitality brands", "Professional 
 const SERVICES_DATA = [
   {
     n: "01",
-    title: "Brand Identity Design",
-    outcome: "A clear, distinctive identity that makes you instantly recognizable and easy to trust.",
+    title: "Brand strategy",
+    outcome: "Get clear on who you are, who you’re for, and why you’re the one they remember.",
     detail:
-      "Logos, type systems, color, and the visual language that ties them together — built as a flexible system, not a one-off logo. You leave with guidelines your whole team can use.",
-    deliver: ["Logo & marks", "Visual system", "Type & color", "Brand guidelines"],
-    ai: "AI helps us widen early exploration — more directions, faster — before a human narrows to the one that's right.",
+      "The foundation everything else stands on — your positioning, your people, and the story only you can tell. We get to the heart of what makes you different, then make it easy to say out loud.",
+    deliver: ["Positioning", "Audience & insight", "Messaging platform", "Brand narrative"],
   },
   {
     n: "02",
-    title: "Web & Digital Product Design",
-    outcome: "Websites and product interfaces designed for clarity, speed, and conversion.",
+    title: "Brand identity",
+    outcome: "A visual world that feels like you — considered, distinctive, and built to grow.",
     detail:
-      "From marketing sites to product UI, we design interfaces that feel effortless and perform in the real world — responsive, accessible, and ready for engineering handoff.",
-    deliver: ["Marketing sites", "Product UI/UX", "Design systems", "Dev-ready handoff"],
-    ai: "AI assists with rapid prototyping and content variants; every interaction and layout decision is made by a designer.",
+      "Logo, type, colour, and the visual language that ties them together — designed as a flexible system, not a one-off. You leave with everything your team needs to keep it consistent.",
+    deliver: ["Logo & marks", "Visual system", "Type & colour", "Brand guidelines"],
   },
   {
     n: "03",
-    title: "Creative Direction",
-    outcome: "A coherent visual voice across everything you ship — so the brand always feels like you.",
+    title: "Packaging design",
+    outcome: "The moment your product meets the world. We make it count.",
     detail:
-      "Art direction, campaign concepts, and the connective tissue that keeps brand, product, and marketing speaking the same language as you grow.",
-    deliver: ["Art direction", "Campaign concepts", "Visual standards", "Ongoing partnership"],
-    ai: "AI supports moodboarding and reference gathering; the creative point of view stays human.",
+      "Packaging that earns a second look on a crowded shelf and feels worth picking up — from the big idea down to the production-ready artwork.",
+    deliver: ["Packaging system", "Structure & dielines", "Production artwork", "Range architecture"],
   },
   {
     n: "04",
-    title: "Marketing Design Systems",
-    outcome: "Reusable templates and assets that keep your brand consistent at speed.",
+    title: "Website design",
+    outcome: "A home for your brand that earns trust and moves people to act.",
     detail:
-      "Social kits, ad systems, decks, and email templates engineered so your team can produce on-brand work without a designer in the loop for every asset.",
-    deliver: ["Social & ad kits", "Pitch decks", "Email templates", "Asset libraries"],
-    ai: "AI automates production and resizing across formats — humans set the system and quality bar.",
+      "A site that tells your story clearly and gives people an easy reason to say yes — designed for the way real visitors read, scroll, and decide.",
+    deliver: ["Marketing sites", "Messaging & copy", "Design system", "Dev-ready handoff"],
+  },
+  {
+    n: "05",
+    title: "Storytelling & messaging",
+    outcome: "The words that make people feel something — and remember you for it.",
+    detail:
+      "The language of your brand — from the line that sums you up to the words across your site and product. Clear, human, and unmistakably yours.",
+    deliver: ["Brand voice", "Key messaging", "Website copy", "Naming"],
+  },
+  {
+    n: "06",
+    title: "Creative direction",
+    outcome: "A cohesive point of view across everything you make.",
+    detail:
+      "One considered point of view across brand, product, and campaigns — so every touchpoint feels like it came from the same place as you grow.",
+    deliver: ["Art direction", "Campaign concepts", "Visual standards", "Ongoing partnership"],
+  },
+  {
+    n: "07",
+    title: "Brand partnerships",
+    outcome: "Ongoing creative partnership for founders building for the long run.",
+    detail:
+      "For founders who’d rather have us in their corner month to month — a steady creative partner who already knows your brand and helps it grow without starting from scratch each time.",
+    deliver: ["Ongoing design", "Creative direction", "Priority access", "A partner who knows you"],
   },
 ];
 
-/* Process — editorial clarity page */
+/* Process — clarity page */
 const PROCESS_DATA = [
   {
     n: "01", title: "Understand", tag: null,
@@ -176,14 +196,14 @@ function Hero() {
       <div className="wrap">
         <Reveal>
           <p className="label label--accent label-dot" style={{ marginBottom: "clamp(28px,4vw,44px)" }}>
-            The brand operating studio for founder-led companies
+            Founder-first brand studio
           </p>
         </Reveal>
 
         <h1 className="display d1 hero-headline" style={{ maxWidth: "15ch" }}>
-          <Reveal as="span" style={{ display: "block" }}>You built the business.</Reveal>
+          <Reveal as="span" style={{ display: "block" }}>Build a brand</Reveal>
           <Reveal as="span" delay={90} style={{ display: "block" }}>
-            Let’s build the <em className="grace">brand</em>.
+            people <em className="grace">remember</em>.
           </Reveal>
         </h1>
 
@@ -191,13 +211,15 @@ function Hero() {
           <div className="col-span-6">
             <Reveal delay={120}>
               <p className="lede" style={{ maxWidth: "46ch" }}>
-                Spazio is a brand operating studio — research-based, designer-led — for founder-led
-                companies. We close the gap between a great business and a brand that finally matches
-                it: strategy and identity that make you look like the category leader you’re becoming.
+                You’ve built something real. Spazio helps it look and feel that way — with strategy,
+                storytelling, and design that make your brand as memorable as the business behind it.
               </p>
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 30, alignItems: "center" }}>
                 <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--primary" style={{ padding: "15px 26px" }}>
                   Start a conversation <Arrow />
+                </a>
+                <a href="#work" className="btn btn--ghost" style={{ padding: "15px 26px" }}>
+                  See the work <Arrow />
                 </a>
               </div>
             </Reveal>
@@ -284,19 +306,11 @@ function ServiceRow({ s, expanded = false }) {
             {expanded ? s.detail : s.outcome}
           </p>
           {expanded && (
-            <>
-              <div className="chips" style={{ marginTop: 22 }}>
-                {s.deliver.map((d) => (
-                  <span key={d} className="chip" style={{ pointerEvents: "none", color: "var(--ink-2)" }}>{d}</span>
-                ))}
-              </div>
-              <p style={{ marginTop: 22, fontSize: 14.5, color: "var(--ink-3)", display: "flex", gap: 10, maxWidth: "52ch", lineHeight: 1.5 }}>
-                <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--accent-deep)",
-                  border: "1px solid var(--accent-line)", borderRadius: 100, padding: "2px 9px",
-                  height: "fit-content", whiteSpace: "nowrap", letterSpacing: "0.06em" }}>AI · SUPPORT</span>
-                {s.ai}
-              </p>
-            </>
+            <div className="chips" style={{ marginTop: 22 }}>
+              {s.deliver.map((d) => (
+                <span key={d} className="chip" style={{ pointerEvents: "none", color: "var(--ink-2)" }}>{d}</span>
+              ))}
+            </div>
           )}
         </div>
       </div>
@@ -460,7 +474,7 @@ function GalleryTile({ src, alt, label }) {
   );
 }
 
-/* Full editorial row (Work page) */
+/* Full case row (Work page) */
 function WorkRow({ w, index }) {
   const { navigate } = useRouter();
   const flip = index % 2 === 1;
