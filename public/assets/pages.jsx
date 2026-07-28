@@ -3,9 +3,11 @@
    ============================================================ */
 
 /* ---------- Reusable inner-page header ---------- */
-function PageHeader({ label, title, lede, children }) {
+function PageHeader({ label, title, lede, children, band }) {
   return (
-    <section style={{ paddingTop: "clamp(48px,7vw,104px)", paddingBottom: "clamp(28px,3vw,40px)" }}>
+    <section className={band || ""} style={band
+      ? { paddingTop: "clamp(64px,8vw,120px)", paddingBottom: "clamp(48px,6vw,84px)" }
+      : { paddingTop: "clamp(48px,7vw,104px)", paddingBottom: "clamp(28px,3vw,40px)" }}>
       <div className="wrap">
         <Reveal>
           <p className="label label--accent label-dot" style={{ marginBottom: 26 }}>{label}</p>
@@ -123,20 +125,20 @@ function CtaBand() {
 /* ---- The Gap ---- */
 function HomeGap() {
   return (
-    <section className="section" style={{ background: "var(--teal)", color: "var(--accent-ink)", overflow: "hidden" }}>
+    <section className="section band-teal" style={{ overflow: "hidden" }}>
       <div className="wrap">
         <div className="grid12" style={{ rowGap: 36, alignItems: "center" }}>
           <div className="col-span-7">
             <Reveal>
-              <p className="label" style={{ marginBottom: 22, color: "var(--sky)" }}>The gap</p>
-              <h2 className="display d2" style={{ maxWidth: "15ch", color: "var(--accent-ink)", lineHeight: 0.98 }}>
-                Your business is ahead of your brand. You can <em className="grace" style={{ color: "var(--sky)" }}>feel</em> it.
+              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>The gap</p>
+              <h2 className="display d2" style={{ maxWidth: "15ch", lineHeight: 0.98 }}>
+                Your business is ahead of your brand. You can <em className="grace">feel</em> it.
               </h2>
-              <p className="lede" style={{ marginTop: 26, maxWidth: "44ch", color: "color-mix(in oklab, var(--accent-ink) 86%, transparent)" }}>
+              <p className="lede" style={{ marginTop: 26, maxWidth: "44ch" }}>
                 You’ve built something genuinely good — but the brand around it is a step behind, and
                 your users feel it before they can name it. They decide you’re “fine” before they ever sign up.
               </p>
-              <p style={{ marginTop: 18, fontSize: 17, lineHeight: 1.6, maxWidth: "46ch", color: "color-mix(in oklab, var(--accent-ink) 70%, transparent)" }}>
+              <p style={{ marginTop: 18, fontSize: 17, lineHeight: 1.6, maxWidth: "46ch", color: "var(--ink-3)" }}>
                 That gap quietly costs you: interest that doesn’t convert, deals that take longer to
                 close, the competitor who simply looked the part winning by default. Closing it is the
                 whole job — and it’s the part we love.
@@ -209,7 +211,7 @@ const HOME_SERVICES = [
 ];
 function HomeWhatWeDo() {
   return (
-    <section className="section band-soft">
+    <section className="section band-peach">
       <div className="wrap">
         <div className="grid12" style={{ rowGap: 20, alignItems: "end", marginBottom: "clamp(36px,5vw,60px)" }}>
           <div className="col-span-7">
@@ -394,25 +396,25 @@ function HomeHow() {
 }
 
 /* ================= PROCESS — spazioOS ================= */
-function ProcessEye({ pupil, scan }) {
+function ProcessMark({ n, fill }) {
   return (
-    <svg width="62" height="62" viewBox="0 0 48 48" aria-hidden="true" style={{ display: "block" }}>
-      <circle cx="24" cy="24" r="23" fill="var(--ink)" />
-      <circle cx="24" cy="24" r="14.5" fill="var(--paper)" />
-      <circle cx="24" cy="24" r="6.6" fill={pupil} />
-      {scan ? <line x1="24" y1="9.5" x2="24" y2="38.5" stroke="var(--ink)" strokeWidth="1.5" /> : null}
-    </svg>
+    <div style={{
+      width: 56, height: 56, borderRadius: 16, background: fill,
+      display: "grid", placeItems: "center", flex: "0 0 auto",
+      fontFamily: "var(--mono)", fontSize: 17, fontWeight: 700, color: "var(--paper)",
+      boxShadow: "0 8px 20px -10px " + fill,
+    }}>{n}</div>
   );
 }
 
-function ProcessStep({ n, label, title, body, pupil, scan }) {
+function ProcessStep({ n, label, title, body, pupil }) {
   return (
     <div style={{
       background: "var(--surface)", border: "1px solid var(--line)",
       borderRadius: 16, padding: "clamp(22px,2.4vw,30px)", height: "100%",
       display: "flex", flexDirection: "column",
     }}>
-      <ProcessEye pupil={pupil} scan={scan} />
+      <ProcessMark n={n} fill={pupil} />
       <p className="tag" style={{ color: "var(--clay)", marginTop: 22, letterSpacing: "0.14em" }}>{n} / {label}</p>
       <h3 style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: "clamp(24px,2.4vw,30px)", letterSpacing: "-0.02em", color: "var(--ink)", margin: "10px 0 12px" }}>{title}</h3>
       <p style={{ fontFamily: "var(--sans)", fontSize: 15.5, lineHeight: 1.55, color: "var(--ink-2)", margin: 0 }}>{body}</p>
@@ -449,7 +451,7 @@ function ProcessBlock() {
               </Reveal>
               <ProcessArrow />
               <Reveal delay={100} style={{ height: "100%" }}>
-                <ProcessStep n="02" label="AUDIT" title="Audit" pupil="var(--gold)" scan
+                <ProcessStep n="02" label="AUDIT" title="Audit" pupil="var(--gold)"
                   body="The verdict. Scored diagnostics turn the read into a clear gap — named, ranked, defensible." />
               </Reveal>
               <ProcessArrow />
@@ -481,9 +483,10 @@ function HomePage() {
   return (
     <main>
       <Hero />
-      <IllustrationStrip height={146} style={{ borderBlock: "1px solid var(--line)", background: "var(--bg-2)" }} />
       <HomeGap />
+      <HomeWhatWeDo />
       <ProcessBlock />
+      <CtaBand />
     </main>
   );
 }
@@ -493,6 +496,7 @@ function ServicesPage() {
   return (
     <main>
       <PageHeader
+        band="band-ink"
         label="Services" title="Design that earns its place."
         lede="Outcome-focused work across brand, product, and marketing — built as systems your team can grow with. AI accelerates our process; humans lead the craft."
       />
@@ -841,6 +845,7 @@ function WorkPage() {
   return (
     <main>
       <PageHeader
+        band="band-teal"
         label="Selected work" title="Brands we've helped find their space."
         lede="Identity, packaging, naming, and systems work for founders and growing brands. Every project here is led by a human designer — not a template, not a generator. AI widens the field of ideas; the diagnosis, the craft, and the final call are always ours."
       />
@@ -873,6 +878,7 @@ function AboutPage() {
   return (
     <main>
       <PageHeader
+        band="band-clay"
         label="About"
         title="Creating brands people feel."
         lede="Spazio is a creative studio where strategy, storytelling, and design come together to build brands with depth."
@@ -1120,7 +1126,7 @@ Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
   HomeGap, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
   HomePage, AboutPage, ServicesPage,
-  ProcessEye, ProcessStep, ProcessArrow, ProcessBlock,
+  ProcessMark, ProcessStep, ProcessArrow, ProcessBlock,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
   CarlosAuditGallery, WorkPage, StartProjectForm, StartProjectPage, StartPage, SubscribePage,
 });
