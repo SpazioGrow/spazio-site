@@ -84,6 +84,7 @@ const WORK_DATA = [
   {
     id: "zindagummy", n: "01", client: "Zindagummy", project: "Credibility you can hold.",
     sector: "Wellness & supplements", year: "2026",
+    img: "/work/zindagummy.png",
     alt: "Zindagummy wellness supplement range — colour-coded jars and pouches",
     desc: "Wellness is a category built on belief, and new buyers are right to be cautious. We gave Zindagummy a colour-coded system that turns complicated formulas into confident, at-a-glance choices — grounded earth tones, bright citrus for immunity — so the science reads as approachable rather than clinical. Each jar reassures before it's opened, and shoppers choose it knowing exactly what they're bringing home.",
     services: ["Brand identity", "Packaging design", "Range architecture"],
@@ -128,19 +129,10 @@ const WORK_DATA = [
   {
     id: "amnesia", n: "06", client: "Amnesia", project: "A refresh with a memory.",
     sector: "Cannabis & edibles", year: "2026",
-    alt: "Amnesia THC gummies range — five stand-up pouches",
-    gallery: [
-      { src: "/work/amnesia/cherry-pie.png", alt: "Amnesia Cherry Pie (Hybrid) THC gummies pouch" },
-      { src: "/work/amnesia/blue-razz.png", alt: "Amnesia Blue Razz (Hybrid) THC gummies pouch" },
-      { src: "/work/amnesia/orange-soda.png", alt: "Amnesia Orange Soda (Hybrid) THC gummies pouch" },
-      { src: "/work/amnesia/watermelon-freeze.png", alt: "Amnesia Watermelon Freeze (Indica) THC gummies pouch" },
-      { src: "/work/amnesia/sour-apple.png", alt: "Amnesia Sour Apple (Indica) THC gummies pouch" },
-      { src: "/work/amnesia/strawberry-shortcake.png", alt: "Amnesia Strawberry Shortcake (Sativa) THC gummies pouch" },
-    ],
+    img: "/work/amnesia.png",
+    alt: "Amnesia THC gummies range — four pastel stand-up pouches with retro script lettering",
     desc: "Reworking a known brand means honouring what already earns loyalty. We modernized Amnesia's retro lettering and playful colour language — keeping the cues devoted customers recognise while sharpening them for today's retail set. The line now feels current without feeling like a stranger, so longtime fans still spot it instantly and newcomers finally give it a second look.",
     services: ["Brand identity", "Packaging design", "Naming & copy", "Range architecture"],
-    skus: ["Cherry Pie", "Blue Razz", "Orange Soda", "Watermelon Freeze", "Sour Apple", "Strawberry Shortcake"],
-    skusLabel: "Flavours in the range",
     tone: "b",
   },
 ];
