@@ -981,8 +981,8 @@ const PARTNER_WAYS = [
     desc: "For founders who have something meaningful to build but need clarity around their positioning, audience, and how to communicate their value.",
     include: ["Brand strategy & positioning", "Audience insights", "Brand story & messaging", "Visual direction", "Brand roadmap"],
     bestFor: "New businesses, early-stage founders, or brands preparing for growth.",
-    img: "/ways/brand-strategy.jpg",
-    alt: "Brand strategy at Spazio — defining positioning, audience, and story",
+    img: "/brandstrategy.png",
+    alt: "Spazio brand strategy — brand book, guidelines, colour palette, and packaging on a studio desk",
   },
   {
     n: "02",
