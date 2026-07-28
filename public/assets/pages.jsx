@@ -981,8 +981,6 @@ const PARTNER_WAYS = [
     desc: "For founders who have something meaningful to build but need clarity around their positioning, audience, and how to communicate their value.",
     include: ["Brand strategy & positioning", "Audience insights", "Brand story & messaging", "Visual direction", "Brand roadmap"],
     bestFor: "New businesses, early-stage founders, or brands preparing for growth.",
-    img: "/brandstrategy.png",
-    alt: "Spazio brand strategy — brand book, guidelines, colour palette, and packaging on a studio desk",
   },
   {
     n: "02",
@@ -1058,6 +1056,7 @@ function PartnerWay({ w }) {
 
 function WaysToPartnerPage() {
   const { navigate } = useRouter();
+  const [imgErr, setImgErr] = useState(false);
   const cta = (e) => { e.preventDefault(); navigate("start-project"); };
   return (
     <main>
@@ -1091,14 +1090,33 @@ function WaysToPartnerPage() {
         </div>
       </section>
 
-      {/* Positioning line */}
-      <section className="section--tight band-teal">
+      {/* Positioning line + brand strategy image */}
+      <section className="section band-teal">
         <div className="wrap">
-          <Reveal>
-            <p className="display" style={{ fontSize: "clamp(28px,4vw,58px)", fontWeight: 600, letterSpacing: "-0.025em", lineHeight: 1.04, maxWidth: "18ch" }}>
-              We become the strategic creative <em className="grace">partner</em> behind ambitious founders.
-            </p>
-          </Reveal>
+          <div className="grid12" style={{ rowGap: 40, alignItems: "center" }}>
+            <div className="col-span-6">
+              <Reveal>
+                <p className="display" style={{ fontSize: "clamp(28px,4vw,58px)", fontWeight: 600, letterSpacing: "-0.025em", lineHeight: 1.04, maxWidth: "17ch" }}>
+                  We become the strategic creative <em className="grace">partner</em> behind ambitious founders.
+                </p>
+              </Reveal>
+            </div>
+            <div className="col-span-6">
+              <Reveal delay={100}>
+                <figure className="frame" style={{ margin: 0, position: "relative", overflow: "hidden", background: "var(--surface)" }}>
+                  <CropMarks color="var(--accent)" />
+                  {imgErr
+                    ? <div className="ph" style={{ aspectRatio: "7 / 6", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                        <span className="ph__tag">Add /brandstrategy.png</span>
+                      </div>
+                    : <img src="/brandstrategy.png"
+                        alt="Spazio brand strategy — brand book, guidelines, colour palette, and packaging on a studio desk"
+                        loading="lazy" onError={() => setImgErr(true)}
+                        style={{ width: "100%", height: "auto", display: "block" }} />}
+                </figure>
+              </Reveal>
+            </div>
+          </div>
         </div>
       </section>
 
