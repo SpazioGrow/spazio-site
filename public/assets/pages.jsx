@@ -3,9 +3,11 @@
    ============================================================ */
 
 /* ---------- Reusable inner-page header ---------- */
-function PageHeader({ label, title, lede, children }) {
+function PageHeader({ label, title, lede, children, band }) {
   return (
-    <section style={{ paddingTop: "clamp(48px,7vw,104px)", paddingBottom: "clamp(28px,3vw,40px)" }}>
+    <section className={band || ""} style={band
+      ? { paddingTop: "clamp(64px,8vw,120px)", paddingBottom: "clamp(48px,6vw,84px)" }
+      : { paddingTop: "clamp(48px,7vw,104px)", paddingBottom: "clamp(28px,3vw,40px)" }}>
       <div className="wrap">
         <Reveal>
           <p className="label label--accent label-dot" style={{ marginBottom: 26 }}>{label}</p>
@@ -101,11 +103,12 @@ function CtaBand() {
     <section className="section" style={{ background: "var(--ink)", color: "var(--bg)" }}>
       <div className="wrap" style={{ textAlign: "center" }}>
         <Reveal>
-          <h2 className="display d2" style={{ margin: "0 auto", maxWidth: "16ch", color: "var(--bg)" }}>
-            Ready to close the <em className="grace" style={{ color: "var(--accent)" }}>gap</em>?
+          <h2 className="display d2" style={{ margin: "0 auto", maxWidth: "18ch", color: "var(--bg)" }}>
+            Let’s build something people <em className="grace" style={{ color: "var(--accent)" }}>remember</em>.
           </h2>
           <p className="lede" style={{ margin: "20px auto 0", color: "color-mix(in oklab, var(--bg) 70%, transparent)" }}>
-            You built the business. Let’s build the brand it deserves.
+            Whether you’re starting fresh or ready to grow into the brand your business deserves,
+            we’d love to hear your story.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 36 }}>
             <a href="https://calendly.com/hi-spaziographics" target="_blank" rel="noopener" className="btn btn--accent" style={{ padding: "15px 28px" }}>
@@ -123,29 +126,28 @@ function CtaBand() {
 /* ---- The Gap ---- */
 function HomeGap() {
   return (
-    <section className="section band">
+    <section className="section band-teal" style={{ overflow: "hidden" }}>
       <div className="wrap">
-        <div className="grid12" style={{ rowGap: 28, alignItems: "start" }}>
+        <div className="grid12" style={{ rowGap: 36, alignItems: "center" }}>
           <div className="col-span-7">
             <Reveal>
-              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>The gap</p>
-              <h2 className="section-title" style={{ maxWidth: "16ch" }}>
-                Your business is ahead of your brand. You can <em className="grace">feel</em> it.
+              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Where we come in</p>
+              <h2 className="display d2" style={{ maxWidth: "16ch", lineHeight: 0.98 }}>
+                Too close to your own story to see what makes it <em className="grace">magnetic</em>.
               </h2>
+              <p className="lede" style={{ marginTop: 26, maxWidth: "44ch" }}>
+                That’s where we come in. Spazio is part strategist, part storyteller, part creative partner —
+                here to help you find what makes your business unforgettable.
+              </p>
+              <p style={{ marginTop: 18, fontSize: 17, lineHeight: 1.6, maxWidth: "46ch", color: "var(--ink-3)" }}>
+                Most founders are too close to their own story to see it clearly. We help you name it,
+                shape it, and build it into something that lasts.
+              </p>
             </Reveal>
           </div>
           <div className="col-span-5">
-            <Reveal delay={80}>
-              <p className="lede" style={{ marginBottom: 18 }}>
-                You’ve built something genuinely good — but the brand around it is a step behind,
-                and your users feel it before they can name it. They decide you’re “fine” before
-                they ever sign up.
-              </p>
-              <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-2)", margin: 0, maxWidth: "46ch" }}>
-                That gap quietly costs you: interest that doesn’t convert, deals that take longer to
-                close, the competitor who simply looked the part winning by default. Closing it is the
-                whole job — and it’s the part we love.
-              </p>
+            <Reveal delay={120}>
+              <Illustration name="lemon-branch-light" style={{ height: "auto", width: "100%", maxWidth: 380, marginLeft: "auto" }} />
             </Reveal>
           </div>
         </div>
@@ -156,36 +158,36 @@ function HomeGap() {
 
 /* ---- Who it's for ---- */
 const HOME_AUDIENCE = [
-  ["Consumer apps", "Mobile-first products with real users and real ambition."],
-  ["B2C SaaS", "Subscription products that live or die on first impressions."],
-  ["Platforms & marketplaces", "Two-sided products that have to feel trustworthy fast."],
-  ["Founder-led, product-first teams", "You make the calls — and you sweat the details."],
+  ["Founder-led brands", "Building something meaningful and ready to share their story with the world."],
+  ["Consumer product companies", "Creating memorable brands, packaging, and experiences people reach for."],
+  ["Growing businesses", "Ready for the strategy and creative direction to evolve into their next chapter."],
+  ["Visionary founders", "Who want a long-term creative partner — not just a design vendor."],
 ];
 function HomeWho() {
   return (
-    <section className="section">
+    <section className="section band-sky">
       <div className="wrap">
         <div className="grid12" style={{ rowGap: 20, alignItems: "end", marginBottom: "clamp(36px,5vw,60px)" }}>
           <div className="col-span-7">
             <Reveal>
-              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Who it’s for</p>
+              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Who we work with</p>
               <h2 className="section-title" style={{ maxWidth: "18ch" }}>
-                For founders whose product is ahead of their brand.
+                The founders and brands we build with.
               </h2>
             </Reveal>
           </div>
           <div className="col-span-5">
             <Reveal delay={80}>
               <p className="lede" style={{ marginLeft: "auto" }}>
-                If you’ve got real traction and a brand that hasn’t caught up to the ambition —
-                and you’re about to raise, launch, or scale — this is for you.
+                We work best with people who care as much about the story as the product —
+                and who are in it for the long run.
               </p>
             </Reveal>
           </div>
         </div>
         <div className="grid12" style={{ rowGap: 0 }}>
           {HOME_AUDIENCE.map(([t, d], i) => (
-            <Reveal as="div" key={t} delay={i * 60} className="col-span-6"
+            <Reveal as="div" key={t} delay={i * 90} className="col-span-6 hover-slide"
               style={{ display: "flex", gap: 16, padding: "22px 0", borderTop: "1px solid var(--line)" }}>
               <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--accent-deep)", paddingTop: 4 }}>{String(i + 1).padStart(2, "0")}</span>
               <div>
@@ -202,36 +204,39 @@ function HomeWho() {
 
 /* ---- What we do ---- */
 const HOME_SERVICES = [
-  ["Brand Strategy & Positioning", "The sharp, defensible story of why you win — before a single pixel."],
-  ["Visual Identity", "Logo, type, color, and a system built to hold up across product, web, and app store."],
-  ["Creative Direction", "One consistent point of view across every surface your users touch."],
-  ["Brand & Web", "Messaging and a site that make the product feel inevitable."],
+  ["Brand strategy", "Get clear on who you are, who you’re for, and why you’re the one they remember."],
+  ["Brand identity", "A visual world that feels like you — considered, distinctive, and built to grow."],
+  ["Packaging design", "The moment your product meets the world. We make it count."],
+  ["Website design", "A home for your brand that earns trust and moves people to act."],
+  ["Storytelling & messaging", "The words that make people feel something — and remember you for it."],
+  ["Creative direction", "A cohesive point of view across everything you make."],
+  ["Brand partnerships", "Ongoing creative partnership for founders building for the long run."],
 ];
 function HomeWhatWeDo() {
   return (
-    <section className="section band-soft">
+    <section className="section band-peach">
       <div className="wrap">
         <div className="grid12" style={{ rowGap: 20, alignItems: "end", marginBottom: "clamp(36px,5vw,60px)" }}>
           <div className="col-span-7">
             <Reveal>
               <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>What we do</p>
-              <h2 className="section-title" style={{ maxWidth: "16ch" }}>
-                Strategy first. Then the identity to <em className="grace">carry</em> it.
+              <h2 className="section-title" style={{ maxWidth: "17ch" }}>
+                Everything we make points at one thing: making you impossible to <em className="grace">forget</em>.
               </h2>
             </Reveal>
           </div>
           <div className="col-span-5">
             <Reveal delay={80}>
               <p className="lede" style={{ marginLeft: "auto" }}>
-                We start with the thinking and end with a brand system your team can actually run
-                with — not a logo and a shrug.
+                From the first idea to the final detail, it all works toward a brand people
+                remember — and come back to.
               </p>
             </Reveal>
           </div>
         </div>
         <div className="grid12" style={{ rowGap: 0 }}>
           {HOME_SERVICES.map(([t, d], i) => (
-            <Reveal as="div" key={t} delay={i * 60} className="col-span-6"
+            <Reveal as="div" key={t} delay={i * 60} className="col-span-6 hover-slide"
               style={{ padding: "26px 0", borderTop: "1px solid var(--line)" }}>
               <h3 style={{ margin: 0, fontFamily: "var(--display)", fontWeight: 600, fontSize: "clamp(22px,2vw,28px)", letterSpacing: "-0.02em" }}>{t}</h3>
               <p style={{ margin: "10px 0 0", fontSize: 16, color: "var(--ink-2)", lineHeight: 1.55, maxWidth: "42ch" }}>{d}</p>
@@ -247,7 +252,7 @@ function HomeWhatWeDo() {
 const AUDIT_POINTS = [
   "A clear read on exactly where your brand lags your product",
   "How you stack up in your category, and the opening you’re missing",
-  "2–3 strategic directions to close the gap",
+  "2–3 strategic directions to move your brand forward",
   "A tight deck, plus a 30-minute walkthrough with us",
 ];
 function HomeAudit() {
@@ -394,25 +399,25 @@ function HomeHow() {
 }
 
 /* ================= PROCESS — spazioOS ================= */
-function ProcessEye({ pupil, scan }) {
+function ProcessMark({ n, fill }) {
   return (
-    <svg width="62" height="62" viewBox="0 0 48 48" aria-hidden="true" style={{ display: "block" }}>
-      <circle cx="24" cy="24" r="23" fill="var(--ink)" />
-      <circle cx="24" cy="24" r="14.5" fill="var(--paper)" />
-      <circle cx="24" cy="24" r="6.6" fill={pupil} />
-      {scan ? <line x1="24" y1="9.5" x2="24" y2="38.5" stroke="var(--ink)" strokeWidth="1.5" /> : null}
-    </svg>
+    <div style={{
+      width: 56, height: 56, borderRadius: 16, background: fill,
+      display: "grid", placeItems: "center", flex: "0 0 auto",
+      fontFamily: "var(--mono)", fontSize: 17, fontWeight: 700, color: "var(--paper)",
+      boxShadow: "0 8px 20px -10px " + fill,
+    }}>{n}</div>
   );
 }
 
-function ProcessStep({ n, label, title, body, pupil, scan }) {
+function ProcessStep({ n, label, title, body, pupil }) {
   return (
     <div style={{
       background: "var(--surface)", border: "1px solid var(--line)",
       borderRadius: 16, padding: "clamp(22px,2.4vw,30px)", height: "100%",
       display: "flex", flexDirection: "column",
     }}>
-      <ProcessEye pupil={pupil} scan={scan} />
+      <ProcessMark n={n} fill={pupil} />
       <p className="tag" style={{ color: "var(--clay)", marginTop: 22, letterSpacing: "0.14em" }}>{n} / {label}</p>
       <h3 style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: "clamp(24px,2.4vw,30px)", letterSpacing: "-0.02em", color: "var(--ink)", margin: "10px 0 12px" }}>{title}</h3>
       <p style={{ fontFamily: "var(--sans)", fontSize: 15.5, lineHeight: 1.55, color: "var(--ink-2)", margin: 0 }}>{body}</p>
@@ -435,31 +440,32 @@ function ProcessBlock() {
           <div style={{ background: "var(--bg-2)", border: "1px solid var(--line)", borderRadius: 26, padding: "clamp(26px,4vw,52px)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 20, flexWrap: "wrap" }}>
               <span style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: "clamp(30px,4.4vw,46px)", letterSpacing: "-0.025em", color: "var(--ink)", lineHeight: 1 }}>
-                spazio<em style={{ fontStyle: "italic", color: "var(--accent)" }}>OS</em>
+                How we <em style={{ fontStyle: "italic", color: "var(--accent)" }}>work</em>
               </span>
-              <span className="tag" style={{ color: "var(--clay)", letterSpacing: "0.2em" }}>The system behind the work</span>
+              <span className="tag" style={{ color: "var(--clay)", letterSpacing: "0.2em" }}>Start with you</span>
             </div>
-            <p style={{ fontFamily: "var(--serif)", fontSize: "clamp(19px,1.9vw,24px)", lineHeight: 1.4, color: "var(--ink)", margin: "16px 0 0", maxWidth: "42ch" }}>
-              One brain, three moves. Research becomes diagnosis becomes a brand the client can run.
+            <p style={{ fontFamily: "var(--serif)", fontSize: "clamp(19px,1.9vw,24px)", lineHeight: 1.4, color: "var(--ink)", margin: "16px 0 0", maxWidth: "46ch" }}>
+              We don’t jump straight to logos. We start with you, then move through strategy, concept,
+              and design with intention — nothing decorative, nothing borrowed.
             </p>
             <div className="oss-grid" style={{ marginTop: "clamp(28px,4vw,44px)" }}>
               <Reveal delay={0} style={{ height: "100%" }}>
-                <ProcessStep n="01" label="INTELLIGENCE" title="Intelligence" pupil="var(--teal)"
-                  body="The research read. Category, competitors, and where the business already outpaces how it looks." />
+                <ProcessStep n="01" label="LISTEN" title="Start with you" pupil="var(--teal)"
+                  body="Your story, your customers, and the feeling you want to create. We listen closely before we design a thing." />
               </Reveal>
               <ProcessArrow />
               <Reveal delay={100} style={{ height: "100%" }}>
-                <ProcessStep n="02" label="AUDIT" title="Audit" pupil="var(--gold)" scan
-                  body="The verdict. Scored diagnostics turn the read into a clear gap — named, ranked, defensible." />
+                <ProcessStep n="02" label="SHAPE" title="Strategy & concept" pupil="var(--gold)"
+                  body="We shape what you stand for into a clear direction — the thinking that makes every later choice easy." />
               </Reveal>
               <ProcessArrow />
               <Reveal delay={200} style={{ height: "100%" }}>
-                <ProcessStep n="03" label="IDENTITY" title="Identity" pupil="var(--coral)"
-                  body="The system shipped. A running brand that makes them look like the leader they're becoming." />
+                <ProcessStep n="03" label="MAKE" title="Design that lasts" pupil="var(--coral)"
+                  body="Identity, packaging, and words that bring it to life. Nothing decorative, nothing borrowed." />
               </Reveal>
             </div>
             <div style={{ marginTop: "clamp(26px,4vw,44px)", borderTop: "1px solid var(--line)", paddingTop: 22, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
-              <span style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "clamp(19px,2vw,24px)", color: "var(--ink)" }}>Close the gap.</span>
+              <span style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "clamp(19px,2vw,24px)", color: "var(--ink)" }}>Every choice earns its place.</span>
               <div style={{ width: 200, maxWidth: "42vw", height: 9, borderRadius: 99, background: "var(--line)", overflow: "hidden", display: "flex", justifyContent: "flex-end" }}>
                 <span style={{ display: "flex", width: "56%" }}>
                   <i style={{ flex: 6, background: "var(--ink)" }} />
@@ -481,9 +487,11 @@ function HomePage() {
   return (
     <main>
       <Hero />
-      <Pattern rows={1} size={140} style={{ borderBlock: "1px solid var(--line)" }} />
       <HomeGap />
+      <HomeWhatWeDo />
+      <HomeWho />
       <ProcessBlock />
+      <CtaBand />
     </main>
   );
 }
@@ -493,8 +501,9 @@ function ServicesPage() {
   return (
     <main>
       <PageHeader
-        label="Services" title="Design that earns its place."
-        lede="Outcome-focused work across brand, product, and marketing — built as systems your team can grow with. AI accelerates our process; humans lead the craft."
+        band="band-ink"
+        label="What we do" title="Everything we make earns its place."
+        lede="Ways we help your brand become impossible to forget — from the first idea to the details that make it stick. You work directly with Christine, start to finish."
       />
       <section className="section--tight">
         <div className="wrap">
@@ -841,8 +850,9 @@ function WorkPage() {
   return (
     <main>
       <PageHeader
-        label="Selected work" title="Brands we've helped find their space."
-        lede="Identity, packaging, naming, and systems work for founders and growing brands. Every project here is led by a human designer — not a template, not a generator. AI widens the field of ideas; the diagnosis, the craft, and the final call are always ours."
+        band="band-teal"
+        label="The work" title="Brands we've helped become unforgettable."
+        lede="Identity, packaging, naming, and stories built with founders and growing brands. Every project starts with the same question: what makes this one impossible to forget?"
       />
       <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,24px)", paddingBottom: 0 }}>
         <div className="wrap">
@@ -873,27 +883,33 @@ function AboutPage() {
   return (
     <main>
       <PageHeader
+        band="band-clay"
         label="About"
-        title="Creating brands people feel."
-        lede="Spazio is a creative studio where strategy, storytelling, and design come together to build brands with depth."
+        title="Building a brand shouldn't feel like building alone."
+        lede="Spazio is a founder-first brand studio led by Christine Montalbano — sharp strategy paired with the warmth that makes a brand feel alive."
       />
       <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,24px)" }}>
         <div className="wrap">
           <div className="grid12" style={{ rowGap: 44, alignItems: "start" }}>
             <div className="col-span-7">
               <Reveal>
-                <p style={{ fontSize: "clamp(18px,1.7vw,21px)", lineHeight: 1.65, color: "var(--ink)", marginTop: 0, maxWidth: "44ch" }}>
-                  Founded by <strong style={{ fontWeight: 600 }}>Christine Montalbano</strong>, a UX and brand designer
-                  with experience shaping global experiences and collaborating with founder-led businesses,
-                  Spazio was created from a desire to bring humanity back into branding.
+                <p style={{ fontSize: "clamp(18px,1.7vw,21px)", lineHeight: 1.65, color: "var(--ink)", marginTop: 0, maxWidth: "46ch" }}>
+                  Spazio was born from a simple realization: the world’s biggest brands are brilliant at
+                  strategy and systems, but they often miss the human part — the founder’s story, the reason
+                  it all started, the thing people actually connect with.
                 </p>
                 <p style={Object.assign({}, para, { maxWidth: "52ch" })}>
-                  Backed by a collective of talented creatives, Spazio partners with founders and growing
-                  brands to craft distinctive identities, packaging, and digital experiences that capture
-                  not only what a brand looks like — but what it stands for.
+                  We bring those two worlds together — sharp strategic thinking, paired with the warmth and
+                  honesty that make a brand feel alive. Spazio is led by <strong style={{ fontWeight: 600 }}>Christine
+                  Montalbano</strong>, a brand and UX designer who started the studio to put the human part back
+                  at the center of branding.
                 </p>
-                <p style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "clamp(21px,2.4vw,30px)", lineHeight: 1.35, color: "var(--accent-deep)", marginTop: 36, maxWidth: "24ch" }}>
-                  We believe the most memorable brands are built through connection, intention, and a story worth sharing.
+                <p style={Object.assign({}, para, { maxWidth: "52ch" })}>
+                  You work directly with Christine — no layers, no handoffs. Just a creative partner who’s
+                  genuinely invested in what you’re building.
+                </p>
+                <p style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "clamp(21px,2.4vw,30px)", lineHeight: 1.35, color: "var(--accent-deep)", marginTop: 36, maxWidth: "26ch" }}>
+                  Building a brand shouldn’t feel like building alone.
                 </p>
               </Reveal>
             </div>
@@ -960,7 +976,7 @@ function StartProjectForm() {
         <p className="label label--accent label-dot" style={{ marginBottom: 16 }}>Received</p>
         <h2 className="display d3" style={{ maxWidth: "15ch" }}>Thank you — we've got it.</h2>
         <p className="lede" style={{ marginTop: 14, maxWidth: "40ch" }}>
-          A real designer reads every inquiry. We'll get back to you within two business days.
+          Christine reads every note personally. We'll get back to you within two business days.
         </p>
       </div>
     );
@@ -1037,16 +1053,16 @@ function StartProjectPage() {
           <div className="grid12" style={{ rowGap: 44, alignItems: "start" }}>
             <div className="col-span-6">
               <Reveal>
-                <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Start a project</p>
+                <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Start a conversation</p>
                 <h1 className="display d2" style={{ maxWidth: "14ch" }}>
-                  Let's build the brand your business has <em className="grace">earned</em>.
+                  Let's start with your <em className="grace">story</em>.
                 </h1>
                 <p className="lede" style={{ marginTop: 24, maxWidth: "42ch" }}>
-                  Tell us where you are and what you need. We read every inquiry ourselves and reply
-                  within two business days — a real conversation, not a funnel.
+                  Tell us where you are and what you're building. Christine reads every note personally
+                  and replies within two business days — a real conversation, not a funnel.
                 </p>
                 <div style={{ marginTop: 34, display: "grid", gap: 0, maxWidth: 400 }}>
-                  {[["Human-led", "A designer reads and replies — every time."],
+                  {[["Straight to Christine", "She reads and replies — every time."],
                     ["No obligation", "A conversation first; scope and pricing come after."],
                     ["Fast", "We reply within two business days."]].map(function (row) {
                     return (
@@ -1120,7 +1136,7 @@ Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
   HomeGap, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
   HomePage, AboutPage, ServicesPage,
-  ProcessEye, ProcessStep, ProcessArrow, ProcessBlock,
+  ProcessMark, ProcessStep, ProcessArrow, ProcessBlock,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
   CarlosAuditGallery, WorkPage, StartProjectForm, StartProjectPage, StartPage, SubscribePage,
 });

@@ -170,11 +170,32 @@ function Pattern({ size = 44, rows = 1, count = 72, style }) {
   );
 }
 
+/* ---------- Hand-drawn illustrations (recolored to the palette) ---------- */
+const ILLOS = ["olive-branch", "flower", "leaf", "sun", "coffee-cup", "sprig", "lemon-branch"];
+function Illustration({ name, height = 90, style }) {
+  return (
+    <img src={`/illustrations/${name}.png`} alt="" aria-hidden="true" loading="lazy"
+      style={{ height, width: "auto", objectFit: "contain", display: "block", flex: "0 0 auto", ...style }} />
+  );
+}
+function IllustrationStrip({ height = 100, items, style }) {
+  const list = items || ILLOS;
+  return (
+    <div aria-hidden="true" style={{
+      display: "flex", alignItems: "center", justifyContent: "space-around",
+      gap: "clamp(18px,4vw,52px)", flexWrap: "wrap",
+      padding: "clamp(22px,3vw,40px) var(--gutter)", ...style,
+    }}>
+      {list.map((n) => <Illustration key={n} name={n} height={height} />)}
+    </div>
+  );
+}
+
 function Logo({ onClick, compact = false }) {
   return (
     <a href="#home" onClick={onClick} aria-label="Spazio — home"
-       style={{ display: "inline-flex", alignItems: "center", gap: 11 }}>
-      <Eye size={34} live />
+       style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+      <span aria-hidden="true" style={{ width: 11, height: 11, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto" }} />
       <span style={{
         fontFamily: "var(--display)", fontWeight: 700, fontSize: 24,
         letterSpacing: "-0.02em", color: "var(--ink)",
@@ -246,7 +267,7 @@ function Nav() {
           >Subscribe</a>
           <a href="#start-project" onClick={(e) => go(e, "start-project")} className="btn btn--primary"
              style={{ marginLeft: 10, padding: "11px 20px" }}>
-            Start a project <Arrow />
+            Start a conversation <Arrow />
           </a>
         </nav>
 
@@ -286,7 +307,7 @@ function Nav() {
           ))}
           <a href="#start-project" onClick={(e) => { go(e, "start-project"); setOpen(false); }} className="btn btn--primary"
              style={{ width: "100%", justifyContent: "center", marginTop: 18, padding: "15px" }}>
-            Start a project <Arrow />
+            Start a conversation <Arrow />
           </a>
         </div>
       </div>
@@ -359,17 +380,17 @@ function Footer() {
   const year = 2026;
   return (
     <footer className="foot" style={{ background: "var(--ink)", color: "var(--bg)" }}>
-      <Pattern rows={1} size={108} />
+      <IllustrationStrip height={78} items={["olive-branch", "flower", "leaf", "sun", "sprig"]} style={{ borderBottom: "1px solid color-mix(in oklab, var(--bg) 12%, transparent)" }} />
       <div className="wrap" style={{ paddingBlock: "clamp(56px,8vw,96px)" }}>
         <div className="grid12" style={{ rowGap: 48 }}>
           <div className="col-span-5">
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
-              <Eye size={26} live />
+              <span aria-hidden="true" style={{ width: 11, height: 11, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto" }} />
               <span style={{ fontFamily: "var(--display)", fontWeight: 600, fontSize: 22, letterSpacing: "-0.03em" }}>Spazio</span>
             </div>
             <p style={{ color: "color-mix(in oklab, var(--bg) 66%, transparent)", maxWidth: "34ch",
               fontSize: 18, lineHeight: 1.5, margin: 0 }}>
-              The brand operating studio for founder-led companies. <em className="grace" style={{ color: "var(--accent)" }}>Research-based</em>, designer-led, senior throughout.
+              A founder-first brand studio helping businesses become <em className="grace" style={{ color: "var(--accent)" }}>unforgettable</em> — with strategy, storytelling, and design. You work directly with Christine.
             </p>
           </div>
 
@@ -389,7 +410,31 @@ function Footer() {
           </div>
         </div>
 
-        <hr style={{ border: 0, height: 1, background: "color-mix(in oklab, var(--bg) 16%, transparent)", margin: "48px 0 22px" }} />
+        <a href="https://www.instagram.com/spaziooo____/" target="_blank" rel="noopener noreferrer" className="ig-peek"
+          style={{ marginTop: 44, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
+            padding: "18px 22px", borderRadius: 16,
+            border: "1px solid color-mix(in oklab, var(--bg) 16%, transparent)",
+            background: "color-mix(in oklab, var(--bg) 6%, transparent)" }}>
+          <span aria-hidden="true" style={{ display: "grid", placeItems: "center", width: 42, height: 42, borderRadius: 12,
+            background: "var(--accent)", color: "var(--accent-ink)", flex: "0 0 auto" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="17.2" cy="6.8" r="1.25" fill="currentColor" />
+            </svg>
+          </span>
+          <span style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <span style={{ fontFamily: "var(--display)", fontWeight: 600, fontSize: 18, letterSpacing: "-0.02em", color: "var(--bg)" }}>
+              A peek behind the studio
+            </span>
+            <span style={{ fontFamily: "var(--mono)", fontSize: 12, letterSpacing: "0.04em", color: "color-mix(in oklab, var(--bg) 60%, transparent)" }}>
+              Follow along on Instagram — @spaziooo____
+            </span>
+          </span>
+          <span className="ig-arrow" style={{ marginLeft: "auto", color: "var(--accent)" }}><Arrow /></span>
+        </a>
+
+        <hr style={{ border: 0, height: 1, background: "color-mix(in oklab, var(--bg) 16%, transparent)", margin: "32px 0 22px" }} />
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "space-between",
           color: "color-mix(in oklab, var(--bg) 50%, transparent)", fontFamily: "var(--mono)", fontSize: 12,
           letterSpacing: "0.04em" }}>
@@ -404,5 +449,5 @@ function Footer() {
 Object.assign(window, {
   RouterCtx, useRouter, ROUTES, useReveal, Reveal, Arrow, ArrowDown,
   CropMarks, ColTicks, Measure,
-  Logo, Nav, Marquee, Footer, Eye, Pattern, PatternTile,
+  Logo, Nav, Marquee, Footer, Eye, Pattern, PatternTile, Illustration, IllustrationStrip,
 });

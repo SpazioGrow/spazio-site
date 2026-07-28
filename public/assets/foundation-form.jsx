@@ -116,7 +116,7 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
       <div className="frame" style={{ position: "relative", background: "var(--surface)", padding: "clamp(24px,3.5vw,48px)" }}>
         <CropMarks color="var(--accent)" />
         <div style={{ maxWidth: "56ch" }}>
-          <p className="label label--accent" style={{ marginBottom: 16, display: "inline-flex", alignItems: "center", gap: 9 }}><Eye size={18} /> Foundation</p>
+          <p className="label label--accent label-dot" style={{ marginBottom: 16 }}>Foundation</p>
           <h2 className="display" style={{ fontSize: "clamp(28px,3.8vw,48px)", fontWeight: 600, letterSpacing: "-0.028em", lineHeight: 1.05, maxWidth: "20ch" }}>
             We've got it. Your <em className="grace">brief</em> is in motion.
           </h2>
@@ -227,7 +227,7 @@ function FoundationForm({ onSuccess, prefillEmail, comped }) {
       <CropMarks color="var(--accent)" />
       {/* Header */}
       <div style={{ marginBottom: "clamp(24px,3vw,36px)", paddingBottom: "clamp(20px,2.6vw,28px)", borderBottom: "1px solid var(--line)" }}>
-        <p className="label label--accent" style={{ marginBottom: 16, display: "inline-flex", alignItems: "center", gap: 9 }}><Eye size={18} /> Foundation</p>
+        <p className="label label--accent label-dot" style={{ marginBottom: 16 }}>Foundation</p>
         <h2 className="display" style={{ fontSize: "clamp(28px,3.8vw,48px)", fontWeight: 600, letterSpacing: "-0.028em", lineHeight: 1, maxWidth: "18ch" }}>
           Let's understand your <em className="grace">brand</em>.
         </h2>
