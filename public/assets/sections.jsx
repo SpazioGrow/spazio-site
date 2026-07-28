@@ -119,6 +119,7 @@ const WORK_DATA = [
   {
     id: "mandarin", n: "05", client: "Mandarin Cookie", project: "A story before the seal.",
     sector: "Cannabis & flower", year: "2026",
+    img: "/work/mandarin-cookies.png",
     alt: "Mandarin Cookie sativa pouch — illustrated sun-and-citrus scene",
     desc: "Some products deserve a world, not a label. For Mandarin Cookie we illustrated a sun-warmed, hammock-and-citrus scene that hands the strain a mood and a wink — flavour and feeling understood in a single look. The pack becomes a small escape, so the relationship begins on the shelf and only deepens once it's in someone's hands.",
     services: ["Illustration", "Packaging design", "Brand identity"],
