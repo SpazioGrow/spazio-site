@@ -123,6 +123,46 @@ function CtaBand() {
 
 /* ================= HOME ================= */
 
+/* ---- Studio moment (founder / launch photo) ---- */
+function HomeStudio() {
+  const [err, setErr] = useState(false);
+  return (
+    <section className="section--tight">
+      <div className="wrap">
+        <div className="grid12" style={{ rowGap: 36, alignItems: "center" }}>
+          <div className="col-span-6">
+            <Reveal>
+              <p className="label label--accent label-dot" style={{ marginBottom: 20 }}>Inside the studio</p>
+              <h2 className="section-title" style={{ maxWidth: "15ch" }}>
+                Founder-led, and you can <em className="grace">feel</em> it.
+              </h2>
+              <p className="lede" style={{ marginTop: 22, maxWidth: "40ch" }}>
+                Real people who care about your brand as much as you do — in it with you from the
+                first idea to the last detail.
+              </p>
+            </Reveal>
+          </div>
+          <div className="col-span-6">
+            <Reveal delay={100}>
+              <figure className="frame" style={{ margin: 0, position: "relative", background: "var(--surface)", overflow: "hidden" }}>
+                <CropMarks color="var(--accent)" />
+                {err
+                  ? <div className="ph" style={{ aspectRatio: "4 / 5", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                      <span className="ph__tag">Add /spazio-launch.jpg</span>
+                    </div>
+                  : <img src="/spazio-launch.jpg"
+                      alt="Spazio celebrating a brand launch — tossing the studio poster and colour palette into the air"
+                      loading="lazy" onError={() => setErr(true)}
+                      style={{ width: "100%", height: "auto", display: "block" }} />}
+              </figure>
+            </Reveal>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---- The Gap ---- */
 function HomeGap() {
   return (
@@ -487,6 +527,7 @@ function HomePage() {
   return (
     <main>
       <Hero />
+      <HomeStudio />
       <HomeGap />
       <HomeWhatWeDo />
       <HomeWho />
@@ -1279,7 +1320,7 @@ function SubscribePage() {
 
 Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
-  HomeGap, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
+  HomeGap, HomeStudio, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
   HomePage, AboutPage, ServicesPage,
   PartnerWay, WaysToPartnerPage,
   ProcessMark, ProcessStep, ProcessArrow, ProcessBlock,
