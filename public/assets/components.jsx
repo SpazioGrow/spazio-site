@@ -410,7 +410,31 @@ function Footer() {
           </div>
         </div>
 
-        <hr style={{ border: 0, height: 1, background: "color-mix(in oklab, var(--bg) 16%, transparent)", margin: "48px 0 22px" }} />
+        <a href="https://www.instagram.com/spaziooo____/" target="_blank" rel="noopener noreferrer" className="ig-peek"
+          style={{ marginTop: 44, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
+            padding: "18px 22px", borderRadius: 16,
+            border: "1px solid color-mix(in oklab, var(--bg) 16%, transparent)",
+            background: "color-mix(in oklab, var(--bg) 6%, transparent)" }}>
+          <span aria-hidden="true" style={{ display: "grid", placeItems: "center", width: 42, height: 42, borderRadius: 12,
+            background: "var(--accent)", color: "var(--accent-ink)", flex: "0 0 auto" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="17.2" cy="6.8" r="1.25" fill="currentColor" />
+            </svg>
+          </span>
+          <span style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <span style={{ fontFamily: "var(--display)", fontWeight: 600, fontSize: 18, letterSpacing: "-0.02em", color: "var(--bg)" }}>
+              A peek behind the studio
+            </span>
+            <span style={{ fontFamily: "var(--mono)", fontSize: 12, letterSpacing: "0.04em", color: "color-mix(in oklab, var(--bg) 60%, transparent)" }}>
+              Follow along on Instagram — @spaziooo____
+            </span>
+          </span>
+          <span className="ig-arrow" style={{ marginLeft: "auto", color: "var(--accent)" }}><Arrow /></span>
+        </a>
+
+        <hr style={{ border: 0, height: 1, background: "color-mix(in oklab, var(--bg) 16%, transparent)", margin: "32px 0 22px" }} />
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "space-between",
           color: "color-mix(in oklab, var(--bg) 50%, transparent)", fontFamily: "var(--mono)", fontSize: 12,
           letterSpacing: "0.04em" }}>

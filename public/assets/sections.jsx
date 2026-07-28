@@ -4,7 +4,7 @@
 
 /* ---------------- DATA ---------------- */
 
-const WHO = ["App & SaaS founders", "Local & hospitality brands", "Professional & service groups", "Anyone going pro"];
+const WHO = ["Founder-led brands", "Consumer products", "Growing businesses", "Long-term partners"];
 
 const SERVICES_DATA = [
   {

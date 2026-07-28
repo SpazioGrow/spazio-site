@@ -158,36 +158,36 @@ function HomeGap() {
 
 /* ---- Who it's for ---- */
 const HOME_AUDIENCE = [
-  ["Consumer apps", "Mobile-first products with real users and real ambition."],
-  ["B2C SaaS", "Subscription products that live or die on first impressions."],
-  ["Platforms & marketplaces", "Two-sided products that have to feel trustworthy fast."],
-  ["Founder-led, product-first teams", "You make the calls — and you sweat the details."],
+  ["Founder-led brands", "Building something meaningful and ready to share their story with the world."],
+  ["Consumer product companies", "Creating memorable brands, packaging, and experiences people reach for."],
+  ["Growing businesses", "Ready for the strategy and creative direction to evolve into their next chapter."],
+  ["Visionary founders", "Who want a long-term creative partner — not just a design vendor."],
 ];
 function HomeWho() {
   return (
-    <section className="section">
+    <section className="section band-sky">
       <div className="wrap">
         <div className="grid12" style={{ rowGap: 20, alignItems: "end", marginBottom: "clamp(36px,5vw,60px)" }}>
           <div className="col-span-7">
             <Reveal>
-              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Who it’s for</p>
+              <p className="label label--accent label-dot" style={{ marginBottom: 22 }}>Who we work with</p>
               <h2 className="section-title" style={{ maxWidth: "18ch" }}>
-                For founders whose product is ahead of their brand.
+                The founders and brands we build with.
               </h2>
             </Reveal>
           </div>
           <div className="col-span-5">
             <Reveal delay={80}>
               <p className="lede" style={{ marginLeft: "auto" }}>
-                If you’ve got real traction and a brand that hasn’t caught up to the ambition —
-                and you’re about to raise, launch, or scale — this is for you.
+                We work best with people who care as much about the story as the product —
+                and who are in it for the long run.
               </p>
             </Reveal>
           </div>
         </div>
         <div className="grid12" style={{ rowGap: 0 }}>
           {HOME_AUDIENCE.map(([t, d], i) => (
-            <Reveal as="div" key={t} delay={i * 60} className="col-span-6"
+            <Reveal as="div" key={t} delay={i * 90} className="col-span-6 hover-slide"
               style={{ display: "flex", gap: 16, padding: "22px 0", borderTop: "1px solid var(--line)" }}>
               <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--accent-deep)", paddingTop: 4 }}>{String(i + 1).padStart(2, "0")}</span>
               <div>
@@ -236,7 +236,7 @@ function HomeWhatWeDo() {
         </div>
         <div className="grid12" style={{ rowGap: 0 }}>
           {HOME_SERVICES.map(([t, d], i) => (
-            <Reveal as="div" key={t} delay={i * 60} className="col-span-6"
+            <Reveal as="div" key={t} delay={i * 60} className="col-span-6 hover-slide"
               style={{ padding: "26px 0", borderTop: "1px solid var(--line)" }}>
               <h3 style={{ margin: 0, fontFamily: "var(--display)", fontWeight: 600, fontSize: "clamp(22px,2vw,28px)", letterSpacing: "-0.02em" }}>{t}</h3>
               <p style={{ margin: "10px 0 0", fontSize: 16, color: "var(--ink-2)", lineHeight: 1.55, maxWidth: "42ch" }}>{d}</p>
@@ -489,6 +489,7 @@ function HomePage() {
       <Hero />
       <HomeGap />
       <HomeWhatWeDo />
+      <HomeWho />
       <ProcessBlock />
       <CtaBand />
     </main>
