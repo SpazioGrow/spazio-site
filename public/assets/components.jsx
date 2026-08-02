@@ -197,7 +197,7 @@ function Logo({ onClick, compact = false }) {
        style={{ display: "inline-flex", alignItems: "center", gap: 11, color: "var(--ink)" }}>
       <span aria-hidden="true" style={{ width: 11, height: 11, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto" }} />
       <span aria-hidden="true" style={{
-        display: "inline-block", width: 62, height: 36, flex: "0 0 auto",
+        display: "inline-block", width: 78, height: 44, flex: "0 0 auto",
         background: "currentColor",
         WebkitMaskImage: "url(/logo-spazio.png)", maskImage: "url(/logo-spazio.png)",
         WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
