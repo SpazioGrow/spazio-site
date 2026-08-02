@@ -163,6 +163,30 @@ function HomeStudio() {
   );
 }
 
+/* ---- Brand band (big logo + pattern) ---- */
+function BrandBand() {
+  return (
+    <section style={{ background: "var(--ink)", color: "var(--bg)" }}>
+      <div style={{ paddingBlock: "clamp(56px,8vw,108px)" }}>
+        <div className="wrap" style={{ textAlign: "center" }}>
+          <span aria-label="Spazio" role="img" style={{
+            display: "inline-block", width: "clamp(150px,24vw,280px)", aspectRatio: "2285 / 1363",
+            background: "var(--bg)",
+            WebkitMaskImage: "url(/logo-spazio.png)", maskImage: "url(/logo-spazio.png)",
+            WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
+            WebkitMaskSize: "contain", maskSize: "contain",
+            WebkitMaskPosition: "center", maskPosition: "center",
+          }} />
+          <p className="label" style={{ justifyContent: "center", letterSpacing: "0.42em", marginTop: 12, color: "color-mix(in oklab, var(--bg) 62%, transparent)" }}>Studio</p>
+          <p className="lede" style={{ margin: "22px auto 0", maxWidth: "26ch", color: "color-mix(in oklab, var(--bg) 80%, transparent)" }}>
+            A creative studio for brands who refuse to blend in.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---- The Gap ---- */
 function HomeGap() {
   return (
@@ -528,6 +552,7 @@ function HomePage() {
     <main>
       <Hero />
       <HomeStudio />
+      <BrandBand />
       <HomeGap />
       <HomeWhatWeDo />
       <HomeWho />
@@ -1356,7 +1381,7 @@ function SubscribePage() {
 
 Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
-  HomeGap, HomeStudio, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
+  HomeGap, HomeStudio, BrandBand, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
   HomePage, AboutPage, ServicesPage,
   PartnerImg, PartnerWay, WaysToPartnerPage,
   ProcessMark, ProcessStep, ProcessArrow, ProcessBlock,

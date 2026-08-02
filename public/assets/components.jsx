@@ -194,14 +194,16 @@ function IllustrationStrip({ height = 100, items, style }) {
 function Logo({ onClick, compact = false }) {
   return (
     <a href="#home" onClick={onClick} aria-label="Spazio — home"
-       style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+       style={{ display: "inline-flex", alignItems: "center", gap: 11, color: "var(--ink)" }}>
       <span aria-hidden="true" style={{ width: 11, height: 11, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto" }} />
-      <span style={{
-        fontFamily: "var(--display)", fontWeight: 700, fontSize: 24,
-        letterSpacing: "-0.02em", color: "var(--ink)",
-      }}>
-        Spazio{compact ? "" : ""}
-      </span>
+      <span aria-hidden="true" style={{
+        display: "inline-block", width: 78, height: 44, flex: "0 0 auto",
+        background: "currentColor",
+        WebkitMaskImage: "url(/logo-spazio.png)", maskImage: "url(/logo-spazio.png)",
+        WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
+        WebkitMaskSize: "contain", maskSize: "contain",
+        WebkitMaskPosition: "left center", maskPosition: "left center",
+      }} />
     </a>
   );
 }
@@ -385,9 +387,16 @@ function Footer() {
       <div className="wrap" style={{ paddingBlock: "clamp(56px,8vw,96px)" }}>
         <div className="grid12" style={{ rowGap: 48 }}>
           <div className="col-span-5">
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 11, marginBottom: 22 }}>
               <span aria-hidden="true" style={{ width: 11, height: 11, borderRadius: "50%", background: "var(--accent)", flex: "0 0 auto" }} />
-              <span style={{ fontFamily: "var(--display)", fontWeight: 600, fontSize: 22, letterSpacing: "-0.03em" }}>Spazio</span>
+              <span aria-label="Spazio" role="img" style={{
+                display: "inline-block", width: 66, height: 38, flex: "0 0 auto",
+                background: "currentColor",
+                WebkitMaskImage: "url(/logo-spazio.png)", maskImage: "url(/logo-spazio.png)",
+                WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
+                WebkitMaskSize: "contain", maskSize: "contain",
+                WebkitMaskPosition: "left center", maskPosition: "left center",
+              }} />
             </div>
             <p style={{ color: "color-mix(in oklab, var(--bg) 66%, transparent)", maxWidth: "34ch",
               fontSize: 18, lineHeight: 1.5, margin: 0 }}>
