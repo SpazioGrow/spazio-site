@@ -108,7 +108,7 @@ const WORK_DATA = [
     alt: "Bowhouse vape range — four character-driven cartoon pouches with matching disposables",
     desc: "In a category shoppers browse by feel, we turned every Bowhouse strain into its own character — a cast with real attitude that makes the lineup read like a crew worth collecting, not a wall of look-alike pouches. The personalities do the sorting, so a first-timer picks with confidence and keeps coming back to ask for one by name.",
     services: ["Brand identity", "Packaging design", "Production artwork", "Social / campaign"],
-    strategyPdf: "/assets/bowhouse-brand-strategy.pdf",
+    strategyPage: "bowhouse-strategy",
     tone: "b",
   },
   {
@@ -476,28 +476,17 @@ function GalleryTile({ src, alt, label }) {
 }
 
 /* Full case row (Work page) */
-/* Brand-strategy embed: premium button that reveals the PDF inline,
-   with an open-in-new-tab fallback (best path on mobile). */
-function BrandStrategy({ pdf, client }) {
-  const [open, setOpen] = useState(false);
+/* Brand-strategy CTA: premium button that opens the dedicated in-site
+   brand-strategy case-study page. */
+function BrandStrategy({ route, client }) {
+  const { navigate } = useRouter();
   return (
     <div style={{ marginTop: 26, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
       <p className="label label--accent label-dot" style={{ marginBottom: 14 }}>Brand Strategy</p>
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
-          className="btn btn--primary" style={{ padding: "13px 24px" }}>
-          {open ? "Hide brand strategy" : "View brand strategy"} <Arrow />
-        </button>
-        <a href={pdf} target="_blank" rel="noopener noreferrer" className="txtlink" style={{ fontSize: 14.5 }}>
-          Open in new tab <Arrow />
-        </a>
-      </div>
-      {open && (
-        <div style={{ marginTop: 20, border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden", background: "var(--surface)" }}>
-          <iframe src={pdf} title={`${client} brand strategy overview`} loading="lazy"
-            style={{ width: "100%", height: "min(80vh, 720px)", border: 0, display: "block", background: "var(--bg)" }} />
-        </div>
-      )}
+      <a href={`#${route}`} onClick={(e) => { e.preventDefault(); navigate(route); }}
+        className="btn btn--primary" style={{ padding: "13px 24px" }}>
+        View the {client} brand strategy <Arrow />
+      </a>
     </div>
   );
 }
@@ -542,7 +531,7 @@ function WorkRow({ w, index }) {
             </div>
           )}
 
-          {w.strategyPdf && <BrandStrategy pdf={w.strategyPdf} client={w.client} />}
+          {w.strategyPage && <BrandStrategy route={w.strategyPage} client={w.client} />}
 
           <a href="/api/checkout?tier=brand-gap-audit" className="txtlink" style={{ marginTop: 26 }}>
             Start one like this <Arrow />
