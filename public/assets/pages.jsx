@@ -1178,6 +1178,55 @@ function WaysToPartnerPage() {
   );
 }
 
+/* ================= BOWHOUSE — BRAND STRATEGY (case-study page) ================= */
+function BowhouseStrategyPage() {
+  const { navigate } = useRouter();
+  const pages = Array.from({ length: 10 }, (_, i) => `/work/bowhouse-strategy/${String(i + 1).padStart(2, "0")}.jpg`);
+  return (
+    <main>
+      <section style={{ paddingTop: "clamp(44px,6vw,92px)", paddingBottom: "clamp(20px,3vw,36px)" }}>
+        <div className="wrap">
+          <a href="#work" onClick={(e) => { e.preventDefault(); navigate("work"); }} className="txtlink" style={{ marginBottom: 26 }}>
+            ← Back to Projects
+          </a>
+          <p className="label label--accent label-dot" style={{ margin: "28px 0 22px" }}>Brand Strategy</p>
+          <div className="grid12" style={{ rowGap: 24, alignItems: "end" }}>
+            <div className="col-span-7">
+              <h1 className="display d2" style={{ maxWidth: "14ch" }}>
+                Bowhouse — brand <em className="grace">strategy</em>.
+              </h1>
+            </div>
+            <div className="col-span-5">
+              <p className="lede" style={{ marginLeft: "auto" }}>
+                An overview of the brand strategy we developed for Bowhouse — positioning, the
+                character system, and the world it lives in.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section--tight" style={{ paddingTop: "clamp(8px,2vw,20px)" }}>
+        <div className="wrap">
+          <div style={{ maxWidth: 1040, margin: "0 auto", display: "flex", flexDirection: "column", gap: "clamp(16px,2.4vw,28px)" }}>
+            {pages.map((src, i) => (
+              <Reveal as="figure" key={src} style={{
+                margin: 0, borderRadius: "var(--radius)", overflow: "hidden",
+                border: "1px solid var(--line)", background: "var(--surface)",
+              }}>
+                <img src={src} alt={`Bowhouse brand strategy — page ${i + 1} of ${pages.length}`} loading="lazy"
+                  style={{ width: "100%", height: "auto", display: "block" }} />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <CtaBand />
+    </main>
+  );
+}
+
 /* ================= START (intake) ================= */
 /* ================= START A PROJECT (public inquiry — Journey 1) ================= */
 /* Client-facing lead capture. Submits to /api/lead (Airtable Leads, Source =
@@ -1383,7 +1432,7 @@ Object.assign(window, {
   PageHeader, IntakeSection, SubscribeSection, CtaBand,
   HomeGap, HomeStudio, BrandBand, HomeWho, HomeWhatWeDo, HomeAudit, HomeWhy, HomeHow,
   HomePage, AboutPage, ServicesPage,
-  PartnerImg, PartnerWay, WaysToPartnerPage,
+  PartnerImg, PartnerWay, WaysToPartnerPage, BowhouseStrategyPage,
   ProcessMark, ProcessStep, ProcessArrow, ProcessBlock,
   OSMotif, OSRoleTag, OSStage, OSFlow, ProcessHero, DesignOS, ProcessRibbon, ProcessQuote, ProcessSummary, ProcessPage,
   CarlosAuditGallery, WorkPage, StartProjectForm, StartProjectPage, StartPage, SubscribePage,
