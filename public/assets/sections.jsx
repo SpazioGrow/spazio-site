@@ -126,6 +126,7 @@ const WORK_DATA = [
     alt: "Bowhouse vape range — four character-driven cartoon pouches with matching disposables",
     desc: "In a category shoppers browse by feel, we turned every Bowhouse strain into its own character — a cast with real attitude that makes the lineup read like a crew worth collecting, not a wall of look-alike pouches. The personalities do the sorting, so a first-timer picks with confidence and keeps coming back to ask for one by name.",
     services: ["Brand identity", "Packaging design", "Production artwork", "Social / campaign"],
+    strategyPdf: "/assets/bowhouse-brand-strategy.pdf",
     tone: "b",
   },
   {
@@ -512,6 +513,15 @@ function WorkRow({ w, index }) {
                   <span key={s} className="chip" style={{ pointerEvents: "none", background: "transparent", color: "var(--ink-2)" }}>{s}</span>
                 ))}
               </div>
+            </div>
+          )}
+
+          {w.strategyPdf && (
+            <div style={{ marginTop: 26, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+              <p className="label label--accent label-dot" style={{ marginBottom: 10 }}>Brand Strategy</p>
+              <a href={w.strategyPdf} target="_blank" rel="noopener noreferrer" className="txtlink" style={{ fontSize: 16 }}>
+                View the {w.client} brand strategy overview <Arrow />
+              </a>
             </div>
           )}
 
